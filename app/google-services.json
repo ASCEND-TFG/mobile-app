@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "548443806639",
+    "project_id": "tfg-ascend",
+    "storage_bucket": "tfg-ascend.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:548443806639:android:f92cdd57865fa55b642d5a",
+        "android_client_info": {
+          "package_name": "com.jaime.ascend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA23rJXOjBjC4w7R-i26XQatbGg20w8NpM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
