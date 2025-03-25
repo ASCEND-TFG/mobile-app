@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">ASCEND</string>
+    <string name="welcome_text">Welcome to Ascend!</string>
+    <string name="email_hint">Enter your email</string>
+    <string name="email_label">Email</string>
+    <string name="password_hint">Enter your password</string>
+    <string name="password_label">Password</string>
+    <string name="forgot_password">Forgot your password?</string>
+    <string name="login_button">Log in</string>
+    <string name="signup_prompt">Don\'t have an account? Sign up</string>
 </resources>
