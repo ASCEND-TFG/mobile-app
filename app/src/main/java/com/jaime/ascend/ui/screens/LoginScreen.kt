@@ -27,6 +27,9 @@ import com.jaime.ascend.R
 import com.jaime.ascend.ui.components.BlackButton
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
+import com.jaime.ascend.ui.theme.AppTypography
+import com.jaime.ascend.ui.theme.bodyFontFamily
+import com.jaime.ascend.ui.theme.displayFontFamily
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -57,10 +60,11 @@ fun LoginContent(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(25.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ascend_logo),
+        Icon(
+            painter = painterResource(id = R.drawable.ascendlogo_removebg),
             contentDescription = "Ascend Logo",
-            modifier = Modifier.size(140.dp)
+            modifier = Modifier.size(140.dp),
+            tint = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -77,10 +81,16 @@ fun LoginContent(navController: NavController) {
                 Box(modifier = Modifier.align(Alignment.Start)) {
                     Text(
                         text = stringResource(id = R.string.welcome_text),
-                        style = TextStyle(
-                            fontSize = 26.sp,
-                            fontWeight = FontWeight.Bold,
+                        /*style = TextStyle(
+                            fontFamily = displayFontFamily,
+                            fontStyle = MaterialTheme.typography.displayLarge,
                             color = MaterialTheme.colorScheme.primary
+                        )*/
+
+                        style = AppTypography.headlineMedium.copy(
+                            fontFamily = displayFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
                         )
                     )
                 }

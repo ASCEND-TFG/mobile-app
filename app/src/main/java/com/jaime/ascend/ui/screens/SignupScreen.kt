@@ -58,10 +58,11 @@ fun SignupContent(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(25.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ascend_logo),
+        Icon(
+            painter = painterResource(id = R.drawable.ascendlogo_removebg),
             contentDescription = "Ascend Logo",
-            modifier = Modifier.size(140.dp)
+            modifier = Modifier.size(140.dp),
+            tint = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(20.dp))
