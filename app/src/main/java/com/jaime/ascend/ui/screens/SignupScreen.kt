@@ -1,6 +1,5 @@
 package com.jaime.ascend.ui.screens
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -29,7 +28,7 @@ import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun SignupScreen(navController: NavController) {
     AppTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -41,7 +40,7 @@ fun LoginScreen(navController: NavController) {
                     .padding(innerPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LoginContent(navController)
+                SignupContent(navController)
             }
         }
     }
@@ -49,9 +48,11 @@ fun LoginScreen(navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginContent(navController: NavController) {
+fun SignupContent(navController: NavController) {
+    var username by remember { mutableStateOf(TextFieldValue("")) }
     var email by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
+    var repeatPassword by remember { mutableStateOf(TextFieldValue("")) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -88,21 +89,25 @@ fun LoginContent(navController: NavController) {
                 Spacer(modifier = Modifier.height(20.dp))
 
                 OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    placeholder = { Text(stringResource(id = R.string.username_hint), color = MaterialTheme.colorScheme.tertiary) },
+                    label = { Text(stringResource(id = R.string.username_label), color = MaterialTheme.colorScheme.primary) },
+                    textStyle = TextStyle(color = MaterialTheme.colorScheme.primary),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    placeholder = {
-                        Text(
-                            stringResource(id = R.string.email_hint),
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                    },
-                    label = {
-                        Text(
-                            stringResource(id = R.string.email_label),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    textStyle = TextStyle(color = Color.Black),
+                    placeholder = { Text(stringResource(id = R.string.email_hint), color = MaterialTheme.colorScheme.tertiary) },
+                    label = { Text(stringResource(id = R.string.email_label), color = MaterialTheme.colorScheme.primary) },
+                    textStyle = TextStyle(color = MaterialTheme.colorScheme.primary),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary
                     ),
@@ -114,18 +119,8 @@ fun LoginContent(navController: NavController) {
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    placeholder = {
-                        Text(
-                            stringResource(id = R.string.password_hint),
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                    },
-                    label = {
-                        Text(
-                            stringResource(id = R.string.password_label),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    },
+                    placeholder = { Text(stringResource(id = R.string.password_hint), color = MaterialTheme.colorScheme.tertiary) },
+                    label = { Text(stringResource(id = R.string.password_label), color = MaterialTheme.colorScheme.primary) },
                     textStyle = TextStyle(color = MaterialTheme.colorScheme.primary),
                     visualTransformation = PasswordVisualTransformation(),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -134,41 +129,36 @@ fun LoginContent(navController: NavController) {
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(5.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                Box(modifier = Modifier.align(Alignment.Start)) {
-                    TextButton(onClick = { /*Todo - Navegar a recuperar contraseña*/ }) {
-                        Text(
-                            stringResource(id = R.string.forgot_password),
-                            color = MaterialTheme.colorScheme.tertiary,
-                            fontSize = 14.sp
-                        )
-                    }
-                }
+                OutlinedTextField(
+                    value = repeatPassword,
+                    onValueChange = { repeatPassword = it },
+                    placeholder = { Text(stringResource(id = R.string.repeat_password_hint), color = MaterialTheme.colorScheme.tertiary) },
+                    label = { Text(stringResource(id = R.string.repeat_password_label), color = MaterialTheme.colorScheme.primary) },
+                    textStyle = TextStyle(color = MaterialTheme.colorScheme.primary),
+                    visualTransformation = PasswordVisualTransformation(),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 BlackButton(
-                    onClick = { /*Todo - Manejar login*/ },
+                    onClick = { /*Todo - Manejar signup*/ },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
                 ) {
-                    Text(
-                        stringResource(id = R.string.login_button),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 16.sp
-                    )
+                    Text(stringResource(id = R.string.signup_button), color = Color.White, fontSize = 16.sp)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                TextButton(onClick = { navController.navigate(route = AppScreens.SignupScreen.route) }) {
-                    Text(
-                        stringResource(id = R.string.signup_prompt),
-                        color = MaterialTheme.colorScheme.tertiary,
-                        fontSize = 14.sp
-                    )
+                TextButton(onClick = { navController.navigate(route = AppScreens.LoginScreen.route) }) {
+                    Text(stringResource(id = R.string.login_prompt), color = MaterialTheme.colorScheme.tertiary, fontSize = 14.sp)
                 }
             }
         }
@@ -177,6 +167,8 @@ fun LoginContent(navController: NavController) {
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
-    LoginScreen(navController = rememberNavController())
+fun SignupScreenPreview() {
+    AppTheme {
+        SignupScreen(navController = rememberNavController())
+    }
 }

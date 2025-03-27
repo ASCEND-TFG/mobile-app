@@ -8,4 +8,10 @@
     <string name="forgot_password">Forgot your password?</string>
     <string name="login_button">Log in</string>
     <string name="signup_prompt">Don\'t have an account? Sign up</string>
+    <string name="username_hint">Enter your username</string>
+    <string name="username_label">Username</string>
+    <string name="repeat_password_hint">Repeat your password</string>
+    <string name="repeat_password_label">Repeat password</string>
+    <string name="signup_button">Sign up</string>
+    <string name="login_prompt">Already have an account? Log in</string>
 </resources>

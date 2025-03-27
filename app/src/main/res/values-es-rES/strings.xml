@@ -3,10 +3,16 @@
     <string name="app_name">ASCEND</string>
     <string name="welcome_text">¡Bienvenido a Ascend!</string>
     <string name="email_hint">Escribe tu correo</string>
-    <string name="email_label">ASCEND</string>
+    <string name="email_label">Correo</string>
     <string name="password_hint">Escribe tu contraseña</string>
     <string name="password_label">Contraseña</string>
     <string name="forgot_password">¿Has olvidado tu contraseña?</string>
     <string name="login_button">Iniciar sesión</string>
     <string name="signup_prompt">¿No tienes una cuenta? Regístrate</string>
+    <string name="username_hint">Escribe tu nombre de usuario</string>
+    <string name="username_label">Nombre de Usuario</string>
+    <string name="repeat_password_hint">Repite tu contraseña</string>
+    <string name="repeat_password_label">Repetir contraseña</string>
+    <string name="signup_button">Registrarse</string>
+    <string name="login_prompt">¿Ya tienes una cuenta? Inicia sesión</string>
 </resources>
