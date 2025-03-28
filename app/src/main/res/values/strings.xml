@@ -14,4 +14,10 @@
     <string name="repeat_password_label">Repeat password</string>
     <string name="signup_button">Sign up</string>
     <string name="login_prompt">Already have an account? Log in</string>
+    <string name="login_error_message_credentials">The email or password is incorrect</string>
+    <string name="signup_error_message_password_mismatch">Passwords do not match</string>
+    <string name="signup_error_message_email_format">Invalid email format</string>
+    <string name="signup_error_message_weak_password">Password must be at least 6 characters long</string>
+    <string name="signup_error_message_email_in_use">Email is already in use by another account</string>
+    <string name="signup_error_message_empty_fields">Please, fill all fields</string>
 </resources>

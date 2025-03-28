@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.jaime.ascend.ui.screens.HomeScreen
 import com.jaime.ascend.ui.screens.LoginScreen
 import com.jaime.ascend.ui.screens.SignupScreen
 
@@ -16,6 +17,9 @@ fun AppNavigation() {
         }
         composable(route = AppScreens.SignupScreen.route) {
             SignupScreen(navController)
+        }
+        composable(route = AppScreens.HomeScreen.route) {
+            HomeScreen(navController)
         }
     }
 }
