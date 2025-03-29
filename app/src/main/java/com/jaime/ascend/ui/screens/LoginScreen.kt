@@ -80,17 +80,20 @@ fun LoginContent(navController: NavController) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(25.dp)
+        modifier = Modifier
+            .padding(25.dp)
+            .fillMaxSize()
     ) {
-
-        Icon(
-            painter = painterResource(id = R.drawable.ascendlogo_removebg),
-            contentDescription = stringResource(R.string.app_name),
-            modifier = Modifier
-                .width(140.dp)
-                .padding(top = 60.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
+        Box(modifier = Modifier.height(80.dp)) {
+            Icon(
+                painter = painterResource(id = R.drawable.ascendlogo_removebg),
+                contentDescription = stringResource(R.string.app_name),
+                modifier = Modifier
+                    .width(155.dp)
+                    .padding(top = 30.dp)
+                    .align(Alignment.Center)
+            )
+        }
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -182,8 +185,9 @@ fun LoginContent(navController: NavController) {
                         viewModel.signIn(email.text, password.text) { success ->
                             if (success) {
                                 navController.navigate(route = AppScreens.HomeScreen.route)
-                            } else if (password.text.isEmpty() ||  email.text.isEmpty()) {
-                                errorMessage = emptyFieldsMessage }else {
+                            } else if (password.text.isEmpty() || email.text.isEmpty()) {
+                                errorMessage = emptyFieldsMessage
+                            } else {
                                 errorMessage = loginErrorMessage
                                 Log.e("AuthRepository", "Failed login")
                             }

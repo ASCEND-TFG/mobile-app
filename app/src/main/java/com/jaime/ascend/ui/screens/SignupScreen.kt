@@ -59,6 +59,7 @@ fun SignupScreen(navController: NavController) {
     val emptyFieldsMessage = stringResource(id = R.string.signup_error_message_empty_fields)
     var email by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
+    var username by remember { mutableStateOf(TextFieldValue("")) }
     var confirmPassword by remember { mutableStateOf(TextFieldValue("")) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
@@ -68,14 +69,16 @@ fun SignupScreen(navController: NavController) {
             .padding(25.dp)
             .fillMaxSize()
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ascendlogo_removebg),
-            contentDescription = stringResource(R.string.app_name),
-            modifier = Modifier
-                .width(140.dp)
-                .padding(top = 88.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
+        Box(modifier = Modifier.height(100.dp)) {
+            Icon(
+                painter = painterResource(id = R.drawable.ascendlogo_removebg),
+                contentDescription = stringResource(R.string.app_name),
+                modifier = Modifier
+                    .width(155.dp)
+                    .padding(top = 60.dp)
+                    .align(Alignment.Center)
+            )
+        }
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -95,6 +98,32 @@ fun SignupScreen(navController: NavController) {
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                     )
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { newValue ->
+                        username = newValue
+                    },
+                    placeholder = {
+                        Text(
+                            stringResource(id = R.string.username_hint),
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    },
+                    label = {
+                        Text(
+                            stringResource(id = R.string.username_label),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -180,23 +209,11 @@ fun SignupScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Box(modifier = Modifier.align(Alignment.Start)) {
-                    TextButton(onClick = { /*Todo - Recover password*/ }) {
-                        Text(
-                            stringResource(id = R.string.forgot_password),
-                            color = MaterialTheme.colorScheme.tertiary,
-                            fontSize = 14.sp
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
                 BlackButton(
                     onClick = {
                         if (password.text != confirmPassword.text) {
                             errorMessage = passwordMismatchMessage
-                        } else if (password.text.isEmpty() || confirmPassword.text.isEmpty() || email.text.isEmpty()) {
+                        } else if (password.text.isEmpty() || confirmPassword.text.isEmpty() || email.text.isEmpty() || username.text.isEmpty()) {
                             errorMessage = emptyFieldsMessage
                         } else {
                             viewModel.signUp(email.text, password.text) { success ->

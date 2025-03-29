@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        FirebaseApp.initializeApp(this)
+        FirebaseApp.initializeApp(this);
         setContent {
             AppTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {

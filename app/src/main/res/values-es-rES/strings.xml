@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ASCEND</string>
+    <string name="splash_text">Cargando…</string>
     <string name="welcome_text">¡Bienvenido a Ascend!</string>
     <string name="email_hint">Escribe tu correo</string>
     <string name="email_label">Correo</string>

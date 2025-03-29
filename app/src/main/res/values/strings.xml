@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">ASCEND</string>
+    <string name="splash_text">Loading…</string>
     <string name="welcome_text">Welcome to Ascend!</string>
     <string name="email_hint">Enter your email</string>
     <string name="email_label">Email</string>

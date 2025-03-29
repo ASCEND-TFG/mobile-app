@@ -7,11 +7,19 @@ import androidx.navigation.compose.rememberNavController
 import com.jaime.ascend.ui.screens.HomeScreen
 import com.jaime.ascend.ui.screens.LoginScreen
 import com.jaime.ascend.ui.screens.SignupScreen
+import com.jaime.ascend.ui.screens.SplashScreenContent
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = AppScreens.LoginScreen.route) {
+    NavHost(navController = navController, startDestination = AppScreens.SplashScreen.route) {
+        composable(route = AppScreens.SplashScreen.route) {
+            SplashScreenContent {
+                navController.navigate(AppScreens.LoginScreen.route) {
+                    popUpTo(AppScreens.SplashScreen.route) { inclusive = true }
+                }
+            }
+        }
         composable(route = AppScreens.LoginScreen.route) {
             LoginScreen(navController)
         }
