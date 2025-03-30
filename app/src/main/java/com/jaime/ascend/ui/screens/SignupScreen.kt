@@ -216,7 +216,7 @@ fun SignupScreen(navController: NavController) {
                         } else if (password.text.isEmpty() || confirmPassword.text.isEmpty() || email.text.isEmpty() || username.text.isEmpty()) {
                             errorMessage = emptyFieldsMessage
                         } else {
-                            viewModel.signUp(email.text, password.text) { success ->
+                            viewModel.signUp(email.text, password.text, username.text) { success ->
                                 if (success) {
                                     navController.navigate(route = AppScreens.HomeScreen.route)
                                 } else {
