@@ -8,14 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jaime.ascend.ui.components.BottomNavigation
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun FriendsScreen(navController: NavController) {
     Scaffold(
         bottomBar = { BottomNavigation(navController, setOf(
             AppScreens.HomeScreen,
@@ -25,7 +24,7 @@ fun HomeScreen(navController: NavController) {
         )) },
         content = { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
-                Text("Home Screen")
+                Text("Friends Screen")
             }
         }
     )
@@ -35,8 +34,8 @@ fun HomeScreen(navController: NavController) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewHomeScreen() {
+fun PreviewFriendsScreen() {
     AppTheme {
-        HomeScreen(navController = rememberNavController())
+        FriendsScreen(navController = rememberNavController())
     }
 }

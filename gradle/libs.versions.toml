@@ -20,6 +20,7 @@ playServicesLocation = "21.3.0"
 uiTextGoogleFonts = "1.7.8"
 uiToolingPreview = "1.8.0"
 uiToolingPreviewAndroid = "1.7.8"
+materialIconsExtended = "1.7.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,6 +55,8 @@ play-services-auth-v2050 = { module = "com.google.android.gms:play-services-auth
 play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
