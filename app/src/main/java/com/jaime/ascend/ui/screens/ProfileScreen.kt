@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.jaime.ascend.ui.components.ActionBar
 import com.jaime.ascend.ui.components.BottomNavigation
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
@@ -16,6 +17,7 @@ import com.jaime.ascend.ui.theme.AppTheme
 @Composable
 fun ProfileScreen(navController: NavController) {
     Scaffold(
+        topBar = { ActionBar() },
         bottomBar = { BottomNavigation(navController, setOf(
             AppScreens.HomeScreen,
             AppScreens.FriendsScreen,

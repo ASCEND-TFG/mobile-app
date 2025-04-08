@@ -1,21 +1,30 @@
 package com.jaime.ascend.ui.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.jaime.ascend.R
 import com.jaime.ascend.ui.navigation.AppScreens
 
 @Composable
@@ -57,5 +66,25 @@ fun BottomNavigation(navController: NavController, screens: Set<AppScreens>) {
                 )
             }
         }
+    }
+}
+@Composable
+@Preview(showBackground = true)
+fun ActionBar(modifier: Modifier = Modifier) {
+    Column(horizontalAlignment = Alignment.Start,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(85.dp)
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ascendlogo_removebg),
+            contentDescription = R.string.app_name.toString(),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .size(120.dp)
+        )
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.onBackground, thickness = 1.dp)
+
     }
 }
