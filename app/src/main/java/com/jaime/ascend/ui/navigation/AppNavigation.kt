@@ -9,6 +9,7 @@ import com.jaime.ascend.ui.screens.FriendsScreen
 import com.jaime.ascend.ui.screens.HomeScreen
 import com.jaime.ascend.ui.screens.LoginScreen
 import com.jaime.ascend.ui.screens.ProfileScreen
+import com.jaime.ascend.ui.screens.SettingsScreen
 import com.jaime.ascend.ui.screens.ShopScreen
 import com.jaime.ascend.ui.screens.SignupScreen
 import com.jaime.ascend.ui.screens.SplashScreenContent
@@ -41,6 +42,9 @@ fun AppNavigation(navController: NavController) {
         }
         composable(route = AppScreens.ProfileScreen.route) {
             ProfileScreen(navController)
+        }
+        composable(route = AppScreens.SettingsScreen.route) {
+            SettingsScreen(navController)
         }
     }
 }

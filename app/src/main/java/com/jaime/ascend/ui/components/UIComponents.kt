@@ -1,5 +1,6 @@
 package com.jaime.ascend.ui.components
 
+import android.R.attr.onClick
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -25,6 +28,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,12 +39,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.jaime.ascend.R
+import com.jaime.ascend.ui.navigation.AppNavigation
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.viewmodel.UserViewModel
+import kotlin.coroutines.coroutineContext
 
 @Composable
 fun BlackButton(
@@ -129,7 +136,7 @@ fun ActionBar(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ActionBarProfileScreen(viewModel: UserViewModel = viewModel(), modifier: Modifier = Modifier) {
+fun ActionBarProfileScreen(viewModel: UserViewModel = viewModel(), modifier: Modifier, navController: NavController) {
     val username by viewModel.userName.collectAsState()
 
     Column(
@@ -158,9 +165,60 @@ fun ActionBarProfileScreen(viewModel: UserViewModel = viewModel(), modifier: Mod
                 imageVector = Icons.Filled.Settings,
                 contentDescription = stringResource(R.string.configuration_icon_content),
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(24.dp)
+                    .clickable { navController.navigate(AppScreens.SettingsScreen.route)}
             )
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.onBackground, thickness = 1.dp)
+    }
+}
+
+@Composable
+fun ActionBarWithBackButton(
+    screenName: String,
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(85.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBackIosNew,
+                contentDescription = stringResource(R.string.back_icon_content),
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable { navController.popBackStack() }
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = screenName,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.onBackground,
+            thickness = 1.dp
+        )
     }
 }

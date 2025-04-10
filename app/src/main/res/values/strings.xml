@@ -25,4 +25,11 @@
     <string name="signup_error_message_username_in_use">Username is already in use by another account</string>
     <string name="signup_error_message_empty_fields">Please, fill all fields</string>
     <string name="configuration_icon_content">Configuration</string>
+    <string name="settings_title">Settings</string>
+    <string name="language_label">Language:</string>
+    <string name="dark_mode_label">Dark mode:</string>
+    <string name="notifications_label">Allow notifications:</string>
+    <string name="sign_out_button">Sign out</string>
+    <string name="delete_account_button">Delete account</string>
+    <string name="back_icon_content">Back</string>
 </resources>

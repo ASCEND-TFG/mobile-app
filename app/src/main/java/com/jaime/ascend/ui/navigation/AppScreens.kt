@@ -12,6 +12,8 @@ sealed class AppScreens(val route: String, open val icon: ImageVector) {
     object LoginScreen : AppScreens("login", Icons.Filled.DisabledByDefault)
     object SignupScreen : AppScreens("signup", Icons.Filled.DisabledByDefault)
     object SplashScreen : AppScreens("splash", Icons.Filled.DisabledByDefault)
+    object SettingsScreen : AppScreens("settings", Icons.Filled.DisabledByDefault)
+
 
     //BottomNavigation Screens
     object HomeScreen : AppScreens("home", Icons.Filled.Home) {

@@ -18,7 +18,7 @@ import com.jaime.ascend.ui.theme.AppTheme
 @Composable
 fun ProfileScreen(navController: NavController) {
     Scaffold(
-        topBar = { ActionBarProfileScreen() },
+        topBar = { ActionBarProfileScreen(navController= navController, modifier = Modifier) },
         bottomBar = { BottomNavigation(navController, setOf(
             AppScreens.HomeScreen,
             AppScreens.FriendsScreen,
