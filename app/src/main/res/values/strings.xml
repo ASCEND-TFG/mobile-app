@@ -19,6 +19,10 @@
     <string name="signup_error_message_password_mismatch">Passwords do not match</string>
     <string name="signup_error_message_email_format">Invalid email format</string>
     <string name="signup_error_message_weak_password">Password must be at least 6 characters long</string>
+    <string name="signup_error_message_short_username">Username must be at least 3 characters long</string>
+    <string name="signup_error_message_long_username">Username must be no longer than 15 characters</string>
     <string name="signup_error_message_email_in_use">Email is already in use by another account</string>
+    <string name="signup_error_message_username_in_use">Username is already in use by another account</string>
     <string name="signup_error_message_empty_fields">Please, fill all fields</string>
+    <string name="configuration_icon_content">Configuration</string>
 </resources>

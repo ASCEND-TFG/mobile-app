@@ -17,6 +17,7 @@ playServicesAuth = "21.3.0"
 playServicesAuthVersion = "20.5.0"
 playServicesBase = "18.6.0"
 playServicesLocation = "21.3.0"
+ui = "1.7.8"
 uiTextGoogleFonts = "1.7.8"
 uiToolingPreview = "1.8.0"
 uiToolingPreviewAndroid = "1.7.8"
@@ -54,6 +55,7 @@ play-services-auth = { module = "com.google.android.gms:play-services-auth", ver
 play-services-auth-v2050 = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuthVersion" }
 play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 

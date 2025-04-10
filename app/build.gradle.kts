@@ -63,6 +63,11 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.material.icons.extended)
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation ("androidx.activity:activity-compose:1.5.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation(libs.ui)
 
     //Firebase
     implementation(platform(libs.firebase.bom))
@@ -73,5 +78,4 @@ dependencies {
     implementation(libs.firebase.messaging.ktx)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.firestore.ktx)
-    implementation(libs.google.firebase.auth.ktx)
 }
