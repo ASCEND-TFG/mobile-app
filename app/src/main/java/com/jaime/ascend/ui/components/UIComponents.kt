@@ -152,7 +152,6 @@ fun ActionBarProfileScreen(viewModel: UserViewModel = viewModel(), modifier: Mod
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
-                //fontStyle = FontStyle.Italic
             )
 
             Icon(

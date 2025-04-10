@@ -52,6 +52,12 @@ fun LoginScreen(navController: NavController) {
         }
     }
 
+    fun isFormValid(): Boolean {
+        return email.text.isNotEmpty() &&
+                password.text.isNotEmpty() &&
+                emailError == null
+    }
+
     AppTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -188,6 +194,7 @@ fun LoginScreen(navController: NavController) {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(50.dp),
+                                enabled = isFormValid(),
                                 content = {
                                     Text(
                                         stringResource(id = R.string.login_button),
