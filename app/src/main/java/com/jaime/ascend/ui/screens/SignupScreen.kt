@@ -1,5 +1,6 @@
 package com.jaime.ascend.ui.screens
 
+import AuthViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -28,7 +29,6 @@ import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
 import com.jaime.ascend.ui.theme.AppTypography
 import com.jaime.ascend.ui.theme.displayFontFamily
-import com.jaime.ascend.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,7 +1,11 @@
 package com.jaime.ascend.ui.navigation
 
+import AuthViewModel
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -15,36 +19,83 @@ import com.jaime.ascend.ui.screens.SignupScreen
 import com.jaime.ascend.ui.screens.SplashScreenContent
 
 @Composable
-fun AppNavigation(navController: NavController) {
+fun AppNavigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = AppScreens.SplashScreen.route) {
+    val authViewModel: AuthViewModel = viewModel()
+    val currentUser by authViewModel.authState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(currentUser) {
+        if (currentUser != null) {
+            val currentRoute = navController.currentBackStackEntry?.destination?.route
+            if (currentRoute == AppScreens.LoginScreen.route ||
+                currentRoute == AppScreens.SignupScreen.route) {
+                navController.navigate(AppScreens.HomeScreen.route) {
+                    popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
+                }
+            }
+        } else {
+            val currentRoute = navController.currentBackStackEntry?.destination?.route
+            if (currentRoute != AppScreens.LoginScreen.route &&
+                currentRoute != AppScreens.SignupScreen.route &&
+                currentRoute != AppScreens.SplashScreen.route) {
+                navController.navigate(AppScreens.LoginScreen.route) {
+                    popUpTo(0)
+                }
+            }
+        }
+    }
+
+    NavHost(
+        navController = navController,
+        startDestination = AppScreens.SplashScreen.route
+    ) {
         composable(route = AppScreens.SplashScreen.route) {
             SplashScreenContent {
-                navController.navigate(AppScreens.LoginScreen.route) {
+                navController.navigate(
+                    if (currentUser != null) AppScreens.HomeScreen.route
+                    else AppScreens.LoginScreen.route
+                ) {
                     popUpTo(AppScreens.SplashScreen.route) { inclusive = true }
                 }
             }
         }
+
         composable(route = AppScreens.LoginScreen.route) {
-            LoginScreen(navController)
+            LoginScreen(navController = navController)
         }
+
         composable(route = AppScreens.SignupScreen.route) {
-            SignupScreen(navController)
+            SignupScreen(navController = navController)
         }
+
         composable(route = AppScreens.HomeScreen.route) {
-            HomeScreen(navController)
+            if (currentUser != null) {
+                HomeScreen(navController)
+            }
         }
+
         composable(route = AppScreens.FriendsScreen.route) {
-            FriendsScreen(navController)
+            if (currentUser != null) {
+                FriendsScreen(navController)
+            }
         }
+
         composable(route = AppScreens.ShopScreen.route) {
-            ShopScreen(navController)
+            if (currentUser != null) {
+                ShopScreen(navController)
+            }
         }
+
         composable(route = AppScreens.ProfileScreen.route) {
-            ProfileScreen(navController)
+            if (currentUser != null) {
+                ProfileScreen(navController)
+            }
         }
+
         composable(route = AppScreens.SettingsScreen.route) {
-            SettingsScreen(navController)
+            if (currentUser != null) {
+                SettingsScreen(navController)
+            }
         }
     }
 }

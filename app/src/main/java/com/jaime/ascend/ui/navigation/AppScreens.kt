@@ -1,34 +1,63 @@
 package com.jaime.ascend.ui.navigation
 
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DisabledByDefault
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.jaime.ascend.R
 
-sealed class AppScreens(val route: String, open val icon: ImageVector) {
-    object LoginScreen : AppScreens("login", Icons.Filled.DisabledByDefault)
-    object SignupScreen : AppScreens("signup", Icons.Filled.DisabledByDefault)
-    object SplashScreen : AppScreens("splash", Icons.Filled.DisabledByDefault)
-    object SettingsScreen : AppScreens("settings", Icons.Filled.DisabledByDefault)
+sealed class AppScreens(
+    val route: String,
+    @StringRes val title: Int,
+    val icon: ImageVector
+) {
+    // Pantallas sin BottomNavigation
+    object LoginScreen : AppScreens(
+        route = "login",
+        title = R.string.login_title,
+        icon = Icons.Filled.DisabledByDefault
+    )
 
+    object SignupScreen : AppScreens(
+        route = "signup",
+        title = R.string.signup_title,
+        icon = Icons.Filled.DisabledByDefault
+    )
 
-    //BottomNavigation Screens
-    object HomeScreen : AppScreens("home", Icons.Filled.Home) {
-        override val icon: ImageVector get() = Icons.Filled.Home
-    }
+    object SplashScreen : AppScreens(
+        route = "splash",
+        title = R.string.app_name,
+        icon = Icons.Filled.DisabledByDefault
+    )
 
-    object ProfileScreen : AppScreens("profile", Icons.Filled.Person) {
-        override val icon: ImageVector get() = Icons.Filled.Person
-    }
+    object SettingsScreen : AppScreens(
+        route = "settings",
+        title = R.string.settings_title,
+        icon = Icons.Filled.DisabledByDefault
+    )
 
-    object ShopScreen : AppScreens("shop", Icons.Filled.ShoppingCart) {
-        override val icon: ImageVector get() = Icons.Filled.ShoppingCart
-    }
+    // Pantallas con BottomNavigation
+    object HomeScreen : AppScreens(
+        route = "home",
+        title = R.string.home_title,
+        icon = Icons.Filled.Home
+    )
 
-    object FriendsScreen : AppScreens("friends", Icons.Filled.People) {
-        override val icon: ImageVector get() = Icons.Filled.People
-    }
+    object ProfileScreen : AppScreens(
+        route = "profile",
+        title = R.string.profile_title,
+        icon = Icons.Filled.Person
+    )
+
+    object ShopScreen : AppScreens(
+        route = "shop",
+        title = R.string.shop_title,
+        icon = Icons.Filled.ShoppingCart
+    )
+
+    object FriendsScreen : AppScreens(
+        route = "friends",
+        title = R.string.friends_title,
+        icon = Icons.Filled.People
+    )
 }

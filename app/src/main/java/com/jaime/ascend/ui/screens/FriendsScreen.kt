@@ -18,12 +18,6 @@ import com.jaime.ascend.ui.theme.AppTheme
 fun FriendsScreen(navController: NavController) {
     Scaffold(
         topBar = { ActionBar() },
-        bottomBar = { BottomNavigation(navController, setOf(
-            AppScreens.HomeScreen,
-            AppScreens.FriendsScreen,
-            AppScreens.ShopScreen,
-            AppScreens.ProfileScreen
-        )) },
         content = { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
                 Text("Friends Screen")
@@ -31,7 +25,6 @@ fun FriendsScreen(navController: NavController) {
         }
     )
 }
-
 
 
 @Preview(showBackground = true)

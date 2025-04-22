@@ -26,6 +26,7 @@
     <string name="signup_error_message_username_in_use">El nombre de usuario ya está en uso por otra cuenta</string>
     <string name="signup_error_message_empty_fields">Porfavor, rellena todos los campos</string>
     <string name="configuration_icon_content">Configuración</string>
+    <string name="splash_title">Ascend</string>
     <string name="settings_title">Configuración</string>
     <string name="language_label">Idioma:</string>
     <string name="dark_mode_label">Modo oscuro:</string>
@@ -33,4 +34,14 @@
     <string name="sign_out_button">Cerrar sesión</string>
     <string name="delete_account_button">Borrar cuenta</string>
     <string name="back_icon_content">Atrás</string>
+    <string name="cancel">Cancelar</string>
+    <string name="select_language">Elige un idioma</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="confirm_logout">¿Estás seguro de que quieres cerrar sesión?</string>
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="signup_title">Registrarse</string>
+    <string name="home_title">Inicio</string>
+    <string name="profile_title">Perfil</string>
+    <string name="shop_title">Tienda</string>
+    <string name="friends_title">Amigos</string>
 </resources>

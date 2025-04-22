@@ -1,5 +1,6 @@
 package com.jaime.ascend.ui.screens
 
+import AuthViewModel
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -28,7 +29,6 @@ import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
 import com.jaime.ascend.ui.theme.AppTypography
 import com.jaime.ascend.ui.theme.displayFontFamily
-import com.jaime.ascend.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -181,7 +181,9 @@ fun LoginScreen(navController: NavController) {
                                     if (emailError == null) {
                                         viewModel.signIn(email.text, password.text) { success ->
                                             if (success) {
-                                                navController.navigate(route = AppScreens.HomeScreen.route)
+                                                navController.navigate(route = AppScreens.HomeScreen.route) {
+                                                    popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
+                                                }
                                             } else if (password.text.isEmpty() || email.text.isEmpty()) {
                                                 formError = emptyFieldsMessage
                                             } else {

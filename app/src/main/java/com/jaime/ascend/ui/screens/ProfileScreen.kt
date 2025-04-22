@@ -19,12 +19,6 @@ import com.jaime.ascend.ui.theme.AppTheme
 fun ProfileScreen(navController: NavController) {
     Scaffold(
         topBar = { ActionBarProfileScreen(navController= navController, modifier = Modifier) },
-        bottomBar = { BottomNavigation(navController, setOf(
-            AppScreens.HomeScreen,
-            AppScreens.FriendsScreen,
-            AppScreens.ShopScreen,
-            AppScreens.ProfileScreen
-        )) },
         content = { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
                 Text("Profile Screen")

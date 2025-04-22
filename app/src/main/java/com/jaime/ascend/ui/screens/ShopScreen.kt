@@ -18,12 +18,6 @@ import com.jaime.ascend.ui.theme.AppTheme
 fun ShopScreen(navController: NavController) {
     Scaffold(
         topBar = { ActionBar() },
-        bottomBar = { BottomNavigation(navController, setOf(
-            AppScreens.HomeScreen,
-            AppScreens.FriendsScreen,
-            AppScreens.ShopScreen,
-            AppScreens.ProfileScreen
-        )) },
         content = { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
                 Text("Shop Screen")

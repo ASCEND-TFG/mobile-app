@@ -32,4 +32,16 @@
     <string name="sign_out_button">Sign out</string>
     <string name="delete_account_button">Delete account</string>
     <string name="back_icon_content">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="select_language">Select language</string>
+    <string name="logout">Log out</string>
+    <string name="confirm_logout">Are you sure you want to log out?</string>
+    <string name="login_title">Log In</string>
+    <string name="signup_title">Sign Up</string>
+    <string name="splash_title">Ascend</string>
+    <string name="home_title">Home</string>
+    <string name="profile_title">Profile</string>
+    <string name="shop_title">Shop</string>
+    <string name="friends_title">Friends</string>
+
 </resources>

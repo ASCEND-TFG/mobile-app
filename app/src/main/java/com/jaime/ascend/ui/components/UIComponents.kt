@@ -1,6 +1,5 @@
 package com.jaime.ascend.ui.components
 
-import android.R.attr.onClick
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +27,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,15 +37,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.jaime.ascend.R
-import com.jaime.ascend.ui.navigation.AppNavigation
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.viewmodel.UserViewModel
-import kotlin.coroutines.coroutineContext
 
 @Composable
 fun BlackButton(
@@ -76,8 +72,7 @@ fun BlackButton(
             .background(backgroundColor)
             .clickable(enabled = enabled) {
                 if (enabled) onClick()
-            }
-    ) {
+            }) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
@@ -90,25 +85,45 @@ fun BlackButton(
     }
 }
 
-@Composable
-fun BottomNavigation(navController: NavController, screens: Set<AppScreens>) {
-    val navBackStackEntry = navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry.value?.destination?.route
 
-    NavigationBar {
-        screens.forEach { screen ->
-            if (screen.route == "home" || screen.route == "friends" || screen.route == "shop" || screen.route == "profile") {
-                NavigationBarItem(
-                    selected = currentRoute == screen.route,
-                    onClick = {
+@Composable
+fun BottomNavigation(navController: NavController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val bottomNavScreens = listOf(
+        AppScreens.HomeScreen,
+        AppScreens.FriendsScreen,
+        AppScreens.ShopScreen,
+        AppScreens.ProfileScreen
+    )
+
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface
+    ) {
+        bottomNavScreens.forEach { screen ->
+            NavigationBarItem(
+                icon = { Icon(screen.icon, contentDescription = stringResource(screen.title)) },
+                label = {
+                    Text(
+                        text = stringResource(screen.title),
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                },
+                selected = currentRoute == screen.route,
+                alwaysShowLabel = false,
+                onClick = {
+                    if (currentRoute != screen.route) {
                         navController.navigate(screen.route) {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
                             launchSingleTop = true
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
                         }
-                    },
-                    icon = { Icon(imageVector = screen.icon, contentDescription = null) }
-                )
-            }
+                    }
+                }
+            )
         }
     }
 }
@@ -117,8 +132,7 @@ fun BottomNavigation(navController: NavController, screens: Set<AppScreens>) {
 @Preview(showBackground = true)
 fun ActionBar(modifier: Modifier = Modifier) {
     Column(
-        horizontalAlignment = Alignment.Start,
-        modifier = Modifier
+        horizontalAlignment = Alignment.Start, modifier = Modifier
             .fillMaxWidth()
             .height(85.dp)
     ) {
@@ -136,14 +150,15 @@ fun ActionBar(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ActionBarProfileScreen(viewModel: UserViewModel = viewModel(), modifier: Modifier, navController: NavController) {
+fun ActionBarProfileScreen(
+    viewModel: UserViewModel = viewModel(), modifier: Modifier, navController: NavController
+) {
     val username by viewModel.userName.collectAsState()
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(85.dp),
-        horizontalAlignment = Alignment.Start
+            .height(85.dp), horizontalAlignment = Alignment.Start
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -166,8 +181,7 @@ fun ActionBarProfileScreen(viewModel: UserViewModel = viewModel(), modifier: Mod
                 contentDescription = stringResource(R.string.configuration_icon_content),
                 modifier = Modifier
                     .size(24.dp)
-                    .clickable { navController.navigate(AppScreens.SettingsScreen.route)}
-            )
+                    .clickable { navController.navigate(AppScreens.SettingsScreen.route) })
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.onBackground, thickness = 1.dp)
     }
@@ -175,15 +189,12 @@ fun ActionBarProfileScreen(viewModel: UserViewModel = viewModel(), modifier: Mod
 
 @Composable
 fun ActionBarWithBackButton(
-    screenName: String,
-    modifier: Modifier = Modifier,
-    navController: NavController
+    screenName: String, modifier: Modifier = Modifier, navController: NavController
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(85.dp),
-        horizontalAlignment = Alignment.Start
+            .height(85.dp), horizontalAlignment = Alignment.Start
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -196,16 +207,14 @@ fun ActionBarWithBackButton(
                 contentDescription = stringResource(R.string.back_icon_content),
                 modifier = Modifier
                     .size(24.dp)
-                    .clickable { navController.popBackStack() }
-            )
+                    .clickable { navController.popBackStack() })
 
             Spacer(modifier = Modifier.width(16.dp))
 
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight(),
-                contentAlignment = Alignment.Center
+                    .fillMaxHeight(), contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = screenName,
@@ -217,8 +226,7 @@ fun ActionBarWithBackButton(
             }
         }
         HorizontalDivider(
-            color = MaterialTheme.colorScheme.onBackground,
-            thickness = 1.dp
+            color = MaterialTheme.colorScheme.onBackground, thickness = 1.dp
         )
     }
 }

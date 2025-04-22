@@ -1,6 +1,8 @@
 package com.jaime.ascend.ui.screens
 
-import androidx.compose.foundation.background
+import AuthViewModel
+import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -30,18 +33,71 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.jaime.ascend.R
 import com.jaime.ascend.ui.components.ActionBarWithBackButton
+import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
 
+@SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
+    val authViewModel: AuthViewModel = viewModel()
     val languages = listOf("English", "Español")
-    var selectedLanguage by remember { mutableStateOf(languages[0]) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
     var darkModeEnabled by remember { mutableStateOf(false) }
     var notificationsEnabled by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = {
+                Text(
+                    text = stringResource(R.string.logout),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.confirm_logout),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        authViewModel.signOut()
+                        showLogoutDialog = false
+                        navController.navigate(AppScreens.LoginScreen.route) {
+                            popUpTo(0)
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    )
+                ) {
+                    Text(stringResource(R.string.logout))
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = { showLogoutDialog = false },
+                    border = ButtonDefaults.outlinedButtonBorder.copy(
+                        width = 1.dp,
+                    )
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            shape = MaterialTheme.shapes.extraLarge,
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 24.dp
+        )
+    }
 
     AppTheme {
         Scaffold(
@@ -71,6 +127,7 @@ fun SettingsScreen(navController: NavController) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
+                            .clickable { showLanguageDialog = true }
                     ) {
                         Text(
                             text = stringResource(id = R.string.language_label),
@@ -78,11 +135,9 @@ fun SettingsScreen(navController: NavController) {
                             modifier = Modifier.weight(1f)
                         )
                         Spacer(modifier = Modifier.width(16.dp))
-                        Text(
-                            text = selectedLanguage,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+
                     }
+
 
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
 
@@ -125,7 +180,7 @@ fun SettingsScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(32.dp))
 
                     OutlinedButton(
-                        onClick = { /* TODO: Implement sign out */ },
+                        onClick = { showLogoutDialog = true },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
