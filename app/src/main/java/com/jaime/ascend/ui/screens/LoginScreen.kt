@@ -32,7 +32,7 @@ import com.jaime.ascend.ui.theme.displayFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
     val viewModel = viewModel<AuthViewModel>()
     val emailPattern = Regex("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]{2,}")
     val loginErrorMessage = stringResource(id = R.string.login_error_message_credentials)
