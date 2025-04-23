@@ -44,4 +44,6 @@
     <string name="profile_title">Perfil</string>
     <string name="shop_title">Tienda</string>
     <string name="friends_title">Amigos</string>
+    <string name="ghabits_title">BUENOS HÁBITOS</string>
+    <string name="bhabits_title">MALOS HÁBITOS</string>
 </resources>

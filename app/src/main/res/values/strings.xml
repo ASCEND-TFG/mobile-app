@@ -43,5 +43,7 @@
     <string name="profile_title">Profile</string>
     <string name="shop_title">Shop</string>
     <string name="friends_title">Friends</string>
+    <string name="ghabits_title">GOOD HABITS</string>
+    <string name="bhabits_title">BAD HABITS</string>
 
 </resources>

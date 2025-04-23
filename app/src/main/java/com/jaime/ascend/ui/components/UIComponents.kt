@@ -108,7 +108,8 @@ fun BottomNavigation(navController: NavController) {
                 label = {
                     Text(
                         text = stringResource(screen.title),
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold
                     )
                 },
                 selected = currentRoute == screen.route,

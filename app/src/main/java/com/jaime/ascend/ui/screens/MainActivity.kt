@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
-               MainScreenNavHost()
+                MainScreenNavHost()
             }
         }
     }
@@ -52,17 +52,13 @@ fun MainScreenNavHost() {
     val auth = Firebase.auth
     var currentUser by remember { mutableStateOf(auth.currentUser) }
     var isNavReady by remember { mutableStateOf(false) }
+    val startDestination = AppScreens.SplashScreen.route
 
     LaunchedEffect(Unit) {
         auth.addAuthStateListener { firebaseAuth ->
             currentUser = firebaseAuth.currentUser
         }
         isNavReady = true
-    }
-
-    val startDestination = remember(currentUser) {
-        if (currentUser != null) AppScreens.HomeScreen.route
-        else AppScreens.SplashScreen.route
     }
 
     if (isNavReady) {

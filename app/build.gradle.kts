@@ -69,6 +69,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation(libs.ui)
+    implementation ("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation ("androidx.compose.foundation:foundation:1.7.8")
 
     //Firebase
     implementation(platform(libs.firebase.bom))
