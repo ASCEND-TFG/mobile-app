@@ -36,6 +36,24 @@ sealed class AppScreens(
         icon = Icons.Filled.DisabledByDefault
     )
 
+    object GoodHabitsScreen : AppScreens(
+        route = "goodHabits",
+        title = R.string.ghabits_title,
+        icon = Icons.Filled.DisabledByDefault
+    )
+
+    object BadHabitsScreen : AppScreens(
+        route = "badHabits",
+        title = R.string.bhabits_title,
+        icon = Icons.Filled.DisabledByDefault
+    )
+
+    object AddNewGoodHabitScreen : AppScreens(
+        route = "addNewGoodHabit",
+        title = R.string.add_new_good_habit_title,
+        icon = Icons.Filled.DisabledByDefault
+    )
+
     // Pantallas con BottomNavigation
     object HomeScreen : AppScreens(
         route = "home",

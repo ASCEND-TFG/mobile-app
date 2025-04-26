@@ -45,5 +45,6 @@
     <string name="friends_title">Friends</string>
     <string name="ghabits_title">GOOD HABITS</string>
     <string name="bhabits_title">BAD HABITS</string>
-
+    <string name="add_new_good_habit_title">Add new good habit</string>
+    <string name="search_hint">Search habits</string>
 </resources>

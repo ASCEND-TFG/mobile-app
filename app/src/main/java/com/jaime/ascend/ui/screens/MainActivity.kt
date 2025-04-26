@@ -131,6 +131,18 @@ fun MainScreenNavHost() {
                         composable(route = AppScreens.SettingsScreen.route) {
                             if (currentUser != null) SettingsScreen(navController)
                         }
+
+                        composable(route = AppScreens.GoodHabitsScreen.route) {
+                            if (currentUser != null) GoodHabitsScreen(navController)
+                        }
+
+                        /*composable(route = AppScreens.BadHabitsScreen.route) {
+                            if (currentUser != null) BadHabitsScreen(navController)
+                        }*/
+
+                        composable(route = AppScreens.AddNewGoodHabitScreen.route) {
+                            if (currentUser != null) AddNewGoodHabitScreen(navController)
+                        }
                     }
                 }
             }

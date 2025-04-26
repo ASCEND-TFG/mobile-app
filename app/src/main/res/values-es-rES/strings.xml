@@ -46,4 +46,6 @@
     <string name="friends_title">Amigos</string>
     <string name="ghabits_title">BUENOS HÁBITOS</string>
     <string name="bhabits_title">MALOS HÁBITOS</string>
+    <string name="add_new_good_habit_title">Añadir nuevo hábito bueno</string>
+    <string name="search_hint">Buscar hábitos</string>
 </resources>

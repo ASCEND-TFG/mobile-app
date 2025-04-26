@@ -105,7 +105,7 @@ fun HomeScreen(navController: NavController) {
                     modifier = Modifier.fillMaxSize()
                 ) { page ->
                     when (page) {
-                        0 -> GoodHabitsScreen()
+                        0 -> GoodHabitsScreen(navController)
                         1 -> BadHabitsScreen()
                     }
                 }
