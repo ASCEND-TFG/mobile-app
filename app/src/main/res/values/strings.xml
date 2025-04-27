@@ -47,4 +47,5 @@
     <string name="bhabits_title">BAD HABITS</string>
     <string name="add_new_good_habit_title">Add new good habit</string>
     <string name="search_hint">Search habits</string>
+    <string name="select_habit">Select habits</string>
 </resources>

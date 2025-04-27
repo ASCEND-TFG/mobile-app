@@ -71,7 +71,7 @@ dependencies {
     implementation(libs.ui)
     implementation ("com.google.accompanist:accompanist-pager:0.28.0")
     implementation ("androidx.compose.foundation:foundation:1.7.8")
-    implementation ("com.google.dagger:hilt-android:2.44")
+    implementation ("com.google.android.gms:play-services-base:18.4.0")
 
     //Firebase
     implementation(platform(libs.firebase.bom))
@@ -82,4 +82,6 @@ dependencies {
     implementation(libs.firebase.messaging.ktx)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.firestore.ktx)
+    implementation ("com.google.firebase:firebase-firestore:25.1.4")
+
 }

@@ -24,7 +24,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.jaime.ascend.data.repository.CategoryRepository
+import com.jaime.ascend.data.repository.HabitRepository
 import com.jaime.ascend.ui.components.BottomNavigation
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
@@ -141,7 +144,15 @@ fun MainScreenNavHost() {
                         }*/
 
                         composable(route = AppScreens.AddNewGoodHabitScreen.route) {
-                            if (currentUser != null) AddNewGoodHabitScreen(navController)
+                            val firestore = FirebaseFirestore.getInstance()
+                            val categoryRepository = CategoryRepository(firestore)
+                            val habitRepository = HabitRepository(firestore)
+
+                            AddNewGoodHabitScreen(
+                                navController = navController,
+                                categoryRepository = categoryRepository,
+                                habitRepository = habitRepository
+                            )
                         }
                     }
                 }
