@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -52,6 +51,7 @@ import com.jaime.ascend.data.models.GoodHabit
 import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.HabitRepository
 import com.jaime.ascend.ui.components.ActionBarWithBackButton
+import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.utils.IconMapper.getCategoryIcon
 import com.jaime.ascend.utils.IconMapper.getHabitIcon
 import com.jaime.ascend.viewmodel.GoodHabitsViewModel
@@ -69,6 +69,7 @@ fun AddNewGoodHabitScreen(
     val state by viewModel.state.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     val focusManager = LocalFocusManager.current
+    val currentLanguage = LocalConfiguration.current.locales[0].language
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -142,7 +143,11 @@ fun AddNewGoodHabitScreen(
                             SearchResultsList(
                                 habits = currentState.searchedHabits,
                                 onHabitSelected = { habit ->
-                                    println("Hábito seleccionado: ${habit.id}")
+                                    navController.navigate(
+                                        AppScreens.AddingGoodHabitScreen.route
+                                            .replace("{habitName}", habit.getName(currentLanguage))
+                                            .replace("{habitDescription}", habit.getDescription(currentLanguage))
+                                    )
                                 }
                             )
                         }
@@ -161,7 +166,11 @@ fun AddNewGoodHabitScreen(
                                     habits = currentState.goodHabits,
                                     onBack = { viewModel.clearCurrentCategory() },
                                     onHabitSelected = { habit ->
-                                        println("Hábito seleccionado: ${habit.id}")
+                                        navController.navigate(
+                                            AppScreens.AddingGoodHabitScreen.route
+                                                .replace("{habitName}", habit.getName(currentLanguage))
+                                                .replace("{habitDescription}", habit.getDescription(currentLanguage))
+                                        )
                                     }
                                 )
                             }

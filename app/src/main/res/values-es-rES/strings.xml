@@ -34,6 +34,7 @@
     <string name="sign_out_button">Cerrar sesión</string>
     <string name="delete_account_button">Borrar cuenta</string>
     <string name="back_icon_content">Atrás</string>
+    <string name="confirm">Confirmar</string>
     <string name="cancel">Cancelar</string>
     <string name="select_language">Elige un idioma</string>
     <string name="logout">Cerrar Sesión</string>
@@ -49,4 +50,24 @@
     <string name="add_new_good_habit_title">Añadir nuevo hábito bueno</string>
     <string name="search_hint">Buscar hábitos</string>
     <string name="select_habit">Selecciona un hábito</string>
+    <string name="how_challenging_question">¿Cómo de difícil es para ti?</string>
+    <string name="set_daily_reminder">Establecer un recordatorio diario</string>
+    <string name="how_many_times_week">¿Cuántas veces a la semana?</string>
+    <string name="habit_motivational_text">Aquí es donde empieza. Un pequeño hábito, un gran cambio.</string>
+    <string name="create">Crear</string>
+    <string name="select_difficulty">Elige una dificultad</string>
+    <string name="easy">Fácil</string>
+    <string name="medium">Intermedio</string>
+    <string name="hard">Difícil</string>
+    <string name="set_reminder">Establecer recordatorio</string>
+    <string name="clear_reminder">Eliminar recordatorio</string>
+    <string name="select_reminder_time">Elige la hora del recordatorio</string>
+    <string name="select_time">Elige una hora</string>
+    <string name="monday_initial">L</string>
+    <string name="tuesday_initial">M</string>
+    <string name="wednesday_initial">X</string>
+    <string name="thursday_initial">J</string>
+    <string name="friday_initial">V</string>
+    <string name="saturday_initial">S</string>
+    <string name="sunday_initial">D</string>
 </resources>

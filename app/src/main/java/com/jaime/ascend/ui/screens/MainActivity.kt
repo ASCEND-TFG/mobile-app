@@ -18,10 +18,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -152,6 +154,23 @@ fun MainScreenNavHost() {
                                 navController = navController,
                                 categoryRepository = categoryRepository,
                                 habitRepository = habitRepository
+                            )
+                        }
+
+                        composable(
+                            route = AppScreens.AddingGoodHabitScreen.route,
+                            arguments = listOf(
+                                navArgument("habitName") { type = NavType.StringType },
+                                navArgument("habitDescription") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val habitName = backStackEntry.arguments?.getString("habitName") ?: ""
+                            val habitDescription = backStackEntry.arguments?.getString("habitDescription") ?: ""
+
+                            AddingGoodHabitScreen(
+                                navController = navController,
+                                habitName = habitName,
+                                habitDescription = habitDescription
                             )
                         }
                     }

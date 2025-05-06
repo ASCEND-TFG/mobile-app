@@ -4,12 +4,16 @@ import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.jaime.ascend.R
 
 sealed class AppScreens(
     val route: String,
     @StringRes val title: Int,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val arguments: List<NamedNavArgument> = emptyList()
 ) {
     // Pantallas sin BottomNavigation
     object LoginScreen : AppScreens(
@@ -50,6 +54,16 @@ sealed class AppScreens(
 
     object AddNewGoodHabitScreen : AppScreens(
         route = "addNewGoodHabit",
+        title = R.string.add_new_good_habit_title,
+        icon = Icons.Filled.DisabledByDefault
+    )
+
+    object AddingGoodHabitScreen : AppScreens(
+        route = "addingGoodHabit/{habitName}/{habitDescription}",
+        arguments = listOf(
+            navArgument("habitName") { type = NavType.StringType },
+            navArgument("habitDescription") { type = NavType.StringType }
+        ),
         title = R.string.add_new_good_habit_title,
         icon = Icons.Filled.DisabledByDefault
     )

@@ -48,4 +48,25 @@
     <string name="add_new_good_habit_title">Add new good habit</string>
     <string name="search_hint">Search habits</string>
     <string name="select_habit">Select habits</string>
+    <string name="how_challenging_question">How challenging is this habit for you?</string>
+    <string name="set_daily_reminder">Set a daily reminder</string>
+    <string name="how_many_times_week">How many times per week?</string>
+    <string name="habit_motivational_text">This is where it starts. One small habit, one big change.</string>
+    <string name="create">Create</string>
+    <string name="select_difficulty">Select difficulty</string>
+    <string name="easy">Easy</string>
+    <string name="medium">Medium</string>
+    <string name="hard">Hard</string>
+    <string name="set_reminder">Set reminder</string>
+    <string name="clear_reminder">Clear reminder</string>
+    <string name="select_reminder_time">Select reminder time</string>
+    <string name="confirm">Confirm</string>
+    <string name="select_time">Select time</string>
+    <string name="monday_initial">M</string>
+    <string name="tuesday_initial">T</string>
+    <string name="wednesday_initial">M</string>
+    <string name="thursday_initial">T</string>
+    <string name="friday_initial">M</string>
+    <string name="saturday_initial">T</string>
+    <string name="sunday_initial">M</string>
 </resources>
