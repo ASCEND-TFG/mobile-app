@@ -1,5 +1,6 @@
 package com.jaime.ascend.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,14 +30,17 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -100,13 +104,20 @@ fun AddNewGoodHabitScreen(
                     Column(modifier = Modifier.fillMaxSize()) {
                         SearchBar(
                             query = searchQuery,
-                            onQueryChange = { viewModel.updateSearchQuery(it) },
-                            active = false,
+                            onQueryChange = { query ->
+                                viewModel.updateSearchQuery(query)
+                            },
+                            active = searchQuery.isNotEmpty(),
                             onActiveChange = {},
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                                .offset(y = (-12).dp),
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .padding(top = 8.dp),
+                            colors = SearchBarDefaults.colors(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                            ),
+                            tonalElevation = 0.2.dp,
+                            windowInsets = WindowInsets(0.dp),
                             placeholder = { Text(text = stringResource(R.string.search_hint)) },
                             leadingIcon = {
                                 Icon(
@@ -118,7 +129,7 @@ fun AddNewGoodHabitScreen(
                                 if (searchQuery.isNotEmpty()) {
                                     IconButton(
                                         onClick = {
-                                            viewModel.searchGoodHabits("")
+                                            viewModel.updateSearchQuery("")
                                             focusManager.clearFocus()
                                         }
                                     ) {
@@ -126,29 +137,61 @@ fun AddNewGoodHabitScreen(
                                     }
                                 }
                             },
-                            onSearch = { viewModel.searchGoodHabits(searchQuery) }
-                        ) {}
-
-                        if (currentState.currentCategory == null) {
-                            CategoriesList(
-                                categories = currentState.categories,
-                                onCategorySelected = { categoryId ->
-                                    viewModel.loadGoodHabitsByCategory(categoryId)
-                                    focusManager.clearFocus()
-                                }
-                            )
-                        } else {
-                            GoodHabitsList(
-                                habits = currentState.goodHabits,
-                                onBack = { viewModel.clearCurrentCategory() },
+                            onSearch = { }
+                        ) {
+                            SearchResultsList(
+                                habits = currentState.searchedHabits,
                                 onHabitSelected = { habit ->
                                     println("Hábito seleccionado: ${habit.id}")
                                 }
                             )
                         }
+
+                        if (searchQuery.isEmpty()) {
+                            if (currentState.currentCategory == null) {
+                                CategoriesList(
+                                    categories = currentState.categories,
+                                    onCategorySelected = { categoryId ->
+                                        viewModel.loadGoodHabitsByCategory(categoryId)
+                                        focusManager.clearFocus()
+                                    }
+                                )
+                            } else {
+                                GoodHabitsList(
+                                    habits = currentState.goodHabits,
+                                    onBack = { viewModel.clearCurrentCategory() },
+                                    onHabitSelected = { habit ->
+                                        println("Hábito seleccionado: ${habit.id}")
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
+        }
+    }
+}
+
+
+@Composable
+private fun SearchResultsList(
+    habits: List<GoodHabit>,
+    onHabitSelected: (GoodHabit) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(rememberNestedScrollInteropConnection())
+            .background(MaterialTheme.colorScheme.background),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        items(habits) { habit ->
+            GoodHabitCard(
+                habit = habit,
+                onClick = { onHabitSelected(habit) }
+            )
         }
     }
 }
@@ -159,7 +202,9 @@ private fun CategoriesList(
     onCategorySelected: (String) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(rememberNestedScrollInteropConnection()),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
@@ -198,9 +243,10 @@ private fun GoodHabitsList(
                 style = MaterialTheme.typography.titleMedium
             )
         }
-
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(rememberNestedScrollInteropConnection()),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {

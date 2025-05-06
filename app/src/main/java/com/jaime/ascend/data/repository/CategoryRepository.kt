@@ -2,6 +2,7 @@ package com.jaime.ascend.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jaime.ascend.data.models.Category
+import com.jaime.ascend.data.models.GoodHabit
 import kotlinx.coroutines.tasks.await
 
 class CategoryRepository(
@@ -26,4 +27,18 @@ class CategoryRepository(
                 }
             }
     }
+
+    suspend fun searchCategories(query: String): List<Category> {
+        return firestore.collection("categories").get().await()
+            .toObjects(Category::class.java)
+            .filter { habit ->
+                habit.name.any { (_, value) ->
+                    value.contains(query, ignoreCase = true)
+                } ||
+                        habit.description.any { (_, value) ->
+                            value.contains(query, ignoreCase = true)
+                        }
+            }
+    }
+
 }

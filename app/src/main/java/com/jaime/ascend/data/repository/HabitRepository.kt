@@ -12,10 +12,9 @@ class HabitRepository(
         return try {
             val categoryRef = firestore.collection("categories").document(categoryId)
             println("Buscando hábitos con referencia: ${categoryRef.path}")
-            val result = firestore.collection("ghabit_templates")
-                .whereEqualTo("category", categoryRef)
-                .get()
-                .await()
+            val result =
+                firestore.collection("ghabit_templates").whereEqualTo("category", categoryRef).get()
+                    .await()
 
             println("Documentos encontrados: ${result.size()}")
             result.forEach { println("   - ${it.data["name"]}") }
@@ -28,25 +27,25 @@ class HabitRepository(
     }
 
     suspend fun getBadHabitsByCategory(categoryId: String): List<BadHabit> {
-        return firestore.collection("bhabit_templates")
-            .whereEqualTo("categoryId", categoryId)
-            .get()
-            .await()
-            .toObjects(BadHabit::class.java)
+        return firestore.collection("bhabit_templates").whereEqualTo("categoryId", categoryId).get()
+            .await().toObjects(BadHabit::class.java)
     }
 
     suspend fun searchGoodHabits(query: String): List<GoodHabit> {
-        return firestore.collection("ghabit_templates")
-            .get()
-            .await()
+        return firestore.collection("ghabit_templates").get().await()
             .toObjects(GoodHabit::class.java)
-            .filter { it.name.values.any { name -> name.contains(query, ignoreCase = true) } }
+            .filter { habit ->
+                habit.name.any { (_, value) ->
+                    value.contains(query, ignoreCase = true)
+                } ||
+                        habit.description.any { (_, value) ->
+                            value.contains(query, ignoreCase = true)
+                        }
+            }
     }
 
     suspend fun searchBadHabits(query: String): List<BadHabit> {
-        return firestore.collection("bhabit_templates")
-            .get()
-            .await()
+        return firestore.collection("bhabit_templates").get().await()
             .toObjects(BadHabit::class.java)
             .filter { it.name.values.any { name -> name.contains(query, ignoreCase = true) } }
     }
