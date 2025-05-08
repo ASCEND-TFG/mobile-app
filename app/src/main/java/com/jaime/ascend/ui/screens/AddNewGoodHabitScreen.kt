@@ -32,6 +32,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import com.jaime.ascend.R
 import com.jaime.ascend.data.factory.GoodHabitsViewModelFactory
 import com.jaime.ascend.data.models.Category
@@ -62,14 +64,19 @@ fun AddNewGoodHabitScreen(
     navController: NavController,
     categoryRepository: CategoryRepository,
     habitRepository: HabitRepository,
+    auth: FirebaseAuth
 ) {
     val viewModel: GoodHabitsViewModel = viewModel(
-        factory = GoodHabitsViewModelFactory(categoryRepository, habitRepository)
+        factory = GoodHabitsViewModelFactory(categoryRepository, habitRepository, auth)
     )
     val state by viewModel.state.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     val focusManager = LocalFocusManager.current
     val currentLanguage = LocalConfiguration.current.locales[0].language
+
+    LaunchedEffect(Unit) {
+        viewModel.loadCategories()
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

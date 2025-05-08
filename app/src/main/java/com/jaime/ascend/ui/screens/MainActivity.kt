@@ -58,6 +58,9 @@ fun MainScreenNavHost() {
     var currentUser by remember { mutableStateOf(auth.currentUser) }
     var isNavReady by remember { mutableStateOf(false) }
     val startDestination = AppScreens.SplashScreen.route
+    val firestore = FirebaseFirestore.getInstance()
+    val categoryRepository = CategoryRepository(firestore)
+    val habitRepository = HabitRepository(firestore)
 
     LaunchedEffect(Unit) {
         auth.addAuthStateListener { firebaseAuth ->
@@ -146,14 +149,11 @@ fun MainScreenNavHost() {
                         }*/
 
                         composable(route = AppScreens.AddNewGoodHabitScreen.route) {
-                            val firestore = FirebaseFirestore.getInstance()
-                            val categoryRepository = CategoryRepository(firestore)
-                            val habitRepository = HabitRepository(firestore)
-
                             AddNewGoodHabitScreen(
                                 navController = navController,
                                 categoryRepository = categoryRepository,
-                                habitRepository = habitRepository
+                                habitRepository = habitRepository,
+                                auth = auth
                             )
                         }
 
@@ -161,16 +161,24 @@ fun MainScreenNavHost() {
                             route = AppScreens.AddingGoodHabitScreen.route,
                             arguments = listOf(
                                 navArgument("habitName") { type = NavType.StringType },
-                                navArgument("habitDescription") { type = NavType.StringType }
+                                navArgument("habitDescription") { type = NavType.StringType },
+                                navArgument("habitCategory") { type = NavType.StringType },
+                                navArgument("habitIcon") { type = NavType.StringType }
                             )
                         ) { backStackEntry ->
                             val habitName = backStackEntry.arguments?.getString("habitName") ?: ""
-                            val habitDescription = backStackEntry.arguments?.getString("habitDescription") ?: ""
+                            val habitDescription =
+                                backStackEntry.arguments?.getString("habitDescription") ?: ""
+                            val habitCategory =
+                                backStackEntry.arguments?.getString("habitCategory") ?: ""
+                            val habitIcon = backStackEntry.arguments?.getString("habitIcon") ?: ""
 
                             AddingGoodHabitScreen(
                                 navController = navController,
                                 habitName = habitName,
-                                habitDescription = habitDescription
+                                habitDescription = habitDescription,
+                                habitCategory = habitCategory,
+                                habitIcon = habitIcon
                             )
                         }
                     }

@@ -20,11 +20,9 @@ import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Psychology
-import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 
 object IconMapper {

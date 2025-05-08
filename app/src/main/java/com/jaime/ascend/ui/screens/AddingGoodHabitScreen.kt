@@ -1,7 +1,6 @@
 package com.jaime.ascend.ui.screens
 
 import android.annotation.SuppressLint
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,19 +43,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.jaime.ascend.R
+import com.jaime.ascend.data.factory.GoodHabitsViewModelFactory
+import com.jaime.ascend.data.models.Difficulty
+import com.jaime.ascend.data.repository.CategoryRepository
+import com.jaime.ascend.data.repository.HabitRepository
 import com.jaime.ascend.ui.components.ActionBarWithBackButton
 import com.jaime.ascend.ui.components.BlackButton
 import com.jaime.ascend.ui.components.DayOfWeekSelector
-
-enum class Difficulty(
-    @StringRes val labelRes: Int,
-) {
-    EASY(R.string.easy),
-    MEDIUM(R.string.medium),
-    HARD(R.string.hard)
-}
+import com.jaime.ascend.ui.navigation.AppScreens
+import com.jaime.ascend.viewmodel.GoodHabitsViewModel
 
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +64,16 @@ enum class Difficulty(
 fun AddingGoodHabitScreen(
     navController: NavController,
     habitName: String,
-    habitDescription: String
+    habitDescription: String,
+    habitCategory: String,
+    habitIcon: String,
+    viewModel: GoodHabitsViewModel = viewModel(
+        factory = GoodHabitsViewModelFactory(
+            categoryRepository = CategoryRepository(FirebaseFirestore.getInstance()),
+            habitRepository = HabitRepository(FirebaseFirestore.getInstance()),
+            auth = FirebaseAuth.getInstance()
+        )
+    )
 ) {
     var selectedDays by remember { mutableStateOf<List<Int>>(emptyList()) }
     var selectedDifficulty by remember { mutableStateOf<Difficulty?>(Difficulty.EASY) }
@@ -235,9 +244,40 @@ fun AddingGoodHabitScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 BlackButton(
-                    onClick = { /* Guardar hábito */ },
+                    onClick = {
+                        if (selectedDays.isNotEmpty() && selectedDifficulty != null) {
+                            val nameMap = mapOf("en" to habitName, "es" to habitName)
+                            val descriptionMap =
+                                mapOf("en" to habitDescription, "es" to habitDescription)
+
+                            viewModel.createGoodHabit(
+                                name = nameMap,
+                                description = descriptionMap,
+                                icon = habitIcon,
+                                categoryRef = FirebaseFirestore.getInstance()
+                                    .collection("categories")
+                                    .document(habitCategory),
+                                difficulty = selectedDifficulty!!,
+                                reminderTime = reminderTime,
+                                days = selectedDays,
+                                onComplete = { result ->
+                                    when {
+                                        result.isSuccess -> {
+                                            navController.navigate(route = AppScreens.HomeScreen.route) {
+                                                popUpTo(AppScreens.AddingGoodHabitScreen.route) {
+                                                    inclusive = true
+                                                }
+                                            }
+                                        }
+                                        result.isFailure -> { /* Show error */ }
+                                    }
+                                }
+                            )
+
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = selectedDays.isNotEmpty(),
+                    enabled = selectedDays.isNotEmpty() && selectedDifficulty != null,
                     content = {
                         Text(
                             text = stringResource(R.string.create),
