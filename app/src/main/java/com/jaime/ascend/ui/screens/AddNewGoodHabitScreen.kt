@@ -1,5 +1,6 @@
 package com.jaime.ascend.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -64,7 +65,7 @@ fun AddNewGoodHabitScreen(
     navController: NavController,
     categoryRepository: CategoryRepository,
     habitRepository: HabitRepository,
-    auth: FirebaseAuth
+    auth: FirebaseAuth,
 ) {
     val viewModel: GoodHabitsViewModel = viewModel(
         factory = GoodHabitsViewModelFactory(categoryRepository, habitRepository, auth)
@@ -150,11 +151,18 @@ fun AddNewGoodHabitScreen(
                             SearchResultsList(
                                 habits = currentState.searchedHabits,
                                 onHabitSelected = { habit ->
-                                    navController.navigate(
-                                        AppScreens.AddingGoodHabitScreen.route
-                                            .replace("{habitName}", habit.getName(currentLanguage))
-                                            .replace("{habitDescription}", habit.getDescription(currentLanguage))
-                                    )
+                                    val r = AppScreens.AddingGoodHabitScreen.route
+                                        .replace("{habitName}", habit.getName(currentLanguage))
+                                        .replace(
+                                            "{habitDescription}",
+                                            habit.getDescription(currentLanguage)
+                                        )
+                                        .replace("{habitCategory}", habit.categoryName)
+                                        .replace("{habitIcon}", habit.icon)
+
+                                    Log.i("TAG", "AddNewGoodHabitScreen: ROUTE: $r")
+
+                                    navController.navigate(r)
                                 }
                             )
                         }
@@ -173,11 +181,19 @@ fun AddNewGoodHabitScreen(
                                     habits = currentState.goodHabits,
                                     onBack = { viewModel.clearCurrentCategory() },
                                     onHabitSelected = { habit ->
-                                        navController.navigate(
-                                            AppScreens.AddingGoodHabitScreen.route
-                                                .replace("{habitName}", habit.getName(currentLanguage))
-                                                .replace("{habitDescription}", habit.getDescription(currentLanguage))
-                                        )
+                                        Log.i("TAG", "AddNewGoodHabitScreen: habit: $habit")
+                                        val r = AppScreens.AddingGoodHabitScreen.route
+                                            .replace("{habitName}", habit.getName(currentLanguage))
+                                            .replace(
+                                                "{habitDescription}",
+                                                habit.getDescription(currentLanguage)
+                                            )
+                                            .replace("{habitCategory}", habit.categoryName)
+                                            .replace("{habitIcon}", habit.icon)
+
+                                        Log.i("TAG", "AddNewGoodHabitScreen: ROUTE: $r")
+
+                                        navController.navigate(r)
                                     }
                                 )
                             }
@@ -193,7 +209,7 @@ fun AddNewGoodHabitScreen(
 @Composable
 private fun SearchResultsList(
     habits: List<GoodHabit>,
-    onHabitSelected: (GoodHabit) -> Unit
+    onHabitSelected: (GoodHabit) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -215,7 +231,7 @@ private fun SearchResultsList(
 @Composable
 private fun CategoriesList(
     categories: List<Category>,
-    onCategorySelected: (String) -> Unit
+    onCategorySelected: (String) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -237,7 +253,7 @@ private fun CategoriesList(
 private fun GoodHabitsList(
     habits: List<GoodHabit>,
     onBack: () -> Unit,
-    onHabitSelected: (GoodHabit) -> Unit
+    onHabitSelected: (GoodHabit) -> Unit,
 ) {
     Column {
         Row(
@@ -279,7 +295,7 @@ private fun GoodHabitsList(
 @Composable
 private fun CategoryCard(
     category: Category,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val currentLanguage = LocalConfiguration.current.locales[0].language
     val icon = getCategoryIcon(category.icon)
@@ -324,7 +340,7 @@ private fun CategoryCard(
 @Composable
 private fun GoodHabitCard(
     habit: GoodHabit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val currentLanguage = LocalConfiguration.current.locales[0].language
     val icon = getHabitIcon(habit.icon)

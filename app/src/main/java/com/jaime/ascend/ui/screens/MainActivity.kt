@@ -2,6 +2,7 @@ package com.jaime.ascend.ui.screens
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -166,6 +167,7 @@ fun MainScreenNavHost() {
                                 navArgument("habitIcon") { type = NavType.StringType }
                             )
                         ) { backStackEntry ->
+                            Log.i("TAG", "MainScreenNavHost: ${backStackEntry.arguments}")
                             val habitName = backStackEntry.arguments?.getString("habitName") ?: ""
                             val habitDescription =
                                 backStackEntry.arguments?.getString("habitDescription") ?: ""

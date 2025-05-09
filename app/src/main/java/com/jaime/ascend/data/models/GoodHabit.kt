@@ -10,7 +10,7 @@ data class GoodHabit(
     override val name: Map<String, String> = emptyMap(),
     override val description: Map<String, String> = emptyMap(),
     override val icon: String = "",
-    val categoryRef: DocumentReference? = null,
+    override val categoryRef: DocumentReference? = null,
     val xpReward: Int = 0,
     val coinReward: Int = 0,
     val difficulty: Difficulty = Difficulty.EASY,
@@ -19,10 +19,8 @@ data class GoodHabit(
     val checked: Boolean = false,
     val createdAt: Date = Date(),
     val userId: String = "",
-    val templateRef: DocumentReference? = null
-) : BaseHabit(id, name, description, "", icon) {
-    var categoryName: String = ""
-
+    val categoryName: String = ""
+) : BaseHabit(id, name, description, null, icon) {
     fun getLocalizedName(languageCode: String = "en"): String {
         return name[languageCode] ?: name["en"] ?: ""
     }
@@ -48,6 +46,7 @@ fun GoodHabit.getExtraData(): Map<String, Any?> {
         "coinReward" to this.coinReward,
         "difficulty" to this.difficulty,
         "reminderTime" to this.reminderTime,
-        "days" to this.days
+        "days" to this.days,
+        "categoryRef" to this.categoryRef
     )
 }

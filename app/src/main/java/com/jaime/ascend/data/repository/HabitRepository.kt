@@ -12,20 +12,23 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import java.util.Locale
 
 class HabitRepository(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
 ) {
     private val habitsCollection = firestore.collection("ghabits")
     private val usersCollection = firestore.collection("users")
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getUserGoodHabitsRealTime(userId: String): Flow<List<GoodHabit>> = callbackFlow {
+        // Query
         val query = habitsCollection
             .whereEqualTo("userId", userId)
             .orderBy("name", Query.Direction.ASCENDING)
             .limitToLast(50)
 
+        // Send query and get results
         val listener = query.addSnapshotListener { snapshot, error ->
             if (error != null) {
                 close(error)
@@ -33,14 +36,12 @@ class HabitRepository(
             }
 
             val habits = snapshot?.documents?.mapNotNull { doc ->
-                // Get the reference field
-                val templateRef = doc.getDocumentReference("templateRef")
                 Log.i("TAG", "getUserGoodHabitsRealTime: $doc")
 
                 doc.toObject(GoodHabit::class.java)?.copy(
                     id = doc.id,
-                    templateRef = templateRef // todo gurl wtf, puede que necesites crear una data class para este objeto
                 )
+
             } ?: emptyList()
 
             trySend(habits)
@@ -58,9 +59,10 @@ class HabitRepository(
         difficulty: Difficulty,
         reminderTime: String?,
         days: List<Int>,
-        userId: String
+        userId: String,
     ): Result<String> = try {
         val categoryRef = firestore.collection("categories").document(categoryId)
+        Log.i("TAG", "createGoodHabit: $categoryRef")
 
         val habit = GoodHabit(
             name = name,
@@ -86,37 +88,10 @@ class HabitRepository(
         Result.failure(e)
     }
 
-    // TODO: review the code
-    suspend fun createGoodHabit2(
-        userId: String,
-        templatePath: String, // e.g. "ghabit_templates/call_family_member"
-        customHabitData: Map<String, Any> // Other fields you want to set
-    ): Result<String> = try {
-        // Create reference to the template
-        val templateRef = firestore.document(templatePath)
-
-        // Create the habit with reference
-        val habitData = mutableMapOf<String, Any>(
-            "userId" to userId,
-            "templateRef" to templateRef,
-            "createdAt" to FieldValue.serverTimestamp()
-        ).apply { putAll(customHabitData) }
-
-        val documentRef = habitsCollection.add(habitData).await()
-
-        // Update user's habits array
-        usersCollection.document(userId)
-            .update("ghabits", FieldValue.arrayUnion(documentRef.id)).await()
-
-        Result.success(documentRef.id)
-    } catch (e: Exception) {
-        Result.failure(e)
-    }
-
     suspend fun updateUserXPAndCoins(
         userId: String,
         xpToAdd: Int,
-        coinsToAdd: Int
+        coinsToAdd: Int,
     ): Result<Unit> = try {
         usersCollection.document(userId).update(
             mapOf(
@@ -129,21 +104,28 @@ class HabitRepository(
         Result.failure(e)
     }
 
-
-    suspend fun getGoodHabitsByCategory(categoryId: String): List<GoodHabit> {
+    suspend fun getGoodHabitsByCategory(categoryId: String, languageCode: String = Locale.getDefault().language): List<GoodHabit> {
         return try {
             val categoryRef = firestore.collection("categories").document(categoryId)
-            println("Buscando hábitos con referencia: ${categoryRef.path}")
-            val result =
-                firestore.collection("ghabit_templates").whereEqualTo("category", categoryRef).get()
-                    .await()
+            // Get the category document and extract the name map
+            val categorySnapshot = categoryRef.get().await()
+            val categoryName = categorySnapshot.get("id") as String
 
-            println("Documentos encontrados: ${result.size()}")
-            result.forEach { println("   - ${it.data["name"]}") }
+            // Get all habits for this category
+            val result = firestore.collection("ghabit_templates")
+                .whereEqualTo("category", categoryRef)
+                .get()
+                .await()
 
-            result.toObjects(GoodHabit::class.java)
+            // Convert to GoodHabit objects with the localized category name
+            result.map { document ->
+                document.toObject(GoodHabit::class.java).copy(
+                    id = document.id,
+                    categoryName = categoryName
+                )
+            }
         } catch (e: Exception) {
-            println("Error: ${e.message}")
+            Log.e("TAG", "getGoodHabitsByCategory: ${e.message}")
             emptyList()
         }
     }

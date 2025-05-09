@@ -63,16 +63,13 @@ class GoodHabitsViewModel(
                             val categoryName = habit.categoryRef?.let { ref ->
                                 try {
                                     val category = ref.get().await()
-                                    Log.i("TAG", "REF: $category")
                                     category.toObject(Category::class.java)?.name?.getLocalizedName(Locale.getDefault()) ?: "Unknown"
                                 } catch (e: Exception) {
                                     "Unknown"
                                 }
                             } ?: "Unknown"
 
-                            habit.copy().apply {
-                                this.categoryName = categoryName
-                            }
+                            habit.copy(categoryName = categoryName)
                         }
 
                         _userHabits.value = updatedHabits
@@ -97,7 +94,6 @@ class GoodHabitsViewModel(
             "current" to (this[locale.language] ?: this["en"] ?: "")
         )
     }
-
 
     fun createGoodHabit(
         name: Map<String, String>,
