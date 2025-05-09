@@ -62,8 +62,9 @@ class GoodHabitsViewModel(
                         val updatedHabits = habits.map { habit ->
                             val categoryName = habit.categoryRef?.let { ref ->
                                 try {
-                                    val category = ref.get().await().toObject(Category::class.java)
-                                    category?.name?.getLocalizedName(Locale.getDefault()) ?: "Unknown"
+                                    val category = ref.get().await()
+                                    Log.i("TAG", "REF: $category")
+                                    category.toObject(Category::class.java)?.name?.getLocalizedName(Locale.getDefault()) ?: "Unknown"
                                 } catch (e: Exception) {
                                     "Unknown"
                                 }

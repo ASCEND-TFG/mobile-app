@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -48,20 +49,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.jaime.ascend.R
 import com.jaime.ascend.ui.navigation.AppScreens
+import com.jaime.ascend.utils.IconMapper
 import com.jaime.ascend.viewmodel.UserViewModel
 
 @Composable
 fun BlackButton(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     content: @Composable RowScope.() -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     val backgroundColor = if (enabled) {
         MaterialTheme.colorScheme.primary
@@ -163,7 +166,7 @@ fun ActionBar(modifier: Modifier = Modifier) {
 
 @Composable
 fun ActionBarProfileScreen(
-    viewModel: UserViewModel = viewModel(), modifier: Modifier, navController: NavController
+    viewModel: UserViewModel = viewModel(), modifier: Modifier, navController: NavController,
 ) {
     val username by viewModel.userName.collectAsState()
 
@@ -201,7 +204,7 @@ fun ActionBarProfileScreen(
 
 @Composable
 fun ActionBarWithBackButton(
-    screenName: String, modifier: Modifier = Modifier, navController: NavController
+    screenName: String, modifier: Modifier = Modifier, navController: NavController,
 ) {
     Column(
         modifier = modifier
@@ -247,7 +250,7 @@ fun ActionBarWithBackButton(
 fun DayOfWeekSelector(
     selectedDays: List<Int>,
     onDaySelected: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val days = listOf(
         stringResource(R.string.monday_initial),
@@ -297,13 +300,16 @@ fun DayOfWeekSelector(
     }
 }
 
+
 @Composable
+@Preview(showBackground = true)
 fun HabitCard(
-    habitName: String,
-    categoryName: String,
-    xpReward: Int,
-    coinReward: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    habitName: String = "Habit super mas largo aun maaaas name",
+    categoryName: String = "Category",
+    xpReward: Int = 30,
+    coinReward: Int = 5,
+    iconName: String = "iconName",
 ) {
     var checked by remember { mutableStateOf(false) }
 
@@ -318,16 +324,52 @@ fun HabitCard(
                 .padding(16.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Icon(
+                imageVector = IconMapper.getHabitIcon(iconName),
+                contentDescription = null,
+            )
+
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+            ) {
                 Text(
                     text = habitName,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
-                    )
+                    ),
                 )
                 Spacer(modifier = Modifier.height(4.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "+$coinReward",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.Paid,
+                            contentDescription = "Monedas ganadas",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    Text(
+                        text = "+$xpReward XP",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = categoryName,
                     style = MaterialTheme.typography.bodySmall,
@@ -335,36 +377,13 @@ fun HabitCard(
                 )
             }
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "+$coinReward",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Icon(
-                        imageVector = Icons.Filled.Paid,
-                        contentDescription = "Monedas ganadas",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+            Spacer(modifier = Modifier.weight(1f))
 
-                Text(
-                    text = "+$xpReward XP",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Checkbox(
-                    checked = checked,
-                    onCheckedChange = { checked = it }
-                )
-            }
+            Checkbox(
+                modifier = Modifier.weight(.1f),
+                checked = checked,
+                onCheckedChange = { checked = it }
+            )
         }
     }
 }

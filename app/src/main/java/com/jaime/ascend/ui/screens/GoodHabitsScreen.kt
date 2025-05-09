@@ -1,9 +1,11 @@
 package com.jaime.ascend.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -93,13 +95,15 @@ fun GoodHabitsScreen(
                 }
 
                 is GoodHabitsViewModel.State.Success -> {
-                    if (state.goodHabits.isEmpty()) {
-                        Text(
-                            text = stringResource(R.string.no_habits),
-                            textAlign = TextAlign.Center
-                        )
-                    } else {
-                        LazyColumn {
+                    LazyColumn {
+                        if (state.goodHabits.isEmpty()) {
+                            item {
+                                Text(
+                                    text = stringResource(R.string.no_habits),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        } else {
                             items(state.goodHabits) { habit ->
                                 HabitCard(
                                     habitName = habit.getName(Locale.getDefault().language ?: "Unnamed"),
@@ -109,28 +113,33 @@ fun GoodHabitsScreen(
                                 )
                             }
                         }
+
+                        item {
+                            Box (
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                BlackButton(
+                                    onClick = { navController.navigate(AppScreens.AddNewGoodHabitScreen.route) },
+                                    modifier = Modifier
+                                        .width(250.dp)
+                                        .padding(bottom = 4.dp, top = 24.dp),
+                                    enabled = true,
+                                    content = {
+                                        Text(
+                                            text = stringResource(R.string.add_new_good_habit_title),
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
-
-        BlackButton(
-            onClick = { navController.navigate(AppScreens.AddNewGoodHabitScreen.route) },
-            modifier = Modifier
-                .width(250.dp)
-                .padding(bottom = 4.dp)
-                .align(Alignment.BottomCenter),
-            enabled = true,
-            content = {
-                Text(
-                    text = stringResource(R.string.add_new_good_habit_title),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-        )
     }
-
 }
 
 private fun getFormattedDate(context: android.content.Context, locale: Locale): String {
