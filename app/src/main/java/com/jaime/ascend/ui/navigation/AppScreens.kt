@@ -59,12 +59,10 @@ sealed class AppScreens(
     )
 
     object AddingGoodHabitScreen : AppScreens(
-        route = "addingGoodHabit/{habitName}/{habitDescription}/{habitCategory}/{habitIcon}",
+        route = "addingGoodHabit/{categoryId}/{templateId}",
         arguments = listOf(
-            navArgument("habitName") { type = NavType.StringType },
-            navArgument("habitDescription") { type = NavType.StringType },
-            navArgument("habitCategory") { type = NavType.StringType },
-            navArgument("habitIcon") { type = NavType.StringType }
+            navArgument("categoryId") { type = NavType.StringType },
+            navArgument("templateId") { type = NavType.StringType },
         ),
         title = R.string.add_new_good_habit_title,
         icon = Icons.Filled.DisabledByDefault

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,6 +26,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +34,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,15 +50,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.jaime.ascend.R
+import com.jaime.ascend.data.models.Category
+import com.jaime.ascend.data.models.GoodHabit
+import com.jaime.ascend.data.models.HabitTemplate
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.utils.IconMapper
 import com.jaime.ascend.viewmodel.UserViewModel
+import kotlinx.coroutines.tasks.await
+import java.util.Locale
 
 @Composable
 fun BlackButton(
@@ -302,8 +307,58 @@ fun DayOfWeekSelector(
 
 
 @Composable
+fun HabitCard(habit: GoodHabit) {
+    // Track template/category loading per card
+    var template by remember { mutableStateOf<HabitTemplate?>(null) }
+    var category by remember { mutableStateOf<Category?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+
+    // Resolve template ONLY when this card appears
+    LaunchedEffect(habit.template) {
+        if (template == null && habit.template != null) {
+            isLoading = true
+            template = habit.template.get().await()
+                .toObject(HabitTemplate::class.java)
+            isLoading = false
+        }
+    }
+
+    // Resolve category similarly
+    LaunchedEffect(habit.category) {
+        if (category == null && habit.category != null) {
+            isLoading = true
+            category = habit.category.get().await()
+                .toObject(Category::class.java)
+            isLoading = false
+        }
+    }
+
+    Card(modifier = Modifier.padding(8.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            if (isLoading) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Loading...")
+                }
+            } else {
+                Text(
+                    text = template?.getLocalizedName(Locale.getDefault()) ?: "Unnamed Habit",
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Category: ${category?.getName(Locale.getDefault()) ?: "Uncategorized"}",
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+                Text("Reward: ${habit.xpReward} XP • ${habit.coinReward} coins")
+            }
+        }
+    }
+}
+
+@Composable
 @Preview(showBackground = true)
-fun HabitCard(
+fun HabitCard2(
     modifier: Modifier = Modifier,
     habitName: String = "Habit super mas largo aun maaaas name",
     categoryName: String = "Category",
@@ -333,8 +388,7 @@ fun HabitCard(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column(
-            ) {
+            Column{
                 Text(
                     text = habitName,
                     style = MaterialTheme.typography.titleMedium.copy(

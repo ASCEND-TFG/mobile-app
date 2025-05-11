@@ -1,6 +1,5 @@
 package com.jaime.ascend.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -59,9 +59,37 @@ import com.jaime.ascend.utils.IconMapper.getCategoryIcon
 import com.jaime.ascend.utils.IconMapper.getHabitIcon
 import com.jaime.ascend.viewmodel.GoodHabitsViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddNewGoodHabitScreen(
+    navController: NavController,
+    categoryRepository: CategoryRepository,
+    habitRepository: HabitRepository,
+    auth: FirebaseAuth,
+) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            ActionBarWithBackButton(
+                screenName = stringResource(id = R.string.add_new_good_habit_title),
+                navController = navController,
+                modifier = Modifier
+            )
+        },
+        contentWindowInsets = WindowInsets(0.dp)
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {}
+    }
+}
+
+/*
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddNewGoodHabitScreen2(
     navController: NavController,
     categoryRepository: CategoryRepository,
     habitRepository: HabitRepository,
@@ -152,16 +180,8 @@ fun AddNewGoodHabitScreen(
                                 habits = currentState.searchedHabits,
                                 onHabitSelected = { habit ->
                                     val r = AppScreens.AddingGoodHabitScreen.route
-                                        .replace("{habitName}", habit.getName(currentLanguage))
-                                        .replace(
-                                            "{habitDescription}",
-                                            habit.getDescription(currentLanguage)
-                                        )
-                                        .replace("{habitCategory}", habit.categoryName)
-                                        .replace("{habitIcon}", habit.icon)
-
-                                    Log.i("TAG", "AddNewGoodHabitScreen: ROUTE: $r")
-
+                                        .replace("{categoryId}", currentState.currentCategory!!)
+                                        .replace("{templateId}", "???")
                                     navController.navigate(r)
                                 }
                             )
@@ -181,18 +201,9 @@ fun AddNewGoodHabitScreen(
                                     habits = currentState.goodHabits,
                                     onBack = { viewModel.clearCurrentCategory() },
                                     onHabitSelected = { habit ->
-                                        Log.i("TAG", "AddNewGoodHabitScreen: habit: $habit")
                                         val r = AppScreens.AddingGoodHabitScreen.route
-                                            .replace("{habitName}", habit.getName(currentLanguage))
-                                            .replace(
-                                                "{habitDescription}",
-                                                habit.getDescription(currentLanguage)
-                                            )
-                                            .replace("{habitCategory}", habit.categoryName)
-                                            .replace("{habitIcon}", habit.icon)
-
-                                        Log.i("TAG", "AddNewGoodHabitScreen: ROUTE: $r")
-
+                                            .replace("{categoryId}", currentState.currentCategory)
+                                            .replace("{templateId}", "???")
                                         navController.navigate(r)
                                     }
                                 )
@@ -343,7 +354,8 @@ private fun GoodHabitCard(
     onClick: () -> Unit,
 ) {
     val currentLanguage = LocalConfiguration.current.locales[0].language
-    val icon = getHabitIcon(habit.icon)
+    //val icon = getHabitIcon(habit.icon)
+    val icon = Icons.Filled.Notes
 
     Card(
         onClick = onClick,
@@ -381,3 +393,5 @@ private fun GoodHabitCard(
         }
     }
 }
+
+ */

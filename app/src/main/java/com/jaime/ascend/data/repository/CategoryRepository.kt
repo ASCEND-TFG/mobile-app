@@ -5,9 +5,7 @@ import com.jaime.ascend.data.models.Category
 import com.jaime.ascend.data.models.GoodHabit
 import kotlinx.coroutines.tasks.await
 
-class CategoryRepository(
-    private val firestore: FirebaseFirestore
-) {
+class CategoryRepository(private val firestore: FirebaseFirestore) {
     suspend fun getCategories(): List<Category> {
         return firestore.collection("categories")
             .get()

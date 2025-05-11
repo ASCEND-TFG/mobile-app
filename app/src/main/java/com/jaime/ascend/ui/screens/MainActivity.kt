@@ -161,26 +161,19 @@ fun MainScreenNavHost() {
                         composable(
                             route = AppScreens.AddingGoodHabitScreen.route,
                             arguments = listOf(
-                                navArgument("habitName") { type = NavType.StringType },
-                                navArgument("habitDescription") { type = NavType.StringType },
-                                navArgument("habitCategory") { type = NavType.StringType },
-                                navArgument("habitIcon") { type = NavType.StringType }
+                                navArgument("categoryId") { type = NavType.StringType },
+                                navArgument("templateId") { type = NavType.StringType },
                             )
                         ) { backStackEntry ->
                             Log.i("TAG", "MainScreenNavHost: ${backStackEntry.arguments}")
-                            val habitName = backStackEntry.arguments?.getString("habitName") ?: ""
-                            val habitDescription =
-                                backStackEntry.arguments?.getString("habitDescription") ?: ""
-                            val habitCategory =
-                                backStackEntry.arguments?.getString("habitCategory") ?: ""
-                            val habitIcon = backStackEntry.arguments?.getString("habitIcon") ?: ""
+                            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+                            val templateId =
+                                backStackEntry.arguments?.getString("templateId") ?: ""
 
                             AddingGoodHabitScreen(
                                 navController = navController,
-                                habitName = habitName,
-                                habitDescription = habitDescription,
-                                habitCategory = habitCategory,
-                                habitIcon = habitIcon
+                                categoryId = categoryId,
+                                templateId = templateId
                             )
                         }
                     }
