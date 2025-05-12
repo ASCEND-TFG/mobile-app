@@ -31,6 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.HabitRepository
+import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.ui.components.BottomNavigation
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
@@ -62,6 +63,7 @@ fun MainScreenNavHost() {
     val firestore = FirebaseFirestore.getInstance()
     val categoryRepository = CategoryRepository(firestore)
     val habitRepository = HabitRepository(firestore)
+    val templateRepository = TemplateRepository(firestore)
 
     LaunchedEffect(Unit) {
         auth.addAuthStateListener { firebaseAuth ->
@@ -154,7 +156,8 @@ fun MainScreenNavHost() {
                                 navController = navController,
                                 categoryRepository = categoryRepository,
                                 habitRepository = habitRepository,
-                                auth = auth
+                                auth = auth,
+                                templateRepository = templateRepository
                             )
                         }
 
@@ -166,13 +169,11 @@ fun MainScreenNavHost() {
                             )
                         ) { backStackEntry ->
                             Log.i("TAG", "MainScreenNavHost: ${backStackEntry.arguments}")
-                            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
                             val templateId =
                                 backStackEntry.arguments?.getString("templateId") ?: ""
 
                             AddingGoodHabitScreen(
                                 navController = navController,
-                                categoryId = categoryId,
                                 templateId = templateId
                             )
                         }

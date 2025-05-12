@@ -37,6 +37,7 @@ import com.jaime.ascend.R
 import com.jaime.ascend.data.factory.GoodHabitsViewModelFactory
 import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.HabitRepository
+import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.ui.components.BlackButton
 import com.jaime.ascend.ui.components.HabitCard
 import com.jaime.ascend.ui.navigation.AppScreens
@@ -56,7 +57,8 @@ fun GoodHabitsScreen(
         factory = GoodHabitsViewModelFactory(
             categoryRepository = CategoryRepository(firestore),
             habitRepository = HabitRepository(firestore),
-            auth = auth
+            auth = auth,
+            templateRepository = TemplateRepository(firestore)
         )
     )
     val configuration = LocalConfiguration.current

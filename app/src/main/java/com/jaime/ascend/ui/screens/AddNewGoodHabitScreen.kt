@@ -1,7 +1,6 @@
 package com.jaime.ascend.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,33 +13,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Notes
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -50,22 +36,41 @@ import com.google.firebase.auth.FirebaseAuth
 import com.jaime.ascend.R
 import com.jaime.ascend.data.factory.GoodHabitsViewModelFactory
 import com.jaime.ascend.data.models.Category
-import com.jaime.ascend.data.models.GoodHabit
+import com.jaime.ascend.data.models.HabitTemplate
 import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.HabitRepository
+import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.ui.components.ActionBarWithBackButton
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.utils.IconMapper.getCategoryIcon
-import com.jaime.ascend.utils.IconMapper.getHabitIcon
 import com.jaime.ascend.viewmodel.GoodHabitsViewModel
+import java.util.Locale
 
 @Composable
 fun AddNewGoodHabitScreen(
     navController: NavController,
     categoryRepository: CategoryRepository,
     habitRepository: HabitRepository,
+    templateRepository: TemplateRepository,
     auth: FirebaseAuth,
 ) {
+    val viewModel: GoodHabitsViewModel = viewModel(
+        factory = GoodHabitsViewModelFactory(
+            categoryRepository,
+            habitRepository,
+            templateRepository,
+            auth
+        )
+    )
+    val categories by viewModel.categories
+    val isLoading by viewModel.isLoading
+    val selectedCategory by viewModel.selectedCategory
+    val templates by viewModel.templates
+
+    LaunchedEffect(Unit) {
+        viewModel.loadCategories()
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -73,7 +78,14 @@ fun AddNewGoodHabitScreen(
             ActionBarWithBackButton(
                 screenName = stringResource(id = R.string.add_new_good_habit_title),
                 navController = navController,
-                modifier = Modifier
+                modifier = Modifier,
+                onBack = {
+                    if (selectedCategory != null) {
+                        viewModel.selectCategory(null)
+                    } else {
+                        navController.popBackStack()
+                    }
+                }
             )
         },
         contentWindowInsets = WindowInsets(0.dp)
@@ -82,7 +94,27 @@ fun AddNewGoodHabitScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-        ) {}
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else if (categories.isEmpty()) {
+                Text(text = "No categories found")
+            } else if (selectedCategory == null) {
+                CategoriesList(
+                    categories = categories,
+                    onCategorySelected = { viewModel.selectCategory(it) }
+                )
+            } else {
+                TemplatesList(
+                    templates = templates,
+                    onTemplateSelected = {
+                        val r = AppScreens.AddingGoodHabitScreen.route
+                            .replace("{templateId}", it.id)
+                        navController.navigate(r)
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -238,11 +270,11 @@ private fun SearchResultsList(
         }
     }
 }
-
+*/
 @Composable
 private fun CategoriesList(
     categories: List<Category>,
-    onCategorySelected: (String) -> Unit,
+    onCategorySelected: (Category) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -252,64 +284,56 @@ private fun CategoriesList(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(categories) { category ->
-            CategoryCard(
-                category = category,
-                onClick = { onCategorySelected(category.id) }
+            ItemDisplayCard(
+                item = DisplayItem.CategoryItem(category),
+                onClick = { onCategorySelected(category) }
             )
         }
     }
 }
 
 @Composable
-private fun GoodHabitsList(
-    habits: List<GoodHabit>,
-    onBack: () -> Unit,
-    onHabitSelected: (GoodHabit) -> Unit,
+fun TemplatesList(
+    templates: List<HabitTemplate>,
+    onTemplateSelected: (HabitTemplate) -> Unit,
 ) {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = "",
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable { onBack() }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(rememberNestedScrollInteropConnection()),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        items(templates) { template ->
+            ItemDisplayCard(
+                item = DisplayItem.TemplateItem(template),
+                onClick = { onTemplateSelected(template) }
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = stringResource(R.string.select_habit),
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(rememberNestedScrollInteropConnection()),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            items(habits) { habit ->
-                GoodHabitCard(
-                    habit = habit,
-                    onClick = { onHabitSelected(habit) }
-                )
-            }
         }
     }
 }
 
+
 @Composable
-private fun CategoryCard(
-    category: Category,
+private fun ItemDisplayCard(
+    item: DisplayItem,
     onClick: () -> Unit,
 ) {
-    val currentLanguage = LocalConfiguration.current.locales[0].language
-    val icon = getCategoryIcon(category.icon)
+    val (name, description, iconName) = when (item) {
+        is DisplayItem.CategoryItem -> Triple(
+            item.category.getName(Locale.getDefault()),
+            item.category.getDescription(Locale.getDefault()),
+            item.category.icon
+        )
+
+        is DisplayItem.TemplateItem -> Triple(
+            item.template.getName(Locale.getDefault()),
+            item.template.getDescription(Locale.getDefault()),
+            item.template.icon
+        )
+    }
+
+    val icon = getCategoryIcon(iconName)
 
     Card(
         onClick = onClick,
@@ -334,12 +358,12 @@ private fun CategoryCard(
 
             Column {
                 Text(
-                    text = category.getName(currentLanguage),
+                    text = name,
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = category.getDescription(currentLanguage),
+                    text = description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
@@ -348,50 +372,7 @@ private fun CategoryCard(
     }
 }
 
-@Composable
-private fun GoodHabitCard(
-    habit: GoodHabit,
-    onClick: () -> Unit,
-) {
-    val currentLanguage = LocalConfiguration.current.locales[0].language
-    //val icon = getHabitIcon(habit.icon)
-    val icon = Icons.Filled.Notes
-
-    Card(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(end = 16.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-
-            Column {
-                Text(
-                    text = habit.getName(currentLanguage),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = habit.getDescription(currentLanguage),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            }
-        }
-    }
+sealed class DisplayItem {
+    data class CategoryItem(val category: Category) : DisplayItem()
+    data class TemplateItem(val template: HabitTemplate) : DisplayItem()
 }
-
- */

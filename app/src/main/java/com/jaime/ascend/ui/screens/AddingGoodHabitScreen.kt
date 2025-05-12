@@ -59,6 +59,7 @@ import com.jaime.ascend.data.models.Difficulty
 import com.jaime.ascend.data.models.HabitTemplate
 import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.HabitRepository
+import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.ui.components.ActionBarWithBackButton
 import com.jaime.ascend.ui.components.BlackButton
 import com.jaime.ascend.ui.components.DayOfWeekSelector
@@ -69,16 +70,23 @@ import java.util.Locale
 @Composable
 fun AddingGoodHabitScreen(
     navController: NavController,
-    categoryId: String,
     templateId: String,
     viewModel: GoodHabitsViewModel = viewModel(
         factory = GoodHabitsViewModelFactory(
             categoryRepository = CategoryRepository(FirebaseFirestore.getInstance()),
             habitRepository = HabitRepository(FirebaseFirestore.getInstance()),
-            auth = FirebaseAuth.getInstance()
+            auth = FirebaseAuth.getInstance(),
+            templateRepository = TemplateRepository(FirebaseFirestore.getInstance())
         )
     ),
 ) {
+    val template by viewModel.templateToAdd
+
+    LaunchedEffect(Unit) {
+        viewModel.loadTemplate(templateId)
+    }
+
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -94,8 +102,18 @@ fun AddingGoodHabitScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-        ) {}
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
+        ) {
+            Column {
+                Text("ADDING GOOD HABIT")
+
+                template?.let { template ->
+                    Text(template.getName(Locale.getDefault()))
+                    Text(template.getDescription(Locale.getDefault()))
+                }
+            }
+        }
     }
 }
 

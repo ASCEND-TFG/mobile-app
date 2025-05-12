@@ -5,11 +5,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.HabitRepository
+import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.viewmodel.GoodHabitsViewModel
 
 class GoodHabitsViewModelFactory(
     private val categoryRepository: CategoryRepository,
     private val habitRepository: HabitRepository,
+    private val templateRepository: TemplateRepository,
     private val auth: FirebaseAuth
 ) : ViewModelProvider.Factory {
 
@@ -21,6 +23,7 @@ class GoodHabitsViewModelFactory(
         return GoodHabitsViewModel(
             categoryRepository,
             habitRepository,
+            templateRepository,
             auth
         ) as T
     }

@@ -209,7 +209,10 @@ fun ActionBarProfileScreen(
 
 @Composable
 fun ActionBarWithBackButton(
-    screenName: String, modifier: Modifier = Modifier, navController: NavController,
+    modifier: Modifier = Modifier,
+    screenName: String,
+    navController: NavController,
+    onBack: () -> Unit = { navController.popBackStack() },
 ) {
     Column(
         modifier = modifier
@@ -227,7 +230,8 @@ fun ActionBarWithBackButton(
                 contentDescription = stringResource(R.string.back_icon_content),
                 modifier = Modifier
                     .size(24.dp)
-                    .clickable { navController.popBackStack() })
+                    .clickable { onBack() }
+            )
 
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -343,7 +347,7 @@ fun HabitCard(habit: GoodHabit) {
                 }
             } else {
                 Text(
-                    text = template?.getLocalizedName(Locale.getDefault()) ?: "Unnamed Habit",
+                    text = template?.getName(Locale.getDefault()) ?: "Unnamed Habit",
                     fontWeight = FontWeight.Bold
                 )
                 Text(
@@ -388,7 +392,7 @@ fun HabitCard2(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column{
+            Column {
                 Text(
                     text = habitName,
                     style = MaterialTheme.typography.titleMedium.copy(

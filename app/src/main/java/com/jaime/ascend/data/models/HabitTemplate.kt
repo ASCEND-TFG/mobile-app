@@ -20,11 +20,11 @@ data class HabitTemplate(
         )
     }
 
-    fun getLocalizedName(locale: Locale): String {
+    fun getName(locale: Locale): String {
         return name[locale.language] ?: name["en"] ?: ""
     }
 
-    fun getLocalizedDescription(locale: Locale): String {
+    fun getDescription(locale: Locale): String {
         return description[locale.language] ?: description["en"] ?: ""
     }
 }
