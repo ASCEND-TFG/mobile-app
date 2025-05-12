@@ -1,6 +1,5 @@
 package com.jaime.ascend.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +42,7 @@ import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.ui.components.ActionBarWithBackButton
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.utils.IconMapper.getCategoryIcon
+import com.jaime.ascend.utils.IconMapper.getHabitIcon
 import com.jaime.ascend.viewmodel.GoodHabitsViewModel
 import java.util.Locale
 
@@ -319,21 +319,19 @@ private fun ItemDisplayCard(
     item: DisplayItem,
     onClick: () -> Unit,
 ) {
-    val (name, description, iconName) = when (item) {
+    val (name, description, icon) = when (item) {
         is DisplayItem.CategoryItem -> Triple(
             item.category.getName(Locale.getDefault()),
             item.category.getDescription(Locale.getDefault()),
-            item.category.icon
+            getCategoryIcon(item.category.icon)
         )
 
         is DisplayItem.TemplateItem -> Triple(
             item.template.getName(Locale.getDefault()),
             item.template.getDescription(Locale.getDefault()),
-            item.template.icon
+            getHabitIcon(item.template.icon)
         )
     }
-
-    val icon = getCategoryIcon(iconName)
 
     Card(
         onClick = onClick,

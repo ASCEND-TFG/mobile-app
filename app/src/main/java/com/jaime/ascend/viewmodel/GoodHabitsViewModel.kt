@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.jaime.ascend.data.models.Category
+import com.jaime.ascend.data.models.Difficulty
 import com.jaime.ascend.data.models.GoodHabit
 import com.jaime.ascend.data.models.HabitTemplate
 import com.jaime.ascend.data.repository.CategoryRepository
@@ -37,13 +39,57 @@ class GoodHabitsViewModel(
     val selectedCategory: State<Category?> = _selectedCategory
     val templateToAdd: State<HabitTemplate?> = _templateToAdd
 
+    // En tu GoodHabitsViewModel.kt
+    fun createGoodHabit(
+        templateId: String,
+        days: List<Int>,
+        difficulty: Difficulty,
+        reminderTime: String? = null,
+        onComplete: (Result<Unit>) -> Unit
+    ) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val template = templateRepository.getTemplateById(templateId)
+                val habitData = hashMapOf(
+                    "category" to template?.category,
+                    "checked" to false,
+                    "coinReward" to difficulty.coinValue,
+                    "createdAt" to com.google.firebase.Timestamp.now(),
+                    "days" to days,
+                    "difficulty" to difficulty.name,
+                    "template" to FirebaseFirestore.getInstance()
+                        .document("ghabit_templates/$templateId"),
+                    "userId" to (auth.currentUser?.uid!!),
+                    "xpReward" to difficulty.xpValue
+                )
+
+                reminderTime?.let {
+                    habitData["reminderTime"] = it
+                }
+
+                FirebaseFirestore.getInstance()
+                    .collection("ghabits")
+                    .add(habitData)
+                    .await()
+
+                onComplete(Result.success(Unit))
+            } catch (e: Exception) {
+                Log.e("GoodHabitsVM", "Error creating habit", e)
+                onComplete(Result.failure(e))
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
     // Load habits WITHOUT resolving templates upfront
     fun loadHabits(userId: String) {
         viewModelScope.launch {
             _isLoading.value = true
             habitRepository.getUserGoodHabitsRealTime(userId)
                 .collect { habits ->
-                    _habits.value = habits // Just store the raw habits
+                    _habits.value = habits
                     _isLoading.value = false
                 }
         }

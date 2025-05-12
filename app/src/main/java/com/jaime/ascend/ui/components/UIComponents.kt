@@ -257,9 +257,9 @@ fun ActionBarWithBackButton(
 
 @Composable
 fun DayOfWeekSelector(
+    modifier: Modifier = Modifier,
     selectedDays: List<Int>,
     onDaySelected: (Int) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val days = listOf(
         stringResource(R.string.monday_initial),
@@ -337,7 +337,12 @@ fun HabitCard(habit: GoodHabit) {
         }
     }
 
-    Card(modifier = Modifier.padding(8.dp)) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             if (isLoading) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -346,102 +351,79 @@ fun HabitCard(habit: GoodHabit) {
                     Text("Loading...")
                 }
             } else {
-                Text(
-                    text = template?.getName(Locale.getDefault()) ?: "Unnamed Habit",
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Category: ${category?.getName(Locale.getDefault()) ?: "Uncategorized"}",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
-                Text("Reward: ${habit.xpReward} XP • ${habit.coinReward} coins")
-            }
-        }
-    }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun HabitCard2(
-    modifier: Modifier = Modifier,
-    habitName: String = "Habit super mas largo aun maaaas name",
-    categoryName: String = "Category",
-    xpReward: Int = 30,
-    coinReward: Int = 5,
-    iconName: String = "iconName",
-) {
-    var checked by remember { mutableStateOf(false) }
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = IconMapper.getHabitIcon(iconName),
-                contentDescription = null,
-            )
-
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column {
-                Text(
-                    text = habitName,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "+$coinReward",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
+                    template?.icon?.let { icon ->
                         Icon(
-                            imageVector = Icons.Filled.Paid,
-                            contentDescription = "Monedas ganadas",
-                            modifier = Modifier.size(20.dp)
+                            imageVector = IconMapper.getHabitIcon(icon),
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp),
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
 
-                    Text(
-                        text = "+$xpReward XP",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column {
+                        Text(
+                            text = template?.getName(Locale.getDefault()) ?: "Unnamed Habit",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = "+${habit.coinReward}",
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                                Icon(
+                                    imageVector = Icons.Filled.Paid,
+                                    contentDescription = "Monedas ganadas",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+                            Text(
+                                text = "+${habit.xpReward} XP",
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = category?.getName(Locale.getDefault()) ?: "Unnamed Category",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            ),
+                            fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Checkbox(
+                        modifier = Modifier.size(32.dp),
+                        checked = habit.checked,
+                        onCheckedChange = { /* TODO CHANGE CHECKED STATUS */ }
                     )
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = categoryName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Checkbox(
-                modifier = Modifier.weight(.1f),
-                checked = checked,
-                onCheckedChange = { checked = it }
-            )
         }
     }
 }
