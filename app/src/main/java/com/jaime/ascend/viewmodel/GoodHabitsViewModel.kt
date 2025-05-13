@@ -61,7 +61,9 @@ class GoodHabitsViewModel(
                     "template" to FirebaseFirestore.getInstance()
                         .document("ghabit_templates/$templateId"),
                     "userId" to (auth.currentUser?.uid!!),
-                    "xpReward" to difficulty.xpValue
+                    "xpReward" to difficulty.xpValue,
+                    "completed" to false,
+                    "reminderTime" to reminderTime,
                 )
 
                 reminderTime?.let {

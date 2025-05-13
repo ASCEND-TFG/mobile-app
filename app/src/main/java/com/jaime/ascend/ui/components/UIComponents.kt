@@ -311,7 +311,9 @@ fun DayOfWeekSelector(
 
 
 @Composable
-fun HabitCard(habit: GoodHabit) {
+fun HabitCard(
+    habit: GoodHabit,
+    onHabitClick: (GoodHabit) -> Unit,) {
     // Track template/category loading per card
     var template by remember { mutableStateOf<HabitTemplate?>(null) }
     var category by remember { mutableStateOf<Category?>(null) }
@@ -340,7 +342,8 @@ fun HabitCard(habit: GoodHabit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .clickable { onHabitClick(habit) },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

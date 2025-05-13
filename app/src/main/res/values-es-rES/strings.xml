@@ -71,4 +71,18 @@
     <string name="saturday_initial">S</string>
     <string name="sunday_initial">D</string>
     <string name="no_habits">No hay hábitos registrados</string>
+    <string name="habit_details">Detalles del Hábito</string>
+    <string name="difficulty">Dificultad</string>
+    <string name="reminder">Recordatorio</string>
+    <string name="days_selected">Días</string>
+    <string name="rewards">Recompensas</string>
+    <string name="coins">Monedas</string>
+    <string name="experience">Experiencia</string>
+    <string name="delete">Borrar</string>
+    <string name="edit">Editar</string>
+    <string name="edit_habit_title">Editar hábito</string>
+    <string name="delete_habit_title">Borrar hábito</string>
+    <string name="delete_habit_confirmation">¿Estás seguro de que quieres eliminar este hábito?</string>
+    <string name="no_reminder_set">No hay recordatorio</string>
+    <string name="no_days_selected">Días no elegidos</string>
 </resources>

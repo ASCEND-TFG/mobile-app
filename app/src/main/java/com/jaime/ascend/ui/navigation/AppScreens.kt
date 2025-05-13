@@ -68,6 +68,15 @@ sealed class AppScreens(
         icon = Icons.Filled.DisabledByDefault
     )
 
+    object HabitDetailScreen : AppScreens(
+        route = "habit_details/{habitId}",
+        arguments = listOf(
+            navArgument("habitId") { type = NavType.StringType }
+        ),
+        title = R.string.habit_details,
+        icon = Icons.Filled.DisabledByDefault
+    )
+
     // Pantallas con BottomNavigation
     object HomeScreen : AppScreens(
         route = "home",

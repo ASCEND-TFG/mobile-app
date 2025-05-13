@@ -177,6 +177,16 @@ fun MainScreenNavHost() {
                                 templateId = templateId
                             )
                         }
+
+                        composable(
+                            route = AppScreens.HabitDetailScreen.route,
+                            arguments = listOf(navArgument("habitId") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            val habitId = backStackEntry.arguments?.getString("habitId") ?: ""
+                            HabitDetailScreen(
+                                habitId = habitId,
+                                navController = navController)
+                        }
                     }
                 }
             }

@@ -106,7 +106,11 @@ fun GoodHabitsScreen(
                         }
                     } else {
                         items(habits) { habit ->
-                            HabitCard(habit)
+                            HabitCard(
+                                habit = habit,
+                                onHabitClick = { clickedHabit ->
+                                    navController.navigate("habit_details/${clickedHabit.id}")
+                                })
                         }
                     }
 

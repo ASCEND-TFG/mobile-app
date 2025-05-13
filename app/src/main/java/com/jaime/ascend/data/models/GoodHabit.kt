@@ -18,6 +18,7 @@ data class GoodHabit(
     val difficulty: Difficulty = Difficulty.EASY,
     val xpReward: Int = 0,
     val userId: String = "",
+    val reminderTime: String? = null,
 ) {
     @Transient var resolvedTemplate: HabitTemplate? = null
     @Transient var resolvedCategory: Category? = null
@@ -62,7 +63,8 @@ data class GoodHabit(
             "days" to days,
             "difficulty" to difficulty,
             "xpReward" to xpReward,
-            "userId" to userId
+            "userId" to userId,
+            "reminderTime" to reminderTime!!,
         )
     }
 }
