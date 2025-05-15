@@ -71,7 +71,7 @@
     <string name="saturday_initial">S</string>
     <string name="sunday_initial">D</string>
     <string name="no_habits">No hay hábitos registrados</string>
-    <string name="habit_details">Detalles del Hábito</string>
+    <string name="habit_details">Detalles del hábito</string>
     <string name="difficulty">Dificultad</string>
     <string name="reminder">Recordatorio</string>
     <string name="days_selected">Días</string>
@@ -85,4 +85,5 @@
     <string name="delete_habit_confirmation">¿Estás seguro de que quieres eliminar este hábito?</string>
     <string name="no_reminder_set">No hay recordatorio</string>
     <string name="no_days_selected">Días no elegidos</string>
+    <string name="save_changes">Guardar cambios</string>
 </resources>

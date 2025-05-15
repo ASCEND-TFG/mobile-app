@@ -95,23 +95,45 @@ fun GoodHabitsScreen(
                 CircularProgressIndicator()
             } else if (error != null) {
                 Text("Error: $error")
-            } else if (!habits.isEmpty()) {
+            } else if (habits.isEmpty()) {
                 LazyColumn {
-                    if (habits.isEmpty()) {
-                        item {
-                            Text(
-                                text = stringResource(R.string.no_habits),
-                                textAlign = TextAlign.Center
+                    item {
+                        Text(
+                            text = stringResource(R.string.no_habits),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    item {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            BlackButton(
+                                onClick = { navController.navigate(AppScreens.AddNewGoodHabitScreen.route) },
+                                modifier = Modifier
+                                    .width(250.dp)
+                                    .padding(bottom = 4.dp, top = 24.dp),
+                                enabled = true,
+                                content = {
+                                    Text(
+                                        text = stringResource(R.string.add_new_good_habit_title),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
                             )
                         }
-                    } else {
-                        items(habits) { habit ->
-                            HabitCard(
-                                habit = habit,
-                                onHabitClick = { clickedHabit ->
-                                    navController.navigate("habit_details/${clickedHabit.id}")
-                                })
-                        }
+                    }
+                }
+            } else {
+                LazyColumn {
+                    items(habits) { habit ->
+                        HabitCard(
+                            habit = habit,
+                            onHabitClick = { clickedHabit ->
+                                navController.navigate("habit_details/${clickedHabit.id}")
+                            })
                     }
 
                     item {

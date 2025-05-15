@@ -1,6 +1,7 @@
 package com.jaime.ascend.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -52,6 +53,7 @@ import com.jaime.ascend.data.models.GoodHabit
 import com.jaime.ascend.data.models.HabitTemplate
 import com.jaime.ascend.ui.components.ActionBarWithBackButton
 import com.jaime.ascend.ui.components.BlackButton
+import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.viewmodel.HabitDetailViewModel
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
@@ -74,7 +76,18 @@ fun HabitDetailScreen(
     var template by remember { mutableStateOf<HabitTemplate?>(null) }
     var category by remember { mutableStateOf<Category?>(null) }
 
-    // Cargar template y category
+    val changesSaved by navController.currentBackStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow<Boolean>("changesSaved", false)
+        ?.collectAsState() ?: remember { mutableStateOf(false) }
+
+    LaunchedEffect(changesSaved) {
+        if (changesSaved) {
+            viewModel.loadHabit(habitId)
+            navController.currentBackStackEntry?.savedStateHandle?.remove<Boolean>("changesSaved")
+        }
+    }
+
     LaunchedEffect(habit) {
         habit?.let { currentHabit ->
             currentHabit.template?.get()?.await()?.toObject(HabitTemplate::class.java)?.let {
@@ -117,12 +130,12 @@ fun HabitDetailScreen(
                     }
 
                     habit != null -> {
-                        val currentHabit = habit!!
                         HabitDetailContent(
-                            habit = currentHabit,
+                            habit = habit!!,
                             template = template,
                             onDeleteClick = { showDeleteDialog = true },
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            navController = navController,
                         )
                     }
                 }
@@ -148,7 +161,8 @@ private fun HabitDetailContent(
     habit: GoodHabit,
     template: HabitTemplate?,
     onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavController
 ) {
     Column(
         modifier = modifier
@@ -206,7 +220,7 @@ private fun HabitDetailContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Días seleccionados con estilo de círculos
+        // Días seleccionados
         Text(
             text = stringResource(R.string.days_selected),
             style = MaterialTheme.typography.titleMedium
@@ -232,10 +246,12 @@ private fun HabitDetailContent(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Botones de acción
+        // Botones
         ActionButtons(
             onDeleteClick = onDeleteClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            navController = navController,
+            habitId = habit.id
         )
     }
 }
@@ -267,7 +283,7 @@ private fun DetailSection(
 }
 
 @Composable
-private fun RewardSection(
+internal fun RewardSection(
     coinReward: Int,
     xpReward: Int,
     modifier: Modifier = Modifier
@@ -376,7 +392,9 @@ private fun DayOfWeekDisplay(
 @Composable
 private fun ActionButtons(
     onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    habitId: String,
+    navController: NavController
 ) {
     Row(
         modifier = modifier,
@@ -403,7 +421,9 @@ private fun ActionButtons(
         )
 
         BlackButton(
-            onClick = { /* TODO: Implement edit navigation */ },
+            onClick = {
+                Log.d("HabitDetail", "Editing habit with ID: $habitId")
+                navController.navigate("edit_habit/${habitId}")  },
             modifier = Modifier.weight(3f),
             content = {
                 Text(

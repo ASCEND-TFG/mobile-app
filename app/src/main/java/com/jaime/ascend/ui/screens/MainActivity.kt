@@ -7,12 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -185,7 +183,17 @@ fun MainScreenNavHost() {
                             val habitId = backStackEntry.arguments?.getString("habitId") ?: ""
                             HabitDetailScreen(
                                 habitId = habitId,
-                                navController = navController)
+                                navController = navController
+                            )
+                        }
+
+                        // In your navigation setup (probably in your MainActivity or NavGraph)
+                        composable(
+                            route = "edit_habit/{habitId}",
+                            arguments = listOf(navArgument("habitId") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            val habitId = backStackEntry.arguments?.getString("habitId") ?: ""
+                            EditHabitScreen(navController, habitId)
                         }
                     }
                 }

@@ -27,6 +27,10 @@ class HabitRepository(private val firestore: FirebaseFirestore) {
     // Current active listeners to avoid duplicates
     private val activeListeners = mutableMapOf<String, ListenerRegistration>()
 
+    suspend fun getHabitById(habitId: String): GoodHabit? {
+        return habitsCollection.document(habitId).get().await().toObject(GoodHabit::class.java)
+    }
+
     /* ------------------------- Template Operations ------------------------- */
     suspend fun getTemplateInfo(templateId: String): HabitTemplate? {
         return try {

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jaime.ascend.data.models.Category
 import com.jaime.ascend.data.models.Difficulty
@@ -16,6 +17,7 @@ import com.jaime.ascend.data.repository.HabitRepository
 import com.jaime.ascend.data.repository.TemplateRepository
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.security.Timestamp
 
 class GoodHabitsViewModel(
     private val categoryRepository: CategoryRepository,
@@ -39,7 +41,6 @@ class GoodHabitsViewModel(
     val selectedCategory: State<Category?> = _selectedCategory
     val templateToAdd: State<HabitTemplate?> = _templateToAdd
 
-    // En tu GoodHabitsViewModel.kt
     fun createGoodHabit(
         templateId: String,
         days: List<Int>,
