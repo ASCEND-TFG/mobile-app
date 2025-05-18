@@ -1,5 +1,6 @@
 package com.jaime.ascend.ui.components
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,6 +44,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -309,6 +313,59 @@ fun DayOfWeekSelector(
     }
 }
 
+@Composable
+fun HealthProgressBar(
+    currentLife: Int,
+    maxLife: Int,
+    modifier: Modifier = Modifier
+) {
+    val progress = if (maxLife > 0) currentLife.toFloat() / maxLife.toFloat() else 0f
+    val progressWidth = progress.coerceIn(0f, 1f)
+    val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
+
+    val startColor = when {
+        progress < 0.3f -> Color.Red
+        progress < 0.6f -> Color.Yellow
+        else -> Color.Green
+    }
+
+    val endColor = when {
+        progress < 0.3f -> Color(0xFFFFA500)
+        progress < 0.6f -> Color(0xFFFFEB3B)
+        else -> Color(0xFF4CAF50)
+    }
+
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(R.string.life, currentLife, maxLife),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Canvas(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(12.dp)
+        ) {
+            drawRect(
+                color = surfaceVariant,
+                size = size
+            )
+
+            drawRect(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(startColor, endColor),
+                    startX = 0f,
+                    endX = size.width * progressWidth
+                ),
+                topLeft = Offset.Zero,
+                size = size.copy(width = size.width * progressWidth)
+            )
+        }
+    }
+}
 
 @Composable
 fun HabitCard(

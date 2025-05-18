@@ -86,4 +86,9 @@
     <string name="no_reminder_set">No hay recordatorio</string>
     <string name="no_days_selected">Días no elegidos</string>
     <string name="save_changes">Guardar cambios</string>
+    <string name="recover_email">Por favor, introduce tu email para recuperar la contraseña</string>
+    <string name="correct_email_format">Por favor, corrige el formato del email</string>
+    <string name="recovery_email_send">Email de recuperación enviado. Revisa tu bandeja</string>
+    <string name="recovery_email_error">Error al enviar el email de recuperación</string>
+    <string name="life">Vida: %1$s/%2$s</string>
 </resources>

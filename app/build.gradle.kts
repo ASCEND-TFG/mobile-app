@@ -63,15 +63,17 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.material.icons.extended)
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
-    implementation ("androidx.activity:activity-compose:1.5.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation (libs.androidx.lifecycle.runtime.ktx.v251)
+    implementation (libs.androidx.activity.compose.v150)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation (libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.ui)
-    implementation ("com.google.accompanist:accompanist-pager:0.28.0")
-    implementation ("androidx.compose.foundation:foundation:1.7.8")
-    implementation ("com.google.android.gms:play-services-base:18.4.0")
+    implementation (libs.accompanist.pager)
+    implementation (libs.androidx.foundation)
+    implementation (libs.play.services.base.v1840)
+    implementation(libs.coil.compose.v260)
+    implementation (libs.androidx.runtime.livedata)
 
     //Firebase
     implementation(platform(libs.firebase.bom))
@@ -82,6 +84,5 @@ dependencies {
     implementation(libs.firebase.messaging.ktx)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.firestore.ktx)
-    implementation ("com.google.firebase:firebase-firestore:25.1.4")
-
+    implementation (libs.google.firebase.firestore)
 }
