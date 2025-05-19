@@ -1,9 +1,7 @@
 package com.jaime.ascend.ui.screens
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,15 +15,15 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Paid
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -34,20 +32,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.jaime.ascend.R
 import com.jaime.ascend.ui.components.ActionBarProfileScreen
 import com.jaime.ascend.ui.components.HealthProgressBar
 import com.jaime.ascend.viewmodel.ProfileViewModel
-import kotlin.random.Random
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
@@ -55,20 +52,15 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel()
 ) {
     val username by viewModel.username.observeAsState("")
+    val avatarId by viewModel.avatarId.observeAsState(0)
     val showAvatarDialog = remember { mutableStateOf(false) }
-    val avatarUrl = remember(username) {
-        viewModel.getAvatarInitialUrl(username)
+    val avatarUrl = remember(avatarId, username) {
+        if (avatarId > 0) {
+            viewModel.getAvatarUrl(avatarId)
+        } else {
+            viewModel.getAvatarInitialUrl(username)
+        }
     }
-
-    /*if (showAvatarDialog.value) {
-        AvatarSelectionDialog(
-            currentAvatar = currentAvatarUrl,
-            onDismiss = { showAvatarDialog.value = false },
-            onAvatarSelected = { newUrl ->
-                viewModel.saveSelectedAvatar(newUrl)
-            }
-        )
-    }*/
 
     Scaffold(
         topBar = { ActionBarProfileScreen(navController = navController, modifier = Modifier) },
@@ -88,7 +80,8 @@ fun ProfileScreen(
                         contentDescription = "Avatar de $username",
                         modifier = Modifier
                             .size(80.dp)
-                            .clip(CircleShape),
+                            .clip(CircleShape)
+                            .clickable { showAvatarDialog.value = true },
                     )
 
                     Spacer(modifier = Modifier.width(16.dp))
@@ -122,68 +115,82 @@ fun ProfileScreen(
             }
         }
     )
+
+    if (showAvatarDialog.value) {
+        AvatarSelectionDialog(
+            viewModel = viewModel,
+            onDismiss = { showAvatarDialog.value = false }
+        )
+    }
 }
 
 @Composable
 fun AvatarSelectionDialog(
-    currentAvatar: String,
-    onDismiss: () -> Unit,
-    onAvatarSelected: (String) -> Unit
+    viewModel: ProfileViewModel,
+    onDismiss: () -> Unit
 ) {
-    val avatarOptions = remember {
-        listOf(
-            "random" to "Aleatorio",
-            "A" to "Letra A",
-            "B" to "Letra B",
-            // Añade más opciones según necesites
-        )
-    }
+    val randomAvatars by viewModel.randomAvatars.observeAsState(emptyList())
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Seleccionar avatar") },
-        text = {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                modifier = Modifier.height(300.dp)
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                items(avatarOptions) { (option, description) ->
-                    val avatarUrl = remember(option) {
-                        if (option == "random") {
-                            "https://api.placeholder.pics/avatar/200?random=${Random.nextInt(1000)}"
-                        } else {
-                            "https://api.placeholder.pics/avatar/200/$option"
+                Text("Selecciona tu avatar")
+                IconButton(
+                    onClick = {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            viewModel.updateAvatar(0)
                         }
-                    }
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .clickable {
-                                onAvatarSelected(avatarUrl)
-                                onDismiss()
-                            }
-                    ) {
-                        AsyncImage(
-                            model = avatarUrl,
-                            contentDescription = description,
-                            modifier = Modifier
-                                .size(64.dp)
-                                .clip(CircleShape)
-                        )
-                        Text(
-                            text = description,
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-                    }
+                        onDismiss()
+                    },
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Restablecer a iniciales",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
         },
+        text = {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                content = {
+                    items(randomAvatars) { avatarId ->
+                        val avatarUrl = viewModel.getAvatarUrl(avatarId)
+                        AsyncImage(
+                            model = avatarUrl,
+                            contentDescription = "Avatar $avatarId",
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .clickable {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        viewModel.updateAvatar(avatarId)
+                                    }
+                                    onDismiss()
+                                }
+                        )
+                    }
+                }
+            )
+        },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+            Button(
+                onClick = {
+                    viewModel.generateRandomAvatars()
+                }
+            ) {
+                Text("Generar nuevos")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancelar")
             }
         }
     )

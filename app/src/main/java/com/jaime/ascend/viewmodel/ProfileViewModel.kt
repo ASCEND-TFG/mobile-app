@@ -16,6 +16,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlin.random.Random
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
     private val firestore = FirebaseFirestore.getInstance()
@@ -40,8 +41,19 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _friends = MutableLiveData<List<String>>()
     val friends: LiveData<List<String>> = _friends
 
+    private val _avatarId = MutableLiveData<Int>()
+    val avatarId: LiveData<Int> = _avatarId
+
+    private val _randomAvatars = MutableLiveData<List<Int>>()
+    val randomAvatars: LiveData<List<Int>> = _randomAvatars
+
     init {
         setupFirestoreListener()
+        generateRandomAvatars()
+    }
+
+    fun getAvatarUrl(avatarId: Int): String {
+        return "https://avatar.iran.liara.run/public/$avatarId"
     }
 
     fun getAvatarInitialUrl(username: String): String {
@@ -67,10 +79,30 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                     _currentLife.value = snapshot.getLong("currentLife")?.toInt() ?: 0
                     _maxLife.value = snapshot.getLong("maxLife")?.toInt() ?: 0
                     _coins.value = snapshot.getLong("coins")?.toInt() ?: 0
+                    _avatarId.value = snapshot.getLong("avatarId")?.toInt() ?: 0
                 } else {
                     Log.d("ProfileViewModel", "Current data: null")
                 }
             }
+        }
+    }
+
+    fun generateRandomAvatars() {
+        val randomAvatars = mutableListOf<Int>()
+        repeat(6) {
+            randomAvatars.add(Random.nextInt(1, 100))
+        }
+        _randomAvatars.value = randomAvatars
+    }
+
+    suspend fun updateAvatar(newAvatarId: Int) {
+        try {
+            firestore.collection("users").document(userId)
+                .update("avatarId", newAvatarId)
+                .await()
+            _avatarId.value = newAvatarId
+        } catch (e: Exception) {
+            Log.e("ProfileViewModel", "Error updating avatar", e)
         }
     }
 
