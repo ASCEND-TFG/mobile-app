@@ -30,6 +30,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -51,6 +52,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -317,7 +319,7 @@ fun DayOfWeekSelector(
 fun HealthProgressBar(
     currentLife: Int,
     maxLife: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val progress = if (maxLife > 0) currentLife.toFloat() / maxLife.toFloat() else 0f
     val progressWidth = progress.coerceIn(0f, 1f)
@@ -370,13 +372,12 @@ fun HealthProgressBar(
 @Composable
 fun HabitCard(
     habit: GoodHabit,
-    onHabitClick: (GoodHabit) -> Unit,) {
-    // Track template/category loading per card
+    onHabitClick: (GoodHabit) -> Unit,
+) {
     var template by remember { mutableStateOf<HabitTemplate?>(null) }
     var category by remember { mutableStateOf<Category?>(null) }
     var isLoading by remember { mutableStateOf(false) }
 
-    // Resolve template ONLY when this card appears
     LaunchedEffect(habit.template) {
         if (template == null && habit.template != null) {
             isLoading = true
@@ -386,7 +387,6 @@ fun HabitCard(
         }
     }
 
-    // Resolve category similarly
     LaunchedEffect(habit.category) {
         if (category == null && habit.category != null) {
             isLoading = true
@@ -408,7 +408,7 @@ fun HabitCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     CircularProgressIndicator(modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Loading...")
+                    Text(stringResource(R.string.loading))
                 }
             } else {
                 Row(
@@ -478,11 +478,99 @@ fun HabitCard(
                     Spacer(modifier = Modifier.weight(1f))
 
                     Checkbox(
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier
+                            .size(32.dp),
                         checked = habit.checked,
                         onCheckedChange = { /* TODO CHANGE CHECKED STATUS */ }
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun ImprovedCategoryCard(category: Category, language: String) {
+    Card(
+        modifier = Modifier.width(120.dp),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = category.name[language] ?: category.id,
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Text(
+                text = "Level ${category.level}",
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+    }
+}
+
+@Composable
+fun CategoryCard(category: Category, language: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = category.name[language] ?: category.id,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text(
+                    text = "Lvl. ${category.level}",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LinearProgressIndicator(
+                progress = category.currentExp.toFloat() / category.neededExp.toFloat(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "${category.currentExp}/${category.neededExp} XP",
+                    style = MaterialTheme.typography.labelSmall
+                )
+
+                Text(
+                    text = "${(category.currentExp.toFloat() / category.neededExp.toFloat() * 100).toInt()}%",
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
         }
     }

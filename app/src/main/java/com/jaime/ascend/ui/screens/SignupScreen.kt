@@ -172,7 +172,7 @@ fun SignupScreen(navController: NavController) {
                                     )
                                 },
                                 textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground),
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                                     errorBorderColor = MaterialTheme.colorScheme.error
                                 ),
@@ -209,7 +209,7 @@ fun SignupScreen(navController: NavController) {
                                     )
                                 },
                                 textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground),
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                                     errorBorderColor = MaterialTheme.colorScheme.error
                                 ),
@@ -247,7 +247,7 @@ fun SignupScreen(navController: NavController) {
                                 },
                                 textStyle = TextStyle(color = MaterialTheme.colorScheme.primary),
                                 visualTransformation = PasswordVisualTransformation(),
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                                     errorBorderColor = MaterialTheme.colorScheme.error
                                 ),
@@ -285,7 +285,7 @@ fun SignupScreen(navController: NavController) {
                                 },
                                 textStyle = TextStyle(color = MaterialTheme.colorScheme.primary),
                                 visualTransformation = PasswordVisualTransformation(),
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                                     errorBorderColor = MaterialTheme.colorScheme.error
                                 ),

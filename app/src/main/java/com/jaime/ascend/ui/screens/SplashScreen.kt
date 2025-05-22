@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jaime.ascend.R
 import com.jaime.ascend.ui.theme.AppTheme
@@ -46,7 +45,7 @@ class SplashScreen : ComponentActivity() {
 
 @Composable
 fun SplashScreenContent(onTimeout: () -> Unit = {}) {
-    val defaultText = stringResource(id = R.string.splash_text)
+    val defaultText = stringResource(id = R.string.loading)
     val splashText = remember { mutableStateOf(defaultText) }
     val language = Locale.getDefault().language
     val db = FirebaseFirestore.getInstance()

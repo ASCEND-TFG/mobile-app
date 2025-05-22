@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">ASCEND</string>
-    <string name="splash_text">Loading…</string>
+    <string name="loading">Loading…</string>
     <string name="welcome_text">Welcome to Ascend!</string>
     <string name="email_hint">Enter your email</string>
     <string name="email_label">Email</string>
@@ -86,9 +86,16 @@
     <string name="no_days_selected">No days selected</string>
     <string name= "save_changes">Save changes</string>
     <string name="recover_email">Please enter your email to recover your password</string>
-    <string name="correct_email_format">Plese correct the formatting of the email</string>
+    <string name="correct_email_format">Please correct the formatting of the email</string>
     <string name="recovery_email_send">Recovery email sent. Check your inbox</string>
     <string name="recovery_email_error">Error sending recovery email</string>
     <string name="life">Life: %1$s/%2$s</string>
-    "
+    <string name="avatar_de">%1$s\'s avatar</string>
+    <string name="select_your_avatar">Select your avatar</string>
+    <string name="reset_to_initial">Reset to initial</string>
+    <string name="generate_new">Generate new</string>
+    <string name="improved_categories">You have improved in %1$s categories this week. Keep it up!</string>
+    <string name="all_categories">Your Categories</string>
+    <string name="level">Level %d</string>
+    <string name="categories">Categories</string>
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ASCEND</string>
-    <string name="splash_text">Cargando…</string>
+    <string name="loading">Cargando…</string>
     <string name="welcome_text">¡Bienvenido a Ascend!</string>
     <string name="email_hint">Escribe tu correo</string>
     <string name="email_label">Correo</string>
@@ -91,4 +91,12 @@
     <string name="recovery_email_send">Email de recuperación enviado. Revisa tu bandeja</string>
     <string name="recovery_email_error">Error al enviar el email de recuperación</string>
     <string name="life">Vida: %1$s/%2$s</string>
+    <string name="avatar_de">Avatar de %1$s</string>
+    <string name="select_your_avatar">Selecciona tu avatar</string>
+    <string name="reset_to_initial">Restablecer a iniciales</string>
+    <string name="generate_new">Generar nuevos</string>
+    <string name="improved_categories">¡Has mejorado en %1$s categorías esta semana! Sigue así.</string>
+    <string name="all_categories">Tus Categorías</string>
+    <string name="level">Nivel %d</string>
+    <string name="categories">Categorías</string>
 </resources>

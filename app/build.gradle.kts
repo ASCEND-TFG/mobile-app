@@ -74,6 +74,8 @@ dependencies {
     implementation (libs.play.services.base.v1840)
     implementation(libs.coil.compose.v260)
     implementation (libs.androidx.runtime.livedata)
+    implementation (libs.material3)
+    implementation (libs.androidx.foundation.v160)
 
     //Firebase
     implementation(platform(libs.firebase.bom))

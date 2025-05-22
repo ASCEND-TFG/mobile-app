@@ -1,5 +1,6 @@
 package com.jaime.ascend.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,9 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -32,25 +36,34 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.jaime.ascend.R
+import com.jaime.ascend.data.models.Category
 import com.jaime.ascend.ui.components.ActionBarProfileScreen
+import com.jaime.ascend.ui.components.CategoryCard
 import com.jaime.ascend.ui.components.HealthProgressBar
+import com.jaime.ascend.ui.components.ImprovedCategoryCard
 import com.jaime.ascend.viewmodel.ProfileViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    viewModel: ProfileViewModel = viewModel()
+    viewModel: ProfileViewModel = viewModel(),
 ) {
+    val currentLanguage = LocalConfiguration.current.locale.language
     val username by viewModel.username.observeAsState("")
     val avatarId by viewModel.avatarId.observeAsState(0)
     val showAvatarDialog = remember { mutableStateOf(false) }
@@ -60,6 +73,10 @@ fun ProfileScreen(
         } else {
             viewModel.getAvatarInitialUrl(username)
         }
+    }
+    val categories by viewModel.categories.observeAsState(emptyMap<String, Category>())
+    val improvedCategories = remember(categories) {
+        categories.values.filter { it.level > 1 }
     }
 
     Scaffold(
@@ -75,9 +92,10 @@ fun ProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Imagen Perfil
                     AsyncImage(
                         model = avatarUrl,
-                        contentDescription = "Avatar de $username",
+                        contentDescription = stringResource(R.string.avatar_de, username),
                         modifier = Modifier
                             .size(80.dp)
                             .clip(CircleShape)
@@ -98,7 +116,7 @@ fun ProfileScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Paid,
-                                contentDescription = "Coins",
+                                contentDescription = stringResource(R.string.coins),
                                 modifier = Modifier.size(24.dp),
                                 tint = MaterialTheme.colorScheme.onSurface
                             )
@@ -110,6 +128,53 @@ fun ProfileScreen(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(R.string.categories),
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        textDecoration = TextDecoration.Underline,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                if (improvedCategories.isNotEmpty()) {
+                    Text(
+                        text = stringResource(
+                            R.string.improved_categories,
+                            improvedCategories.size
+                        ),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    LazyRow {
+                        items(improvedCategories) { category ->
+                            ImprovedCategoryCard(
+                                category = category,
+                                language = currentLanguage
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Lista completa de categorías
+                LazyColumn {
+                    items(
+                        items = categories.values.toList(),
+                        key = { it.id }
+                    ) { category ->
+                        CategoryCard(category = category, language = currentLanguage)
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }
@@ -127,7 +192,7 @@ fun ProfileScreen(
 @Composable
 fun AvatarSelectionDialog(
     viewModel: ProfileViewModel,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val randomAvatars by viewModel.randomAvatars.observeAsState(emptyList())
 
@@ -139,7 +204,7 @@ fun AvatarSelectionDialog(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Selecciona tu avatar")
+                Text(stringResource(R.string.select_your_avatar))
                 IconButton(
                     onClick = {
                         CoroutineScope(Dispatchers.IO).launch {
@@ -151,7 +216,7 @@ fun AvatarSelectionDialog(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
-                        contentDescription = "Restablecer a iniciales",
+                        contentDescription = stringResource(R.string.reset_to_initial),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -185,12 +250,12 @@ fun AvatarSelectionDialog(
                     viewModel.generateRandomAvatars()
                 }
             ) {
-                Text("Generar nuevos")
+                Text(stringResource(R.string.generate_new))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Cancelar")
+                Text(stringResource(R.string.cancel))
             }
         }
     )

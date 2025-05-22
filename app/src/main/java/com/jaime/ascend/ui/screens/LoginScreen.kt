@@ -129,7 +129,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
                                     )
                                 },
                                 textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground),
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                                     errorBorderColor = MaterialTheme.colorScheme.error
                                 ),
@@ -155,7 +155,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
                                 },
                                 textStyle = TextStyle(color = MaterialTheme.colorScheme.primary),
                                 visualTransformation = PasswordVisualTransformation(),
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                                 ),
                                 modifier = Modifier.fillMaxWidth()

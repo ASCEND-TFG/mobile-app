@@ -6,7 +6,10 @@ data class Category(
     val id: String = "",
     val icon: String = "",
     val name: Map<String, String> = emptyMap(),
-    val description: Map<String, String> = emptyMap()
+    val description: Map<String, String> = emptyMap(),
+    val level: Int = 0,
+    val currentExp: Int = 0,
+    val neededExp: Int = 0
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
