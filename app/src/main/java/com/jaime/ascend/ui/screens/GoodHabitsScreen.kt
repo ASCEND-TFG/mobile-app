@@ -15,8 +15,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +36,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jaime.ascend.R
 import com.jaime.ascend.data.factory.GoodHabitsViewModelFactory
+import com.jaime.ascend.data.factory.RewardsViewModelFactory
 import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.HabitRepository
 import com.jaime.ascend.data.repository.TemplateRepository
@@ -42,6 +44,7 @@ import com.jaime.ascend.ui.components.BlackButton
 import com.jaime.ascend.ui.components.HabitCard
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
+import com.jaime.ascend.viewmodel.RewardsViewModel
 import com.jaime.ascend.viewmodel.GoodHabitsViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -61,6 +64,15 @@ fun GoodHabitsScreen(
             templateRepository = TemplateRepository(firestore)
         )
     )
+    val rewardsViewModel: RewardsViewModel = viewModel(
+        factory = RewardsViewModelFactory(
+            auth = auth,
+            firestore = firestore,
+            habitsViewModel = viewModel
+        )
+    )
+
+
     val configuration = LocalConfiguration.current
     val currentLocale by rememberUpdatedState(configuration.locales[0])
     val context = LocalContext.current
@@ -129,11 +141,22 @@ fun GoodHabitsScreen(
             } else {
                 LazyColumn {
                     items(habits) { habit ->
+                        /*val resolvedHabit = remember(habit.id) {
+                            derivedStateOf {
+                                LaunchedEffect(Unit) {
+                                    habit.resolveTemplate()
+                                    habit.resolverCategory()
+                                }
+                            }
+                        }.value*/
+
                         HabitCard(
                             habit = habit,
                             onHabitClick = { clickedHabit ->
                                 navController.navigate("habit_details/${clickedHabit.id}")
-                            })
+                            },
+                            viewModel = rewardsViewModel // Pasa el ViewModel aquí
+                        )
                     }
 
                     item {

@@ -36,6 +36,7 @@ uiTextGoogleFonts = "1.7.8"
 uiToolingPreview = "1.8.0"
 uiToolingPreviewAndroid = "1.7.8"
 materialIconsExtended = "1.7.8"
+roomRuntimeAndroid = "2.7.1"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -87,6 +88,7 @@ play-services-location = { module = "com.google.android.gms:play-services-locati
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
 
 
 [plugins]

@@ -11,7 +11,7 @@ data class GoodHabit(
     val id: String = "",
     val category: DocumentReference? = null,
     val template: DocumentReference? = null,
-    val checked: Boolean = false,
+    var completed: Boolean = false,
     val coinReward: Int = 0,
     val createdAt: Date = Date(),
     val days: List<Int> = emptyList(),
@@ -57,7 +57,7 @@ data class GoodHabit(
         return mapOf(
             "category" to category!!,
             "template" to template!!,
-            "checked" to checked,
+            "checked" to completed,
             "coinReward" to coinReward,
             "createdAt" to createdAt,
             "days" to days,

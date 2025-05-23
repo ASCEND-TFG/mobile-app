@@ -11,13 +11,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -41,6 +46,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +58,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.font.Typeface
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -67,14 +72,15 @@ import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.utils.ColorTemplate
 import com.jaime.ascend.R
 import com.jaime.ascend.data.models.Category
 import com.jaime.ascend.data.models.GoodHabit
 import com.jaime.ascend.data.models.HabitTemplate
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.utils.IconMapper
+import com.jaime.ascend.viewmodel.RewardsViewModel
 import com.jaime.ascend.viewmodel.UserViewModel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
@@ -133,7 +139,10 @@ fun BottomNavigation(navController: NavController) {
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        modifier = Modifier.windowInsetsPadding(
+            WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+        )
     ) {
         bottomNavScreens.forEach { screen ->
             NavigationBarItem(
@@ -381,10 +390,12 @@ fun HealthProgressBar(
 fun HabitCard(
     habit: GoodHabit,
     onHabitClick: (GoodHabit) -> Unit,
+    viewModel: RewardsViewModel
 ) {
     var template by remember { mutableStateOf<HabitTemplate?>(null) }
     var category by remember { mutableStateOf<Category?>(null) }
     var isLoading by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(habit.template) {
         if (template == null && habit.template != null) {
@@ -486,10 +497,12 @@ fun HabitCard(
                     Spacer(modifier = Modifier.weight(1f))
 
                     Checkbox(
-                        modifier = Modifier
-                            .size(32.dp),
-                        checked = habit.checked,
-                        onCheckedChange = { /* TODO CHANGE CHECKED STATUS */ }
+                        checked = habit.completed,
+                        onCheckedChange = { isChecked ->
+                            coroutineScope.launch {
+                                viewModel.toggleHabitCompleted(habit, isChecked)
+                            }
+                        }
                     )
                 }
             }
@@ -501,7 +514,6 @@ fun HabitCard(
 fun CategoryCard(category: Category, language: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )

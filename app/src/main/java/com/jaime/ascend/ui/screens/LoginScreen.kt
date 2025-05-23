@@ -1,11 +1,14 @@
 package com.jaime.ascend.ui.screens
 
 import AuthViewModel
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,10 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -43,6 +49,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
     var password by remember { mutableStateOf(TextFieldValue("")) }
     var emailError by remember { mutableStateOf<String?>(null) }
     var formError by remember { mutableStateOf<String?>(null) }
+    val ctx: Context = LocalContext.current
 
     fun validateEmail() {
         emailError = when {
@@ -128,6 +135,10 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                 },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Email,
+                                    imeAction = ImeAction.Next
+                                ),
                                 textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground),
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -153,6 +164,33 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                 },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Password,
+                                    imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        formError = null
+                                        validateEmail()
+
+                                        if (emailError == null) {
+                                            viewModel.signIn(email.text, password.text) { success ->
+                                                if (success) {
+                                                    navController.navigate(route = AppScreens.HomeScreen.route) {
+                                                        popUpTo(AppScreens.LoginScreen.route) {
+                                                            inclusive = true
+                                                        }
+                                                    }
+                                                } else if (password.text.isEmpty() || email.text.isEmpty()) {
+                                                    formError = emptyFieldsMessage
+                                                } else {
+                                                    formError = loginErrorMessage
+                                                    Log.e("AuthRepository", "Failed login")
+                                                }
+                                            }
+                                        }
+                                    }
+                                ),
                                 textStyle = TextStyle(color = MaterialTheme.colorScheme.primary),
                                 visualTransformation = PasswordVisualTransformation(),
                                 colors = OutlinedTextFieldDefaults.colors(
@@ -163,7 +201,21 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
 
                             Spacer(modifier = Modifier.height(5.dp))
 
-                            TextButton(onClick = { /*TODO*/ }) {
+                            TextButton(onClick = {
+                                if (email.text.isBlank()) {
+                                    formError = ctx.getString(R.string.recover_email)
+                                } else if (emailError != null) {
+                                    formError = ctx.getString(R.string.correct_email_format)
+                                } else {
+                                    viewModel.sendPasswordResetEmail(email.text) { success ->
+                                        if (success) {
+                                            formError = ctx.getString(R.string.recovery_email_send)
+                                        } else {
+                                            formError = ctx.getString(R.string.recovery_email_error)
+                                        }
+                                    }
+                                }
+                            }) {
                                 Text(
                                     stringResource(id = R.string.forgot_password),
                                     color = MaterialTheme.colorScheme.tertiary,
@@ -182,7 +234,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
                                         viewModel.signIn(email.text, password.text) { success ->
                                             if (success) {
                                                 navController.navigate(route = AppScreens.HomeScreen.route) {
-                                                    popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
+                                                    popUpTo(AppScreens.LoginScreen.route) {
+                                                        inclusive = true
+                                                    }
                                                 }
                                             } else if (password.text.isEmpty() || email.text.isEmpty()) {
                                                 formError = emptyFieldsMessage

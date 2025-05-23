@@ -38,65 +38,37 @@ class AuthRepository {
                 val user = firebaseAuth.currentUser
                 val uid = user?.uid ?: ""
                 val userDocRef = firestore.collection("users").document(uid)
+
+                // Función auxiliar para crear categorías con la estructura correcta
+                fun createCategory(initialExp: Int = 0): Map<String, Any> {
+                    return mapOf(
+                        "currentExp" to initialExp,
+                        "level" to 1,
+                        "neededExp" to 150,
+                    )
+                }
+
                 val userData = mapOf(
                     "username" to username,
                     "coins" to 0,
-                    "maxLife" to 100,
                     "currentLife" to 100,
+                    "maxLife" to 100,
                     "friends" to emptyList<String>(),
                     "ghabits" to emptyList<String>(),
                     "bhabits" to emptyList<String>(),
+                    "profileImageUrl" to "",
                     "categories" to mapOf(
-                        "mental_health" to mutableMapOf<String, Any>(
-                            "level" to 1,
-                            "currentExp" to 0,
-                            "neededExp" to 150,
-                            "nextLevelExp" to calculateNextLevelExp(0)
-                        ),
-                        "physic_health" to mutableMapOf<String, Any>(
-                            "level" to 1,
-                            "currentExp" to 0,
-                            "neededExp" to 150,
-                            "nextLevelExp" to calculateNextLevelExp(0)
-                        ),
-                        "finances" to mutableMapOf<String, Any>(
-                            "level" to 1,
-                            "currentExp" to 0,
-                            "neededExp" to 150,
-                            "nextLevelExp" to calculateNextLevelExp(0)
-                        ),
-                        "family" to mutableMapOf<String, Any>(
-                            "level" to 1,
-                            "currentExp" to 0,
-                            "neededExp" to 150,
-                            "nextLevelExp" to calculateNextLevelExp(0)
-                        ),
-                        "couple" to mutableMapOf<String, Any>(
-                            "level" to 1,
-                            "currentExp" to 0,
-                            "neededExp" to 150,
-                            "nextLevelExp" to calculateNextLevelExp(0)
-                        ),
-                        "social" to mutableMapOf<String, Any>(
-                            "level" to 1,
-                            "currentExp" to 0,
-                            "neededExp" to 150,
-                            "nextLevelExp" to calculateNextLevelExp(0)
-                        ),
-                        "career_studies" to mutableMapOf<String, Any>(
-                            "level" to 1,
-                            "currentExp" to 0,
-                            "neededExp" to 150,
-                            "nextLevelExp" to calculateNextLevelExp(0)
-                        ),
-                        "self_care" to mutableMapOf<String, Any>(
-                            "level" to 1,
-                            "currentExp" to 0,
-                            "neededExp" to 150,
-                            "nextLevelExp" to calculateNextLevelExp(0)
-                        )
-                    )
+                        "career_studies" to createCategory(),
+                        "couple" to createCategory(),
+                        "family" to createCategory(),
+                        "finances" to createCategory(),
+                        "mental_health" to createCategory(),
+                        "physic_health" to createCategory(),
+                        "self_care" to createCategory(),
+                        "social" to createCategory()
+                    ),
                 )
+
                 userDocRef.set(userData).addOnCompleteListener { userDocTask ->
                     callback(userDocTask.isSuccessful)
                 }
@@ -114,14 +86,5 @@ class AuthRepository {
                 }
             }
         }
-    }
-
-    private fun calculateNextLevelExp(currentExp: Int): Int {
-        val level = getLevelFromExp(currentExp)
-        return if (level < 10) currentExp + (150 * level) else currentExp
-    }
-
-    private fun getLevelFromExp(exp: Int): Int {
-        return exp / 150 + 1
     }
 }

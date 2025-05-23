@@ -21,6 +21,13 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    fun sendPasswordResetEmail(email: String, onComplete: (Boolean) -> Unit) {
+        Firebase.auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                onComplete(task.isSuccessful)
+            }
+    }
+
     fun signIn(email: String, password: String, callback: (Boolean) -> Unit) {
         if (email.isEmpty() || password.isEmpty()) {
             callback(false)
