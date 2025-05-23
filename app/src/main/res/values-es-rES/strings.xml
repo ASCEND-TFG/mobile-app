@@ -99,4 +99,6 @@
     <string name="all_categories">Tus Categorías</string>
     <string name="level">Nivel %d</string>
     <string name="categories">Categorías</string>
+    <string name="no_improved_categories">Todavía no has mejorado esta semana. ¡Empieza ahora!</string>
+    <string name="radar_chart_title">Resumen del Equilibrio de tu Vida</string>
 </resources>

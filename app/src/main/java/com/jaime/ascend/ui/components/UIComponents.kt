@@ -48,18 +48,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.Typeface
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.github.mikephil.charting.charts.RadarChart
+import com.github.mikephil.charting.data.RadarData
+import com.github.mikephil.charting.data.RadarDataSet
+import com.github.mikephil.charting.data.RadarEntry
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.utils.ColorTemplate
 import com.jaime.ascend.R
 import com.jaime.ascend.data.models.Category
 import com.jaime.ascend.data.models.GoodHabit
@@ -490,38 +498,13 @@ fun HabitCard(
 }
 
 @Composable
-fun ImprovedCategoryCard(category: Category, language: String) {
-    Card(
-        modifier = Modifier.width(120.dp),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = category.name[language] ?: category.id,
-                style = MaterialTheme.typography.labelMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                text = "Level ${category.level}",
-                style = MaterialTheme.typography.labelSmall
-            )
-        }
-    }
-}
-
-@Composable
 fun CategoryCard(category: Category, language: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column(
             modifier = Modifier.padding(12.dp)
@@ -574,4 +557,73 @@ fun CategoryCard(category: Category, language: String) {
             }
         }
     }
+}
+
+@Composable
+fun RadarChartView(
+    categories: Map<String, Category>,
+    modifier: Modifier = Modifier
+) {
+    val isDarkTheme = isSystemInDarkTheme()
+    var radarTextColor: Color = if (isDarkTheme) Color.White else Color.Black
+    val webColor = Color.LightGray.copy(alpha = 0.3f)
+
+    AndroidView(
+        factory = { context ->
+            RadarChart(context).apply {
+                setBackgroundColor(Color.Transparent.toArgb())
+                description.isEnabled = false
+                legend.isEnabled = false
+                isRotationEnabled = false
+                setTouchEnabled(false)
+                isClickable = false
+                webLineWidth = 1f
+                webAlpha = 100
+                webLineWidthInner = 1f
+                webColorInner = webColor.toArgb()
+
+                yAxis.apply {
+                    textColor = radarTextColor.toArgb()
+                    axisMinimum = 0f
+                    axisMaximum = 5f
+                    setDrawLabels(false)
+                    setDrawAxisLine(false)
+                    setDrawGridLines(false)
+                }
+
+                xAxis.apply {
+                    textColor = radarTextColor.toArgb()
+                    textSize = 12f
+                    xOffset = 0f
+                    yOffset = 0f
+                }
+            }
+        },
+        update = { radarChart ->
+            val entries = categories.values.map {
+                RadarEntry(it.level.toFloat().coerceAtLeast(0.1f))
+            }
+
+            val dataSet = RadarDataSet(entries, "").apply {
+                color = Color.LightGray.toArgb()
+                fillColor = Color.LightGray.copy(alpha = 0.5f).toArgb()
+                setDrawFilled(true)
+                fillAlpha = 80
+                lineWidth = 2f
+                isDrawHighlightCircleEnabled = false
+                setDrawValues(false)
+            }
+
+            radarChart.data = RadarData(dataSet).apply {
+                setValueTextSize(12f)
+                setValueTextColor(radarTextColor.toArgb())
+            }
+
+            radarChart.xAxis.valueFormatter = IndexAxisValueFormatter(
+                categories.values.map { it.getName(Locale.getDefault()) }.toList()
+            )
+            radarChart.invalidate()
+        },
+        modifier = modifier
+    )
 }

@@ -1,18 +1,17 @@
 package com.jaime.ascend.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -38,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -51,12 +49,11 @@ import com.jaime.ascend.data.models.Category
 import com.jaime.ascend.ui.components.ActionBarProfileScreen
 import com.jaime.ascend.ui.components.CategoryCard
 import com.jaime.ascend.ui.components.HealthProgressBar
-import com.jaime.ascend.ui.components.ImprovedCategoryCard
+import com.jaime.ascend.ui.components.RadarChartView
 import com.jaime.ascend.viewmodel.ProfileViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 @Composable
 fun ProfileScreen(
@@ -82,100 +79,101 @@ fun ProfileScreen(
     Scaffold(
         topBar = { ActionBarProfileScreen(navController = navController, modifier = Modifier) },
         content = { innerPadding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .padding(innerPadding)
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Imagen Perfil
-                    AsyncImage(
-                        model = avatarUrl,
-                        contentDescription = stringResource(R.string.avatar_de, username),
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(CircleShape)
-                            .clickable { showAvatarDialog.value = true },
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Column {
-                        HealthProgressBar(
-                            currentLife = viewModel.currentLife.value ?: 0,
-                            maxLife = viewModel.maxLife.value ?: 0,
-                            modifier = Modifier.fillMaxWidth()
+                // Sección de perfil
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AsyncImage(
+                            model = avatarUrl,
+                            contentDescription = stringResource(R.string.avatar_de, username),
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(CircleShape)
+                                .clickable { showAvatarDialog.value = true },
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Paid,
-                                contentDescription = stringResource(R.string.coins),
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onSurface
+                        Spacer(Modifier.width(16.dp))
+                        Column {
+                            HealthProgressBar(
+                                currentLife = viewModel.currentLife.value ?: 0,
+                                maxLife = viewModel.maxLife.value ?: 0,
+                                modifier = Modifier.fillMaxWidth()
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "${viewModel.coins.value ?: 0}",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                            Spacer(Modifier.height(8.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.Paid,
+                                    contentDescription = stringResource(R.string.coins),
+                                    modifier = Modifier.size(24.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    text = "${viewModel.coins.value ?: 0}",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                item { Spacer(Modifier.height(24.dp)) }
 
-                Text(
-                    text = stringResource(R.string.categories),
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        textDecoration = TextDecoration.Underline,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                if (improvedCategories.isNotEmpty()) {
+                // Radar Chart
+                item {
                     Text(
-                        text = stringResource(
-                            R.string.improved_categories,
-                            improvedCategories.size
+                        text = stringResource(R.string.radar_chart_title),
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            textDecoration = TextDecoration.Underline,
+                            fontWeight = FontWeight.Bold
                         ),
-                        style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    LazyRow {
-                        items(improvedCategories) { category ->
-                            ImprovedCategoryCard(
-                                category = category,
-                                language = currentLanguage
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                        }
-                    }
+                    RadarChartView(
+                        categories = categories,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .height(400.dp)
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                // Título de categorías
+                item {
+                    Text(
+                        text = stringResource(R.string.categories),
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            textDecoration = TextDecoration.Underline,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = if (improvedCategories.isEmpty()) {
+                            stringResource(R.string.no_improved_categories)
+                        } else {
+                            stringResource(R.string.improved_categories, improvedCategories.size)
+                        },
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
 
-                // Lista completa de categorías
-                LazyColumn {
-                    items(
-                        items = categories.values.toList(),
-                        key = { it.id }
-                    ) { category ->
-                        CategoryCard(category = category, language = currentLanguage)
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
+                // Lista de categorías
+                items(categories.values.toList()) { category ->
+                    CategoryCard(category = category, language = currentLanguage)
+                    Spacer(Modifier.height(8.dp))
                 }
             }
         }

@@ -76,6 +76,7 @@ dependencies {
     implementation (libs.androidx.runtime.livedata)
     implementation (libs.material3)
     implementation (libs.androidx.foundation.v160)
+    implementation (libs.mpandroidchart) // Para gráficos
 
     //Firebase
     implementation(platform(libs.firebase.bom))
