@@ -2,6 +2,7 @@ package com.jaime.ascend.ui.screens
 
 import AuthViewModel
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,11 +14,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -39,14 +43,17 @@ import com.jaime.ascend.R
 import com.jaime.ascend.ui.components.ActionBarWithBackButton
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
+import com.jaime.ascend.viewmodel.SettingsViewModel
 
 @SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
     val authViewModel: AuthViewModel = viewModel()
+    val settingsViewModel: SettingsViewModel = viewModel()
     val languages = listOf("English", "Español")
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var showDeleteAccountDialog by remember { mutableStateOf(false) }
     var darkModeEnabled by remember { mutableStateOf(false) }
     var notificationsEnabled by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
@@ -98,6 +105,56 @@ fun SettingsScreen(navController: NavController) {
             tonalElevation = 24.dp
         )
     }
+
+    if (showDeleteAccountDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteAccountDialog = false },
+            title = {
+                Text(
+                    text = stringResource(R.string.delete_account_button),
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.delete_account_confirmation),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        settingsViewModel.deleteUserAccount(
+                            onSuccess = {
+                                authViewModel.signOut()
+                                navController.navigate(AppScreens.LoginScreen.route) {
+                                    popUpTo(0)
+                                }
+                            },
+                            onFailure = { exception ->
+                                Log.e("SettingsScreen", "Error al eliminar cuenta", exception)
+                            }
+                        )
+                        showDeleteAccountDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    )
+                ) {
+                    Text(stringResource(R.string.delete_account_button))
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = { showDeleteAccountDialog = false }
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
 
     AppTheme {
         Scaffold(
@@ -195,7 +252,7 @@ fun SettingsScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
-                        onClick = { /* TODO: Implement account deletion */ },
+                        onClick = { showDeleteAccountDialog = true },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),

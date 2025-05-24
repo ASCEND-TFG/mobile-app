@@ -100,4 +100,5 @@
     <string name="categories">Categories</string>
     <string name="no_improved_categories">You haven\'t improved yet this week. Start now!</string>
     <string name="radar_chart_title">Your Life Balance Overview</string>
+    <string name="delete_account_confirmation">Are you sure you want to delete your account permanently? This action cannot be undone.</string>
 </resources>
