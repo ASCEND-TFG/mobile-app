@@ -42,9 +42,9 @@ git clone https://github.com/ASCEND-TFG/mobile-app.git
 
 ## 📈 Project Status
 - ✅ Signup and login
-- 👨‍💻 Habit creation and tracking
-- ⬜ Relapse control
-- ⬜ Statistics and gamification
+- ✅ Habit creation and tracking
+- 👨‍💻 Relapse control
+- 👨‍💻 Statistics and gamification
 - ⬜ Public web + admin panel
 
 ## 📬 Contact
