@@ -37,7 +37,7 @@ import com.jaime.ascend.data.factory.GoodHabitsViewModelFactory
 import com.jaime.ascend.data.models.Category
 import com.jaime.ascend.data.models.HabitTemplate
 import com.jaime.ascend.data.repository.CategoryRepository
-import com.jaime.ascend.data.repository.HabitRepository
+import com.jaime.ascend.data.repository.GoodHabitRepository
 import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.ui.components.ActionBarWithBackButton
 import com.jaime.ascend.ui.navigation.AppScreens
@@ -50,16 +50,14 @@ import java.util.Locale
 fun AddNewGoodHabitScreen(
     navController: NavController,
     categoryRepository: CategoryRepository,
-    habitRepository: HabitRepository,
+    habitRepository: GoodHabitRepository,
     templateRepository: TemplateRepository,
-    auth: FirebaseAuth,
 ) {
     val viewModel: GoodHabitsViewModel = viewModel(
         factory = GoodHabitsViewModelFactory(
             categoryRepository,
             habitRepository,
             templateRepository,
-            auth
         )
     )
     val categories by viewModel.categories

@@ -28,7 +28,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.jaime.ascend.data.repository.CategoryRepository
-import com.jaime.ascend.data.repository.HabitRepository
+import com.jaime.ascend.data.repository.GoodHabitRepository
 import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.ui.components.BottomNavigation
 import com.jaime.ascend.ui.navigation.AppScreens
@@ -60,7 +60,7 @@ fun MainScreenNavHost() {
     val startDestination = AppScreens.SplashScreen.route
     val firestore = FirebaseFirestore.getInstance()
     val categoryRepository = CategoryRepository(firestore)
-    val habitRepository = HabitRepository(firestore)
+    val habitRepository = GoodHabitRepository(firestore, auth)
     val templateRepository = TemplateRepository(firestore)
 
     LaunchedEffect(Unit) {
@@ -145,12 +145,21 @@ fun MainScreenNavHost() {
                             if (currentUser != null) GoodHabitsScreen(navController)
                         }
 
-                        /*composable(route = AppScreens.BadHabitsScreen.route) {
+                        composable(route = AppScreens.BadHabitsScreen.route) {
                             if (currentUser != null) BadHabitsScreen(navController)
-                        }*/
+                        }
 
                         composable(route = AppScreens.AddNewGoodHabitScreen.route) {
                             AddNewGoodHabitScreen(
+                                navController = navController,
+                                categoryRepository = categoryRepository,
+                                habitRepository = habitRepository,
+                                templateRepository = templateRepository
+                            )
+                        }
+
+                        composable(route = AppScreens.AddNewBadHabitScreen.route) {
+                            AddNewBadHabitScreen(
                                 navController = navController,
                                 categoryRepository = categoryRepository,
                                 habitRepository = habitRepository,
@@ -177,6 +186,23 @@ fun MainScreenNavHost() {
                         }
 
                         composable(
+                            route = AppScreens.AddingBadHabitScreen.route,
+                            arguments = listOf(
+                                navArgument("categoryId") { type = NavType.StringType },
+                                navArgument("templateId") { type = NavType.StringType },
+                            )
+                        ) { backStackEntry ->
+                            Log.i("TAG", "MainScreenNavHost: ${backStackEntry.arguments}")
+                            val templateId =
+                                backStackEntry.arguments?.getString("templateId") ?: ""
+
+                            AddingBadHabitScreen(
+                                navController = navController,
+                                templateId = templateId
+                            )
+                        }
+
+                        composable(
                             route = AppScreens.HabitDetailScreen.route,
                             arguments = listOf(navArgument("habitId") { type = NavType.StringType })
                         ) { backStackEntry ->
@@ -187,7 +213,6 @@ fun MainScreenNavHost() {
                             )
                         }
 
-                        // In your navigation setup (probably in your MainActivity or NavGraph)
                         composable(
                             route = "edit_habit/{habitId}",
                             arguments = listOf(navArgument("habitId") { type = NavType.StringType })

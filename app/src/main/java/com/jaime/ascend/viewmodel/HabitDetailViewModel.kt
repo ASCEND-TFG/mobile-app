@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.jaime.ascend.data.models.Difficulty
 import com.jaime.ascend.data.models.GoodHabit
+import com.jaime.ascend.utils.Difficulty
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,6 +46,7 @@ class HabitDetailViewModel(habitId: String) : ViewModel() {
                     "difficulty" to difficulty.name,
                     "coinReward" to difficulty.coinValue,
                     "xpReward" to difficulty.xpValue,
+                    "lifeLoss" to difficulty.lifeLoss
                 )
 
                 if (reminderTime != null) {
@@ -64,7 +65,8 @@ class HabitDetailViewModel(habitId: String) : ViewModel() {
                     difficulty = difficulty,
                     coinReward = difficulty.coinValue,
                     xpReward = difficulty.xpValue,
-                    reminderTime = reminderTime
+                    reminderTime = reminderTime,
+
                 )
             } catch (e: Exception) {
                 _error.value = "Error updating habit: ${e.localizedMessage}"

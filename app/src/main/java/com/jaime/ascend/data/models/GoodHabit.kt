@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.annotation.StringRes
 import com.google.firebase.firestore.DocumentReference
 import com.jaime.ascend.R
+import com.jaime.ascend.utils.Difficulty
 import kotlinx.coroutines.tasks.await
 import java.util.*
 
@@ -67,15 +68,4 @@ data class GoodHabit(
             "reminderTime" to reminderTime!!,
         )
     }
-}
-
-enum class Difficulty(
-    val xpValue: Int,
-    val coinValue: Int,
-    val difficultyName: String,
-    @StringRes val labelRes: Int,
-) {
-    EASY(xpValue = 30, coinValue = 5, difficultyName = "EASY", labelRes = R.string.easy),
-    MEDIUM(xpValue = 70, coinValue = 15, difficultyName = "MEDIUM", labelRes = R.string.medium),
-    HARD(xpValue = 150, coinValue = 30, difficultyName = "HARD", labelRes = R.string.hard)
 }

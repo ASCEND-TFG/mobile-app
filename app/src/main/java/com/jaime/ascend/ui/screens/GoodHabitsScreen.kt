@@ -15,9 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,14 +36,14 @@ import com.jaime.ascend.R
 import com.jaime.ascend.data.factory.GoodHabitsViewModelFactory
 import com.jaime.ascend.data.factory.RewardsViewModelFactory
 import com.jaime.ascend.data.repository.CategoryRepository
-import com.jaime.ascend.data.repository.HabitRepository
+import com.jaime.ascend.data.repository.GoodHabitRepository
 import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.ui.components.BlackButton
 import com.jaime.ascend.ui.components.HabitCard
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
-import com.jaime.ascend.viewmodel.RewardsViewModel
 import com.jaime.ascend.viewmodel.GoodHabitsViewModel
+import com.jaime.ascend.viewmodel.RewardsViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,8 +57,7 @@ fun GoodHabitsScreen(
     val viewModel: GoodHabitsViewModel = viewModel(
         factory = GoodHabitsViewModelFactory(
             categoryRepository = CategoryRepository(firestore),
-            habitRepository = HabitRepository(firestore),
-            auth = auth,
+            habitRepository = GoodHabitRepository(firestore, auth),
             templateRepository = TemplateRepository(firestore)
         )
     )
@@ -72,13 +69,11 @@ fun GoodHabitsScreen(
         )
     )
 
-
     val configuration = LocalConfiguration.current
     val currentLocale by rememberUpdatedState(configuration.locales[0])
     val context = LocalContext.current
 
     val habits by viewModel.habits
-    val templates by viewModel.templates
     val isLoading by viewModel.isLoading
     val error by viewModel.error
 
@@ -141,21 +136,12 @@ fun GoodHabitsScreen(
             } else {
                 LazyColumn {
                     items(habits) { habit ->
-                        /*val resolvedHabit = remember(habit.id) {
-                            derivedStateOf {
-                                LaunchedEffect(Unit) {
-                                    habit.resolveTemplate()
-                                    habit.resolverCategory()
-                                }
-                            }
-                        }.value*/
-
                         HabitCard(
                             habit = habit,
                             onHabitClick = { clickedHabit ->
                                 navController.navigate("habit_details/${clickedHabit.id}")
                             },
-                            viewModel = rewardsViewModel // Pasa el ViewModel aquí
+                            viewModel = rewardsViewModel
                         )
                     }
 

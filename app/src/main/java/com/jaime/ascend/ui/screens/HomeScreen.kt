@@ -106,7 +106,7 @@ fun HomeScreen(navController: NavController) {
                 ) { page ->
                     when (page) {
                         0 -> GoodHabitsScreen(navController)
-                        1 -> BadHabitsScreen()
+                        1 -> BadHabitsScreen(navController)
                     }
                 }
             }

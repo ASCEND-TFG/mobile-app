@@ -11,13 +11,30 @@ class RewardsViewModelFactory(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
     private val habitsViewModel: GoodHabitsViewModel
+    // ghrepo
+    // bhrepo
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RewardsViewModel::class.java)) {
-            return RewardsViewModel(auth, firestore, habitsViewModel) as T
+            return RewardsViewModel(auth, firestore) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
+
+
+
+
+
+    // todo
+    /*
+    * - Arreglar las cosas que están en los viewmodels que deberían estar en el repository
+    * - Implementar los BadHabits diferencia con los otros, tienen un contador y
+    *   en la dificultad a parte de calcular xp y coins, tmb tiene lifeloss
+    *
+    *   Arreglar los vm para que no sean tan largos y para el rewardsvmF
+    *   RVMF:
+    *       -
+    * */
 }

@@ -1,73 +1,22 @@
 package com.jaime.ascend.ui.screens
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.jaime.ascend.R
 import com.jaime.ascend.data.factory.GoodHabitsViewModelFactory
 import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.GoodHabitRepository
 import com.jaime.ascend.data.repository.TemplateRepository
-import com.jaime.ascend.ui.components.ActionBarWithBackButton
-import com.jaime.ascend.ui.components.BlackButton
-import com.jaime.ascend.ui.components.DayOfWeekSelector
-import com.jaime.ascend.ui.navigation.AppScreens
-import com.jaime.ascend.utils.Difficulty
 import com.jaime.ascend.viewmodel.GoodHabitsViewModel
-import java.util.Locale
 
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddingGoodHabitScreen(
+fun AddingBadHabitScreen(
     navController: NavController,
     templateId: String,
     viewModel: GoodHabitsViewModel = viewModel(
@@ -77,7 +26,7 @@ fun AddingGoodHabitScreen(
             templateRepository = TemplateRepository(FirebaseFirestore.getInstance())
         )
     ),
-) {
+) {/*
     val template by viewModel.templateToAdd
     val isLoading by viewModel.isLoading
     var expanded by remember { mutableStateOf(false) }
@@ -96,7 +45,7 @@ fun AddingGoodHabitScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             ActionBarWithBackButton(
-                screenName = stringResource(id = R.string.add_new_good_habit_title),
+                screenName = stringResource(id = R.string.add_new_bad_habit_title),
                 navController = navController,
                 modifier = Modifier
             )
@@ -258,7 +207,7 @@ fun AddingGoodHabitScreen(
                         BlackButton(
                             onClick = {
                                 if (selectedDays.isNotEmpty()) {
-                                    viewModel.createGoodHabit (
+                                    viewModel.createHabit(
                                         templateId = templateId,
                                         days = selectedDays,
                                         difficulty = selectedDifficulty,
@@ -321,5 +270,5 @@ fun AddingGoodHabitScreen(
                 )
             }
         }
-    }
+    }*/
 }

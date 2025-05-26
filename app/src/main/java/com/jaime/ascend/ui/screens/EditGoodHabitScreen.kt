@@ -53,12 +53,12 @@ import androidx.navigation.NavController
 import com.jaime.ascend.R
 import com.jaime.ascend.data.factory.HabitDetailViewModelFactory
 import com.jaime.ascend.data.models.Category
-import com.jaime.ascend.data.models.Difficulty
 import com.jaime.ascend.data.models.GoodHabit
 import com.jaime.ascend.data.models.HabitTemplate
 import com.jaime.ascend.ui.components.ActionBarWithBackButton
 import com.jaime.ascend.ui.components.BlackButton
 import com.jaime.ascend.ui.components.DayOfWeekSelector
+import com.jaime.ascend.utils.Difficulty
 import com.jaime.ascend.viewmodel.HabitDetailViewModel
 import kotlinx.coroutines.tasks.await
 import java.util.Locale

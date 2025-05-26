@@ -8,7 +8,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -22,7 +21,6 @@ import kotlin.math.max
 class RewardsViewModel(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
-    private val habitsViewModel: GoodHabitsViewModel
 ) : ViewModel() {
 
     var userCategories by mutableStateOf<Map<String, Map<String, Any>>>(emptyMap())
@@ -245,7 +243,7 @@ class RewardsViewModel(
                 userRef.update("lastDailyReset", FieldValue.serverTimestamp()).await()
             }
 
-            if (now.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY &&
+            if (now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY &&
                 (lastWeeklyReset == null || !isSameWeek(lastWeeklyReset, now.timeInMillis))) {
                 executeWeeklyReset()
             }

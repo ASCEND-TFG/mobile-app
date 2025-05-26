@@ -5,21 +5,25 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.jaime.ascend.data.models.BadHabit
 import com.jaime.ascend.data.models.Category
-import com.jaime.ascend.data.models.GoodHabit
 import com.jaime.ascend.data.models.HabitTemplate
+import com.jaime.ascend.data.repository.BadHabitRepository
 import com.jaime.ascend.data.repository.CategoryRepository
-import com.jaime.ascend.data.repository.GoodHabitRepository
 import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.utils.Difficulty
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
-class GoodHabitsViewModel(
+class BadHabitsViewModel(
     private val categoryRepository: CategoryRepository,
-    private val habitRepository: GoodHabitRepository,
+    private val habitRepository: BadHabitRepository,
     private val templateRepository: TemplateRepository,
+    private val auth: FirebaseAuth,
 ) : ViewModel() {
-    private val _habits = mutableStateOf<List<GoodHabit>>(emptyList())
+    private val _habits = mutableStateOf<List<BadHabit>>(emptyList())
     private val _templates = mutableStateOf<List<HabitTemplate>>(emptyList())
     private val _isLoading = mutableStateOf(false)
     private val _error = mutableStateOf<String?>(null)
@@ -27,7 +31,7 @@ class GoodHabitsViewModel(
     private val _selectedCategory = mutableStateOf<Category?>(null)
     private val _templateToAdd = mutableStateOf<HabitTemplate?>(null)
 
-    val habits: State<List<GoodHabit>> = _habits
+    val habits: State<List<BadHabit>> = _habits
     val templates: State<List<HabitTemplate>> = _templates
     val isLoading: State<Boolean> = _isLoading
     val error: State<String?> = _error
@@ -35,22 +39,37 @@ class GoodHabitsViewModel(
     val selectedCategory: State<Category?> = _selectedCategory
     val templateToAdd: State<HabitTemplate?> = _templateToAdd
 
-    fun createGoodHabit(
+    fun createBadHabit(
         templateId: String,
-        days: List<Int>,
         difficulty: Difficulty,
-        reminderTime: String? = null,
         onComplete: (Result<Unit>) -> Unit
     ) {
         viewModelScope.launch {
             _isLoading.value = true
-
             try {
-                if (habitRepository.createGoodHabit(templateId, days, difficulty, reminderTime)) {
-                    onComplete(Result.success(Unit))
-                }
+                val template = templateRepository.getTemplateById(templateId)
+                val habitData = hashMapOf(
+                    "category" to template?.category,
+                    "checked" to false,
+                    "coinReward" to difficulty.coinValue,
+                    "createdAt" to com.google.firebase.Timestamp.now(),
+                    "difficulty" to difficulty.name,
+                    "template" to FirebaseFirestore.getInstance()
+                        .document("bhabit_templates/$templateId"),
+                    "userId" to (auth.currentUser?.uid!!),
+                    "xpReward" to difficulty.xpValue,
+                    "completed" to false,
+                    "lifeLoss" to difficulty.lifeLoss
+                )
+
+                FirebaseFirestore.getInstance()
+                    .collection("bhabits")
+                    .add(habitData)
+                    .await()
+
+                onComplete(Result.success(Unit))
             } catch (e: Exception) {
-                Log.e("GoodHabitsVM", "Error creating habit", e)
+                Log.e("BadHabitsVM", "Error creating habit", e)
                 onComplete(Result.failure(e))
             } finally {
                 _isLoading.value = false
@@ -58,11 +77,10 @@ class GoodHabitsViewModel(
         }
     }
 
-    // Load habits WITHOUT resolving templates upfront
     fun loadHabits(userId: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            habitRepository.getUserGoodHabitsRealTime(userId)
+            habitRepository.getUserBadHabitsRealTime(userId)
                 .collect { habits ->
                     _habits.value = habits
                     _isLoading.value = false
@@ -90,21 +108,33 @@ class GoodHabitsViewModel(
         }
     }
 
-
     fun selectCategory(category: Category?) {
         _selectedCategory.value = category
         _isLoading.value = true
 
-        // Load templates for the selected category
         viewModelScope.launch {
             try {
                 _templates.value = templateRepository.getTemplatesByCategory(category?.id!!)
             } catch (e: Exception) {
-                Log.e("TAG", "selectCategory: $e")
+                Log.e("BadHabitsVM", "Error loading templates", e)
                 _error.value = e.localizedMessage
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
 
+    fun toggleHabitCompleted(habit: BadHabit, isCompleted: Boolean) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val updatedHabit = habit.copy(completed = isCompleted)
+                habitRepository.updateBadHabit(updatedHabit)
+            } catch (e: Exception) {
+                Log.e("BadHabitsVM", "Error updating habit", e)
+                _error.value = e.localizedMessage
+            } finally {
+                _isLoading.value = false
             }
         }
     }

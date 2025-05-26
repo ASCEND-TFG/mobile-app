@@ -58,6 +58,12 @@ sealed class AppScreens(
         icon = Icons.Filled.DisabledByDefault
     )
 
+    object AddNewBadHabitScreen : AppScreens(
+        route = "addNewBadHabit",
+        title = R.string.add_new_bad_habit_title,
+        icon = Icons.Filled.DisabledByDefault
+    )
+
     object AddingGoodHabitScreen : AppScreens(
         route = "addingGoodHabit/{categoryId}/{templateId}",
         arguments = listOf(
@@ -65,6 +71,16 @@ sealed class AppScreens(
             navArgument("templateId") { type = NavType.StringType },
         ),
         title = R.string.add_new_good_habit_title,
+        icon = Icons.Filled.DisabledByDefault
+    )
+
+    object AddingBadHabitScreen : AppScreens(
+        route = "addingBadHabit/{categoryId}/{templateId}",
+        arguments = listOf(
+            navArgument("categoryId") { type = NavType.StringType },
+            navArgument("templateId") { type = NavType.StringType },
+        ),
+        title = R.string.add_new_bad_habit_title,
         icon = Icons.Filled.DisabledByDefault
     )
 
