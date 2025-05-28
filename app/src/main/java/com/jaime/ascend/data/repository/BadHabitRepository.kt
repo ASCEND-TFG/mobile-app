@@ -1,18 +1,24 @@
 package com.jaime.ascend.data.repository
 
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.jaime.ascend.data.models.BadHabit
+import com.jaime.ascend.utils.Difficulty
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
-class BadHabitRepository(private val firestore: FirebaseFirestore) {
+class BadHabitRepository(
+    private val firestore: FirebaseFirestore,
+    private val auth: FirebaseAuth
+) {
     private val habitsCollection = firestore.collection("bhabits")
+    private val templateRepository = TemplateRepository(firestore)
 
     // Current active listeners to avoid duplicates
     private val activeListeners = mutableMapOf<String, ListenerRegistration>()
@@ -49,14 +55,35 @@ class BadHabitRepository(private val firestore: FirebaseFirestore) {
         awaitClose { activeListeners.remove(listenerKey)?.remove() }
     }
 
-    suspend fun createBadHabit(habit: BadHabit): String {
-        return try {
-            val docRef = habitsCollection.add(habit.toMap()).await()
-            docRef.id
-        } catch (e: Exception) {
-            logError("BADHABIT_CREATE", "Error creating bad habit", e)
-            throw e
-        }
+    suspend fun createBadHabit(
+        templateId: String,
+        difficulty: Difficulty,
+    ): Boolean {
+        var success = false
+
+        val template = templateRepository.getBadHabitTemplateById(templateId)
+        val habitData = hashMapOf(
+            "category" to template?.category,
+            "coinReward" to difficulty.coinValue,
+            "createdAt" to com.google.firebase.Timestamp.now(),
+            "difficulty" to difficulty.name,
+            "template" to FirebaseFirestore.getInstance()
+                .document("bhabit_templates/$templateId"),
+            "userId" to (auth.currentUser?.uid!!),
+            "xpReward" to difficulty.xpValue,
+            "completed" to false,
+            "lifeLoss" to difficulty.lifeLoss,
+            "lastRelapse" to com.google.firebase.Timestamp.now(),
+            "streak" to null
+        )
+
+        FirebaseFirestore.getInstance()
+            .collection("bhabits")
+            .add(habitData)
+            .await()
+
+        success = true
+        return success
     }
 
     suspend fun updateBadHabit(habit: BadHabit) {

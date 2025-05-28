@@ -31,10 +31,9 @@ class GoodHabitRepository(
     ): Boolean {
         var success = false
 
-        val template = templateRepository.getTemplateById(templateId)
+        val template = templateRepository.getGoodHabitTemplateById(templateId)
         val habitData = hashMapOf(
             "category" to template?.category,
-            "checked" to false,
             "coinReward" to difficulty.coinValue,
             "createdAt" to com.google.firebase.Timestamp.now(),
             "days" to days,

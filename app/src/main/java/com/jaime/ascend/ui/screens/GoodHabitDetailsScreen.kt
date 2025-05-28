@@ -14,13 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -53,7 +51,7 @@ import com.jaime.ascend.data.models.GoodHabit
 import com.jaime.ascend.data.models.HabitTemplate
 import com.jaime.ascend.ui.components.ActionBarWithBackButton
 import com.jaime.ascend.ui.components.BlackButton
-import com.jaime.ascend.ui.navigation.AppScreens
+import com.jaime.ascend.ui.components.RewardSection
 import com.jaime.ascend.viewmodel.HabitDetailViewModel
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
@@ -61,14 +59,14 @@ import java.util.Locale
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HabitDetailScreen(
+fun GoodHabitDetailScreen(
     navController: NavController,
     habitId: String,
     viewModel: HabitDetailViewModel = viewModel(
-        factory = HabitDetailViewModelFactory(habitId)
+        factory = HabitDetailViewModelFactory(habitId, true)
     )
 ) {
-    val habit by viewModel.habit.collectAsState()
+    val habit by viewModel.ghabit.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
@@ -83,7 +81,7 @@ fun HabitDetailScreen(
 
     LaunchedEffect(changesSaved) {
         if (changesSaved) {
-            viewModel.loadHabit(habitId)
+            viewModel.loadGoodHabit(habitId)
             navController.currentBackStackEntry?.savedStateHandle?.remove<Boolean>("changesSaved")
         }
     }
@@ -148,7 +146,7 @@ fun HabitDetailScreen(
     if (showDeleteDialog) {
         DeleteConfirmationDialog(
             onConfirm = {
-                viewModel.deleteHabit(habitId)
+                viewModel.deleteGoodHabit(habitId)
                 navController.popBackStack()
             },
             onDismiss = { showDeleteDialog = false }
@@ -282,57 +280,7 @@ private fun DetailSection(
     }
 }
 
-@Composable
-internal fun RewardSection(
-    coinReward: Int,
-    xpReward: Int,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Column {
-            Text(
-                text = stringResource(R.string.coins),
-                style = MaterialTheme.typography.bodyMedium
-            )
 
-            Row(modifier = Modifier) {
-                Text(
-                    text = "+$coinReward",
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-
-                Spacer(modifier = Modifier.width(3.dp))
-
-                Icon(
-                    imageVector = Icons.Filled.Paid,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-
-
-        }
-        Column {
-            Text(
-                text = stringResource(R.string.experience),
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = "+${xpReward} XP",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
-                )
-            )
-        }
-    }
-}
 
 
 @Composable

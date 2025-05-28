@@ -27,11 +27,13 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.jaime.ascend.data.repository.BadHabitRepository
 import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.GoodHabitRepository
 import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.ui.components.BottomNavigation
 import com.jaime.ascend.ui.navigation.AppScreens
+import com.jaime.ascend.ui.navigation.AppScreens.EditBadHabitScreen
 import com.jaime.ascend.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
@@ -60,7 +62,8 @@ fun MainScreenNavHost() {
     val startDestination = AppScreens.SplashScreen.route
     val firestore = FirebaseFirestore.getInstance()
     val categoryRepository = CategoryRepository(firestore)
-    val habitRepository = GoodHabitRepository(firestore, auth)
+    val goodHabitRepository = GoodHabitRepository(firestore, auth)
+    val badHabitRepository = BadHabitRepository(firestore, auth)
     val templateRepository = TemplateRepository(firestore)
 
     LaunchedEffect(Unit) {
@@ -153,7 +156,7 @@ fun MainScreenNavHost() {
                             AddNewGoodHabitScreen(
                                 navController = navController,
                                 categoryRepository = categoryRepository,
-                                habitRepository = habitRepository,
+                                habitRepository = goodHabitRepository,
                                 templateRepository = templateRepository
                             )
                         }
@@ -162,7 +165,7 @@ fun MainScreenNavHost() {
                             AddNewBadHabitScreen(
                                 navController = navController,
                                 categoryRepository = categoryRepository,
-                                habitRepository = habitRepository,
+                                habitRepository = badHabitRepository,
                                 auth = auth,
                                 templateRepository = templateRepository
                             )
@@ -203,11 +206,22 @@ fun MainScreenNavHost() {
                         }
 
                         composable(
-                            route = AppScreens.HabitDetailScreen.route,
+                            route = AppScreens.GoodHabitsDetailScreen.route,
                             arguments = listOf(navArgument("habitId") { type = NavType.StringType })
                         ) { backStackEntry ->
                             val habitId = backStackEntry.arguments?.getString("habitId") ?: ""
-                            HabitDetailScreen(
+                            GoodHabitDetailScreen(
+                                habitId = habitId,
+                                navController = navController
+                            )
+                        }
+
+                        composable(
+                            route = AppScreens.BadHabitsDetailScreen.route,
+                            arguments = listOf(navArgument("habitId") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            val habitId = backStackEntry.arguments?.getString("habitId") ?: ""
+                            BadHabitDetailsScreen(
                                 habitId = habitId,
                                 navController = navController
                             )
@@ -218,7 +232,15 @@ fun MainScreenNavHost() {
                             arguments = listOf(navArgument("habitId") { type = NavType.StringType })
                         ) { backStackEntry ->
                             val habitId = backStackEntry.arguments?.getString("habitId") ?: ""
-                            EditHabitScreen(navController, habitId)
+                            EditGoodHabitScreen(navController, habitId)
+                        }
+
+                        composable(
+                            route = "edit_bhabit/{habitId}",
+                            arguments = listOf(navArgument("habitId") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            val habitId = backStackEntry.arguments?.getString("habitId") ?: ""
+                            EditBadHabitScreen(navController, habitId)
                         }
                     }
                 }

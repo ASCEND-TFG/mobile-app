@@ -3,15 +3,18 @@ package com.jaime.ascend.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.jaime.ascend.ui.navigation.AppScreens
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class SettingsViewModel(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val navController: NavController
 ) : ViewModel() {
 
     fun deleteUserAccount(
@@ -28,7 +31,9 @@ class SettingsViewModel(
                     // 2. Eliminar de Authentication
                     deleteUserFromAuth(currentUser)
 
-                    onSuccess()
+                    onSuccess(
+                        //navController.navigate(AppScreens.LoginScreen.route)
+                    )
                 } else {
                     onFailure(Exception("No hay usuario autenticado"))
                 }

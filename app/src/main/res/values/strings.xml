@@ -52,6 +52,7 @@
     <string name="set_daily_reminder">Set a daily reminder</string>
     <string name="how_many_times_week">How many times per week?</string>
     <string name="habit_motivational_text">This is where it starts. One small habit, one big change.</string>
+    <string name="bad_habit_motivational_text">Every journey needs a starting point. This is yours.</string>
     <string name="create">Create</string>
     <string name="select_difficulty">Select difficulty</string>
     <string name="easy">Easy</string>
@@ -75,6 +76,7 @@
     <string name="reminder">Reminder</string>
     <string name="days_selected">Days</string>
     <string name="rewards">Rewards</string>
+    <string name="passive_rewards">Passive Rewards and Penalties</string>
     <string name="coins">Coins</string>
     <string name="experience">Experience</string>
     <string name="delete">Delete</string>
@@ -101,5 +103,6 @@
     <string name="no_improved_categories">You haven\'t improved yet this week. Start now!</string>
     <string name="radar_chart_title">Your Life Balance Overview</string>
     <string name="delete_account_confirmation">Are you sure you want to delete your account permanently? This action cannot be undone.</string>
-    <string name="add_new_bad_habit_title">Add new bad habit</string>"
+    <string name="add_new_bad_habit_title">Add new bad habit</string>
+    <string name="life_loss">Life loss</string>"
 </resources>

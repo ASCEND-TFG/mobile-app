@@ -1,11 +1,11 @@
 package com.jaime.ascend.data.models
 
 import android.util.Log
-import androidx.annotation.StringRes
 import com.google.firebase.firestore.DocumentReference
-import com.jaime.ascend.R
+import com.google.firebase.firestore.ServerTimestamp
 import com.jaime.ascend.utils.Difficulty
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
 import java.util.*
 
 data class BadHabit(
@@ -17,30 +17,30 @@ data class BadHabit(
     val createdAt: Date = Date(),
     val difficulty: Difficulty = Difficulty.EASY,
     val lifeLoss: Int = 0,
+    @ServerTimestamp
+    val lastRelapse: Date? = Date(),
     val xpReward: Int = 0,
     val userId: String = "",
+    @Transient var currentStreak: String = "0 min"
 ) {
     @Transient var resolvedTemplate: HabitTemplate? = null
     @Transient var resolvedCategory: Category? = null
 
-    suspend fun resolveTemplate(): HabitTemplate? {
-        return if (resolvedTemplate != null) {
-            resolvedTemplate  // Return cached version
-        } else {
-            try {
-                val template = template?.get()?.await()?.toObject(HabitTemplate::class.java)
-                resolvedTemplate = template
-                template
-            } catch (e: Exception) {
-                Log.e("HABIT", "Error resolving template", e)
-                null
-            }
+    fun calculateAndFormatCurrentStreak(): String {
+        val referenceDate = lastRelapse ?: createdAt
+        val diff = System.currentTimeMillis() - referenceDate.time
+        val minutes = (diff / (1000 * 60)).toInt()
+
+        return when {
+            minutes < 60 -> "$minutes min"
+            minutes < 24 * 60 -> "${minutes / 60} h"
+            else -> "${minutes / (24 * 60)} d"
         }
     }
 
     suspend fun resolverCategory(): Category? {
         return if (resolvedCategory != null) {
-            resolvedCategory  // Return cached version
+            resolvedCategory
         } else {
             try {
                 val category = category?.get()?.await()?.toObject(Category::class.java)

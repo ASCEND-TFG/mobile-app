@@ -73,7 +73,7 @@ class GoodHabitsViewModel(
     fun loadTemplate(templateId: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            val template = templateRepository.getTemplateById(templateId)
+            val template = templateRepository.getGoodHabitTemplateById(templateId)
             _templateToAdd.value = template
             _isLoading.value = false
         }
@@ -98,7 +98,7 @@ class GoodHabitsViewModel(
         // Load templates for the selected category
         viewModelScope.launch {
             try {
-                _templates.value = templateRepository.getTemplatesByCategory(category?.id!!)
+                _templates.value = templateRepository.getGoodHabitTemplatesByCategory(category?.id!!)
             } catch (e: Exception) {
                 Log.e("TAG", "selectCategory: $e")
                 _error.value = e.localizedMessage

@@ -1,12 +1,12 @@
 package com.jaime.ascend.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.jaime.ascend.data.models.BadHabit
 import com.jaime.ascend.data.models.Category
 import com.jaime.ascend.data.models.HabitTemplate
@@ -14,14 +14,16 @@ import com.jaime.ascend.data.repository.BadHabitRepository
 import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.utils.Difficulty
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class BadHabitsViewModel(
     private val categoryRepository: CategoryRepository,
     private val habitRepository: BadHabitRepository,
     private val templateRepository: TemplateRepository,
-    private val auth: FirebaseAuth,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
     private val _habits = mutableStateOf<List<BadHabit>>(emptyList())
     private val _templates = mutableStateOf<List<HabitTemplate>>(emptyList())
@@ -47,27 +49,9 @@ class BadHabitsViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val template = templateRepository.getTemplateById(templateId)
-                val habitData = hashMapOf(
-                    "category" to template?.category,
-                    "checked" to false,
-                    "coinReward" to difficulty.coinValue,
-                    "createdAt" to com.google.firebase.Timestamp.now(),
-                    "difficulty" to difficulty.name,
-                    "template" to FirebaseFirestore.getInstance()
-                        .document("bhabit_templates/$templateId"),
-                    "userId" to (auth.currentUser?.uid!!),
-                    "xpReward" to difficulty.xpValue,
-                    "completed" to false,
-                    "lifeLoss" to difficulty.lifeLoss
-                )
-
-                FirebaseFirestore.getInstance()
-                    .collection("bhabits")
-                    .add(habitData)
-                    .await()
-
-                onComplete(Result.success(Unit))
+                if (habitRepository.createBadHabit(templateId, difficulty)) {
+                    onComplete(Result.success(Unit))
+                }
             } catch (e: Exception) {
                 Log.e("BadHabitsVM", "Error creating habit", e)
                 onComplete(Result.failure(e))
@@ -80,7 +64,8 @@ class BadHabitsViewModel(
     fun loadHabits(userId: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            habitRepository.getUserBadHabitsRealTime(userId)
+            habitRepository
+                .getUserBadHabitsRealTime(userId)
                 .collect { habits ->
                     _habits.value = habits
                     _isLoading.value = false
@@ -91,7 +76,7 @@ class BadHabitsViewModel(
     fun loadTemplate(templateId: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            val template = templateRepository.getTemplateById(templateId)
+            val template = templateRepository.getBadHabitTemplateById(templateId)
             _templateToAdd.value = template
             _isLoading.value = false
         }
@@ -114,7 +99,7 @@ class BadHabitsViewModel(
 
         viewModelScope.launch {
             try {
-                _templates.value = templateRepository.getTemplatesByCategory(category?.id!!)
+                _templates.value = templateRepository.getBadHabitTemplatesByCategory(category?.id!!)
             } catch (e: Exception) {
                 Log.e("BadHabitsVM", "Error loading templates", e)
                 _error.value = e.localizedMessage

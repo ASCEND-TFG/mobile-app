@@ -39,7 +39,7 @@ import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.GoodHabitRepository
 import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.ui.components.BlackButton
-import com.jaime.ascend.ui.components.HabitCard
+import com.jaime.ascend.ui.components.GoodHabitCard
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
 import com.jaime.ascend.viewmodel.GoodHabitsViewModel
@@ -65,7 +65,6 @@ fun GoodHabitsScreen(
         factory = RewardsViewModelFactory(
             auth = auth,
             firestore = firestore,
-            habitsViewModel = viewModel
         )
     )
 
@@ -136,10 +135,10 @@ fun GoodHabitsScreen(
             } else {
                 LazyColumn {
                     items(habits) { habit ->
-                        HabitCard(
+                        GoodHabitCard(
                             habit = habit,
                             onHabitClick = { clickedHabit ->
-                                navController.navigate("habit_details/${clickedHabit.id}")
+                                navController.navigate("ghabit_details/${clickedHabit.id}")
                             },
                             viewModel = rewardsViewModel
                         )

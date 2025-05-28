@@ -66,14 +66,14 @@ import java.util.Locale
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditHabitScreen(
+fun EditGoodHabitScreen(
     navController: NavController,
     habitId: String,
     viewModel: HabitDetailViewModel = viewModel(
-        factory = HabitDetailViewModelFactory(habitId)
+        factory = HabitDetailViewModelFactory(habitId, true)
     )
 ) {
-    val habit by viewModel.habit.collectAsState()
+    val habit by viewModel.ghabit.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
@@ -144,7 +144,7 @@ fun EditHabitScreen(
                         )
                     }
                     habit != null && template != null -> {
-                        EditHabitContent(
+                        EditGoodHabitContent(
                             habit = habit!!,
                             template = template!!,
                             selectedDifficulty = selectedDifficulty,
@@ -159,7 +159,7 @@ fun EditHabitScreen(
                             selectedDays = selectedDays,
                             onSelectedDaysChange = { selectedDays = it },
                             onSaveClick = {
-                                viewModel.updateHabit(
+                                viewModel.updateGoodHabit(
                                     habitId = habitId,
                                     days = selectedDays,
                                     difficulty = selectedDifficulty,
@@ -180,7 +180,7 @@ fun EditHabitScreen(
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EditHabitContent(
+private fun EditGoodHabitContent(
     habit: GoodHabit,
     template: HabitTemplate,
     selectedDifficulty: Difficulty,

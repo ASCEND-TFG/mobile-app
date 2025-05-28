@@ -84,8 +84,8 @@ sealed class AppScreens(
         icon = Icons.Filled.DisabledByDefault
     )
 
-    object HabitDetailScreen : AppScreens(
-        route = "habit_details/{habitId}",
+    object GoodHabitsDetailScreen : AppScreens(
+        route = "ghabit_details/{habitId}",
         arguments = listOf(
             navArgument("habitId") { type = NavType.StringType }
         ),
@@ -93,8 +93,26 @@ sealed class AppScreens(
         icon = Icons.Filled.DisabledByDefault
     )
 
-    object EditHabitScreen : AppScreens(
+    object BadHabitsDetailScreen : AppScreens(
+        route = "bhabit_details/{habitId}",
+        arguments = listOf(
+            navArgument("habitId") { type = NavType.StringType }
+        ),
+        title = R.string.habit_details,
+        icon = Icons.Filled.DisabledByDefault
+    )
+
+    object EditGoodHabitScreen : AppScreens(
         route = "edit_habit/{habitId}",
+        arguments = listOf(
+            navArgument("habitId") { type = NavType.StringType }
+        ),
+        title = R.string.edit_habit_title,
+        icon = Icons.Filled.DisabledByDefault
+    )
+
+    object EditBadHabitScreen : AppScreens(
+        route = "edit_bhabit/{habitId}",
         arguments = listOf(
             navArgument("habitId") { type = NavType.StringType }
         ),

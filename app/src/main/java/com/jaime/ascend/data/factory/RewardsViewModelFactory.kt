@@ -10,7 +10,6 @@ import com.jaime.ascend.viewmodel.RewardsViewModel
 class RewardsViewModelFactory(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
-    private val habitsViewModel: GoodHabitsViewModel
     // ghrepo
     // bhrepo
 ) : ViewModelProvider.Factory {

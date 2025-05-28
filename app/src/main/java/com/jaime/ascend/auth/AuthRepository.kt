@@ -53,6 +53,8 @@ class AuthRepository {
                     "coins" to 0,
                     "currentLife" to 100,
                     "maxLife" to 100,
+                    "lastDailyReset" to null,
+                    "lastWeeklyReset" to null,
                     "friends" to emptyList<String>(),
                     "ghabits" to emptyList<String>(),
                     "bhabits" to emptyList<String>(),

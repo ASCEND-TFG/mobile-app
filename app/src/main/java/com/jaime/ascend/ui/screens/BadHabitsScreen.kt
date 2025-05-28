@@ -32,16 +32,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jaime.ascend.R
 import com.jaime.ascend.data.factory.BadHabitsViewModelFactory
-import com.jaime.ascend.data.factory.GoodHabitsViewModelFactory
 import com.jaime.ascend.data.factory.RewardsViewModelFactory
 import com.jaime.ascend.data.repository.BadHabitRepository
 import com.jaime.ascend.data.repository.CategoryRepository
-import com.jaime.ascend.data.repository.GoodHabitRepository
 import com.jaime.ascend.data.repository.TemplateRepository
+import com.jaime.ascend.ui.components.BadHabitCard
 import com.jaime.ascend.ui.components.BlackButton
+import com.jaime.ascend.ui.components.GoodHabitCard
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.viewmodel.BadHabitsViewModel
-import com.jaime.ascend.viewmodel.GoodHabitsViewModel
 import com.jaime.ascend.viewmodel.RewardsViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -56,18 +55,17 @@ fun BadHabitsScreen(
     val viewModel: BadHabitsViewModel = viewModel(
         factory = BadHabitsViewModelFactory(
             categoryRepository = CategoryRepository(firestore),
-            habitRepository = BadHabitRepository(firestore),
+            habitRepository = BadHabitRepository(firestore, auth),
             auth = auth,
             templateRepository = TemplateRepository(firestore)
         )
     )
-    /*val rewardsViewModel: RewardsViewModel = viewModel(
+    val rewardsViewModel: RewardsViewModel = viewModel(
         factory = RewardsViewModelFactory(
             auth = auth,
             firestore = firestore,
-            habitsViewModel = viewModel
         )
-    )*/
+    )
 
     val configuration = LocalConfiguration.current
     val currentLocale by rememberUpdatedState(configuration.locales[0])
@@ -137,13 +135,13 @@ fun BadHabitsScreen(
             } else {
                 LazyColumn {
                     items(habits) { habit ->
-                        /*HabitCard(
+                        BadHabitCard(
                             habit = habit,
                             onHabitClick = { clickedHabit ->
-                                navController.navigate("habit_details/${clickedHabit.id}")
+                                navController.navigate("bhabit_details/${clickedHabit.id}")
                             },
                             viewModel = rewardsViewModel
-                        )*/
+                        )
                     }
 
                     item {

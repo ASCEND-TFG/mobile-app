@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.HeartBroken
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
@@ -73,6 +74,7 @@ import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.jaime.ascend.R
+import com.jaime.ascend.data.models.BadHabit
 import com.jaime.ascend.data.models.Category
 import com.jaime.ascend.data.models.GoodHabit
 import com.jaime.ascend.data.models.HabitTemplate
@@ -387,7 +389,182 @@ fun HealthProgressBar(
 }
 
 @Composable
-fun HabitCard(
+fun RewardSection(
+    coinReward: Int,
+    xpReward: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Column {
+            Text(
+                text = stringResource(R.string.coins),
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Row(modifier = Modifier) {
+                Text(
+                    text = "+$coinReward",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                Spacer(modifier = Modifier.width(3.dp))
+
+                Icon(
+                    imageVector = Icons.Filled.Paid,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+
+        }
+        Column {
+            Text(
+                text = stringResource(R.string.experience),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "+${xpReward} XP",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun BadHabitCard(
+    habit: BadHabit,
+    onHabitClick: (BadHabit) -> Unit,
+    viewModel: RewardsViewModel
+) {
+    var template by remember { mutableStateOf<HabitTemplate?>(null) }
+    var category by remember { mutableStateOf<Category?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+    var isChecked by remember { mutableStateOf(habit.completed) }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(habit.completed) {
+        isChecked = habit.completed
+    }
+
+    LaunchedEffect(habit.template) {
+        if (template == null && habit.template != null) {
+            isLoading = true
+            template = habit.template.get().await()
+                .toObject(HabitTemplate::class.java)
+            isLoading = false
+        }
+    }
+
+    LaunchedEffect(habit.category) {
+        if (category == null && habit.category != null) {
+            isLoading = true
+            category = habit.category.get().await()
+                .toObject(Category::class.java)
+            isLoading = false
+        }
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable { onHabitClick(habit) },
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            if (isLoading) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(stringResource(R.string.loading))
+                }
+            } else {
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    template?.icon?.let { icon ->
+                        Icon(
+                            imageVector = IconMapper.getHabitIcon(icon),
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column {
+                        Text(
+                            text = template?.getName(Locale.getDefault()) ?: "Unnamed Habit",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = "-${habit.lifeLoss}",
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                                Icon(
+                                    imageVector = Icons.Filled.HeartBroken,
+                                    contentDescription = "Vida perdida",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = category?.getName(Locale.getDefault()) ?: "Unnamed Category",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            ),
+                            fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Checkbox(
+                        checked = habit.completed,
+                        onCheckedChange = { newCheckedState ->
+                            isChecked = newCheckedState
+                            coroutineScope.launch {
+                                viewModel.toggleBadHabitCompleted(habit, newCheckedState)
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun GoodHabitCard(
     habit: GoodHabit,
     onHabitClick: (GoodHabit) -> Unit,
     viewModel: RewardsViewModel
@@ -500,7 +677,7 @@ fun HabitCard(
                         checked = habit.completed,
                         onCheckedChange = { isChecked ->
                             coroutineScope.launch {
-                                viewModel.toggleHabitCompleted(habit, isChecked)
+                                viewModel.toggleGoodHabitCompleted(habit, isChecked)
                             }
                         }
                     )
