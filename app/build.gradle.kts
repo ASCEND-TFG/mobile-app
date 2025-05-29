@@ -42,7 +42,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -79,6 +78,8 @@ dependencies {
     implementation (libs.androidx.foundation.v160)
     implementation (libs.mpandroidchart)
     implementation (libs.androidx.datastore.preferences)
+    implementation (libs.kotlinx.serialization.json)
+    implementation (libs.gson)
 
     //Firebase
     implementation(platform(libs.firebase.bom))
@@ -90,4 +91,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.firestore.ktx)
     implementation (libs.google.firebase.firestore)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 }

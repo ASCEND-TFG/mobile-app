@@ -14,7 +14,6 @@ import kotlinx.coroutines.tasks.await
 class SettingsViewModel(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
-    private val navController: NavController
 ) : ViewModel() {
 
     fun deleteUserAccount(
@@ -24,16 +23,14 @@ class SettingsViewModel(
         viewModelScope.launch {
             try {
                 val currentUser = auth.currentUser
+
                 if (currentUser != null) {
                     // 1. Eliminar de Firestore
                     deleteUserFromFirestore(currentUser.uid)
-
                     // 2. Eliminar de Authentication
                     deleteUserFromAuth(currentUser)
 
-                    onSuccess(
-                        //navController.navigate(AppScreens.LoginScreen.route)
-                    )
+                    onSuccess()
                 } else {
                     onFailure(Exception("No hay usuario autenticado"))
                 }

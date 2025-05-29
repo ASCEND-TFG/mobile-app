@@ -12,18 +12,24 @@ import androidx.compose.material.icons.filled.DinnerDining
 import androidx.compose.material.icons.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.EmojiEmotions
 import androidx.compose.material.icons.filled.FamilyRestroom
+import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Handshake
+import androidx.compose.material.icons.filled.LocalMall
 import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.Nightlife
+import androidx.compose.material.icons.filled.NightsStay
 import androidx.compose.material.icons.filled.Notes
+import androidx.compose.material.icons.filled.PartyMode
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.ui.graphics.vector.ImageVector
 
 object IconMapper {
@@ -68,4 +74,20 @@ object IconMapper {
                 else -> Icons.Filled.CheckCircle
             }
     }
+
+    fun getMomentIcon(iconName: String?): ImageVector {
+        if (iconName == null)
+            return Icons.Filled.CheckCircle
+        else
+            return when (iconName.lowercase()) {
+                "goparty" -> Icons.Filled.Nightlife
+                "happypurchase" -> Icons.Filled.LocalMall
+                "junkfood" -> Icons.Filled.Fastfood
+                "localtourist"-> Icons.Filled.TravelExplore
+                "sleepover" -> Icons.Filled.NightsStay
+                else -> Icons.Filled.CheckCircle
+            }
+
+    }
+
 }

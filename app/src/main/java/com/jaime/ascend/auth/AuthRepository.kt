@@ -1,6 +1,11 @@
 package com.jaime.ascend.auth
 
+import android.content.Context
+import android.credentials.GetCredentialRequest
+import android.provider.Settings.Global.getString
 import android.util.Log
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -10,6 +15,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 class AuthRepository {
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
+
+    /*fun getGoogleSignInClient(context: Context): GoogleSignInClient {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(context.getString(R.string.default_web_client_id)) // Reemplaza con tu client ID
+            .requestEmail()
+            .build()
+
+        return GoogleSignIn.getClient(context, gso)
+    }*/
+
 
     fun signIn(email: String, password: String, callback: (Boolean) -> Unit) {
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->

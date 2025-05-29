@@ -104,5 +104,14 @@
     <string name="radar_chart_title">Your Life Balance Overview</string>
     <string name="delete_account_confirmation">Are you sure you want to delete your account permanently? This action cannot be undone.</string>
     <string name="add_new_bad_habit_title">Add new bad habit</string>
-    <string name="life_loss">Life loss</string>"
+    <string name="life_loss">Life loss</string>
+    <string name="this_week_s_moments">This Week\'s Moments</string>
+    <string name="new_moments_in_days">New moments in: %1$s days</string>
+    <string name="owned">OWNED</string>
+    <string name="view_more">VIEW MORE</string>
+    <string name="loading_moments">Loading moments...</string>
+    <string name="reward">Reward: +%1$s</string>
+    <string name="purchase_for">Purchase for %1$s</string>
+    <string name="moment_purchased">Moment purchased!</string>
+    <string name="insufficent_coins">Insufficient coins</string>"
 </resources>

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,13 +28,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.HeartBroken
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -78,6 +84,7 @@ import com.jaime.ascend.data.models.BadHabit
 import com.jaime.ascend.data.models.Category
 import com.jaime.ascend.data.models.GoodHabit
 import com.jaime.ascend.data.models.HabitTemplate
+import com.jaime.ascend.data.models.Moment
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.utils.IconMapper
 import com.jaime.ascend.viewmodel.RewardsViewModel
@@ -227,6 +234,54 @@ fun ActionBarProfileScreen(
                 modifier = Modifier
                     .size(24.dp)
                     .clickable { navController.navigate(AppScreens.SettingsScreen.route) })
+        }
+        HorizontalDivider(color = MaterialTheme.colorScheme.onBackground, thickness = 1.dp)
+    }
+}
+
+@Composable
+fun ActionBarShopScreen(
+    viewModel: UserViewModel = viewModel(),
+    coins: Int,
+    modifier: Modifier,
+) {
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(85.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ascendlogo_removebg),
+                contentDescription = R.string.app_name.toString(),
+                modifier = Modifier
+                    .size(120.dp)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Text(
+                text = coins.toString(),
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Icon(
+                imageVector = Icons.Filled.Paid,
+                contentDescription = stringResource(R.string.configuration_icon_content),
+                modifier = Modifier
+                    .size(24.dp)
+            )
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.onBackground, thickness = 1.dp)
     }
@@ -815,4 +870,134 @@ fun RadarChartView(
         },
         modifier = modifier
     )
+}
+
+@Composable
+fun MomentCard(
+    moment: Moment,
+    coins: Int,
+    onClick: () -> Unit
+) {
+    val language = Locale.getDefault().language
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    // Diálogo de confirmación
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = moment.getName(Locale.getDefault().language)) },
+            text = {
+                Column {
+                    Text(
+                        text = moment.getDescription(Locale.getDefault().language),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    Divider()
+
+                    Row(
+                    ) {
+                        Text(
+                            text = stringResource(R.string.reward, moment.reward),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+
+                        Icon(
+                            imageVector = Icons.Filled.Favorite,
+                            contentDescription = null,
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        onClick()
+                        showDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Row() {
+                        Text(
+                            text = stringResource(R.string.purchase_for, moment.price),
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(8.dp)
+                        )
+
+                        Icon(
+                            imageVector = Icons.Filled.Paid,
+                            contentDescription = null,
+                            modifier = Modifier.padding(top = 8.dp),
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+            }
+        )
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1f),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = IconMapper.getMomentIcon(moment.icon),
+                contentDescription = null,
+                modifier = Modifier.size(48.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+
+            Text(
+                text = moment.getName(language),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                if (moment.isOwned) {
+                    Text(
+                        text = stringResource(R.string.owned),
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        ),
+                    )
+                } else {
+                    BlackButton(
+                        onClick = { showDialog = true },
+                        modifier = Modifier.fillMaxWidth().height(35.dp),
+                        content = {
+                            Text(
+                                text = stringResource(R.string.view_more),
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    )
+                }
+            }
+        }
+    }
 }

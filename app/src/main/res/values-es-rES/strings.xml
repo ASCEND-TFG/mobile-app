@@ -106,4 +106,13 @@
     <string name="delete_account_confirmation">¿Estás seguro de que quieres eliminar tu cuenta permanentemente? Esta acción no se puede deshacer.</string>
     <string name="add_new_bad_habit_title">Añadir nuevo hábito malo</string>
     <string name="life_loss">Pérdida de Vida</string>
+    <string name="this_week_s_moments">Momentos de la Semana</string>
+    <string name="new_moments_in_days">Nuevos momentos en: %1$s días</string>
+    <string name="owned">COMPRADO</string>
+    <string name="view_more">VER MÁS</string>
+    <string name="loading_moments">Cargando momentos...</string>
+    <string name="reward">Recompensa: +%1$s</string>
+    <string name="purchase_for">Comprar por %1$s</string>
+    <string name="moment_purchased">¡Momento comprado!</string>
+    <string name="insufficent_coins">Monedas insuficientes</string>
 </resources>
