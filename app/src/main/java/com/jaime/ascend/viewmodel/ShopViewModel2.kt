@@ -21,9 +21,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
-import java.util.Calendar
-import javax.inject.Inject
-import kotlin.math.min
 
 class ShopViewModel2(
     private val shopRepo: ShopRepository,
@@ -67,15 +64,23 @@ class ShopViewModel2(
                 val didReset = shopRepo.checkAndHandleWeeklyReset(userId)
                 _showResetMessage.value = didReset
 
-                // 3. Obtener momentos actuales
+                // 3. Generar nuevos momentos is hace falta
+                val b = shopRepo.shouldGenerateNewMoments()
+                println("should generate new moments $b")
+                if (b) {
+                    shopRepo.generateNewMoments()
+                    _ownedMoments.value = emptySet()
+                }
+
+                // 4. Obtener momentos actuales
                 val currentMoments = shopRepo.getCurrentMoments()
+
                 _moments.value = currentMoments.map { moment ->
                     moment.copy(isOwned = moment.id in _ownedMoments.value)
                 }
 
-                // 4. Calcular días hasta el próximo lunes
+                // 5. Calcular días hasta el próximo lunes
                 _daysUntilRefresh.intValue = calculateDaysUntilNextMonday()
-
             } catch (e: Exception) {
                 Log.e("ShopViewModel", "Error loading data", e)
                 Toast.makeText(ctx, "Error cargando datos", Toast.LENGTH_SHORT).show()
@@ -112,8 +117,7 @@ class ShopViewModel2(
         viewModelScope.launch {
             try {
                 val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
-                shopRepo.purchaseMoment(userId, momentId) {
-                    newCoins, newLife, ownedMoments ->
+                shopRepo.purchaseMoment(userId, momentId) { newCoins, newLife, ownedMoments ->
                     _userCoins.intValue = newCoins
                     _currentLife.intValue = newLife
                     _ownedMoments.value = ownedMoments.toSet()

@@ -65,17 +65,22 @@ class ShopRepository(
      * @return Lista de momentos, si no hay, devuelve una lista vacia
      */
     suspend fun getCurrentMoments(): List<Moment> {
-        return localCache.getCachedMoments().ifEmpty {
-            // Si no hay en caché, generar nuevos momentos
-            val allMoments = firestore.collection(MOMENTS_COLLECTION)
-                .get()
-                .await()
-                .toObjects(Moment::class.java)
+        return localCache.getCachedMoments()
+    }
 
-            val randomMoments = allMoments.shuffled().take(4)
-            localCache.cacheMoments(randomMoments)
-            randomMoments
-        }
+    /**
+     * Genera nuevos momentos aleatorios y los almacena en la caché local
+     */
+    suspend fun generateNewMoments() {
+        val allMoments = firestore.collection(MOMENTS_COLLECTION)
+            .get()
+            .await()
+            .toObjects(Moment::class.java)
+
+        val randomMoments = allMoments.shuffled().take(4)
+        localCache.cacheMoments(randomMoments)
+        localCache.cacheLastReRollDate(LocalDate.now().toString())
+        println("new random moments: $randomMoments")
     }
 
     /**
@@ -85,13 +90,10 @@ class ShopRepository(
     suspend fun getLastReRollDate(): LocalDate? {
         val dateString = localCache.getLastReRollDate()
 
-        val date = dateString?.let {
+        return dateString?.let {
             LocalDate.parse(it, DateTimeFormatter.ISO_LOCAL_DATE)
         }
-
-        return date
     }
-
 
     /**
      * Verifica si es necesario generar nuevos momentos
@@ -99,12 +101,16 @@ class ShopRepository(
      */
     suspend fun shouldGenerateNewMoments(): Boolean {
         val lastReRoll = getLastReRollDate()
-        val today = LocalDate.now()
-        val daysSinceLastReRoll = today.toEpochDay() - (lastReRoll?.toEpochDay() ?: 0)
 
-        return today.dayOfWeek == DayOfWeek.MONDAY && daysSinceLastReRoll >= 7
+        if (lastReRoll == null)
+            return true
+        else {
+            val today = LocalDate.now()
+            val daysSinceLastReRoll = today.toEpochDay() - (lastReRoll.toEpochDay())
+
+            return today.dayOfWeek == DayOfWeek.MONDAY && !lastReRoll.isEqual(today) || daysSinceLastReRoll >= 7
+        }
     }
-
 
     /**
      * Realiza la compra de un momento
