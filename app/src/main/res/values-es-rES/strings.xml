@@ -115,4 +115,12 @@
     <string name="purchase_for">Comprar por %1$s</string>
     <string name="moment_purchased">¡Momento comprado!</string>
     <string name="insufficent_coins">Monedas insuficientes</string>
+    <string name="add_friend">Añadir amigos</string>
+    <string name="username">Nombre de usuario</string>
+    <string name="send_request">Enviar solicitud</string>
+    <string name="request_already_sent">Ya has enviado una solicitud a este usuario</string>
+    <string name="already_friends">Tú y este usuario ya son amiogs</string>
+    <string name="user_not_found">Usuario no encontrado</string>
+    <string name="request_sended">Solicitud enviada</string>
+    <string name="request_yourself">No puedes enviarte solicitud a ti mismo</string>
 </resources>

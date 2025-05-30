@@ -71,9 +71,9 @@ class AuthRepository {
                     "lastDailyReset" to null,
                     "lastWeeklyReset" to null,
                     "friends" to emptyList<String>(),
+                    "pendingRequests" to emptyList<String>(),
                     "ghabits" to emptyList<String>(),
                     "bhabits" to emptyList<String>(),
-                    "profileImageUrl" to "",
                     "categories" to mapOf(
                         "career_studies" to createCategory(),
                         "couple" to createCategory(),

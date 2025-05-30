@@ -18,10 +18,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
 
@@ -74,7 +72,8 @@ class RewardsViewModel(
                     }
 
                     userCoins = (doc["coins"] as? Number)?.toInt() ?: 0
-                    userCategories = (doc["categories"] as? Map<String, Map<String, Any>>) ?: emptyMap()
+                    userCategories =
+                        (doc["categories"] as? Map<String, Map<String, Any>>) ?: emptyMap()
                     maxLife = (doc["maxLife"] as? Number)?.toInt() ?: 100
                     currentLife = (doc["currentLife"] as? Number)?.toInt() ?: 10
                     lastRelapse = doc["lastRelapse"] as? Date
@@ -249,7 +248,8 @@ class RewardsViewModel(
             val newLife = max(0, currentLife - habit.lifeLoss)
             val lastRelapse = FieldValue.serverTimestamp()
 
-            val completedHabits = (userDoc["bhabits"] as? List<String>)?.toMutableList() ?: mutableListOf()
+            val completedHabits =
+                (userDoc["bhabits"] as? List<String>)?.toMutableList() ?: mutableListOf()
             if (!completedHabits.contains(habit.id)) {
                 completedHabits.add(habit.id)
             }
@@ -396,12 +396,14 @@ class RewardsViewModel(
             if (categoryRewards.isNotEmpty()) {
                 firestore.runTransaction { transaction ->
                     val updatedUserDoc = transaction.get(userRef)
-                    val categories = (updatedUserDoc["categories"] as? Map<String, Map<String, Any>>)?.toMutableMap()
-                        ?: mutableMapOf()
+                    val categories =
+                        (updatedUserDoc["categories"] as? Map<String, Map<String, Any>>)?.toMutableMap()
+                            ?: mutableMapOf()
 
                     // Aplicar recompensas a cada categoría
                     categoryRewards.forEach { (categoryId, rewards) ->
-                        val categoryData = categories[categoryId]?.toMutableMap() ?: createDefaultCategory().toMutableMap()
+                        val categoryData = categories[categoryId]?.toMutableMap()
+                            ?: createDefaultCategory().toMutableMap()
 
                         // Actualizar XP y nivel
                         var currentExp = (categoryData["currentExp"] as? Number)?.toInt() ?: 0
@@ -441,7 +443,10 @@ class RewardsViewModel(
                     )
                 }.await()
 
-                Log.d("PassiveRewards", "Applied passive rewards to ${categoryRewards.size} categories")
+                Log.d(
+                    "PassiveRewards",
+                    "Applied passive rewards to ${categoryRewards.size} categories"
+                )
             }
         } catch (e: Exception) {
             Log.e("PassiveRewards", "Error processing daily passive rewards", e)

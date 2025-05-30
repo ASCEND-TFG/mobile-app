@@ -113,5 +113,14 @@
     <string name="reward">Reward: +%1$s</string>
     <string name="purchase_for">Purchase for %1$s</string>
     <string name="moment_purchased">Moment purchased!</string>
-    <string name="insufficent_coins">Insufficient coins</string>"
+    <string name="insufficent_coins">Insufficient coins</string>
+    <string name="add_friend">Add Friends</string>
+    <string name="username">Username</string>
+    <string name="send_request">Send request</string>
+    <string name="user_not_found">User not found</string>
+    <string name="request_sended">Request sent</string>
+    <string name="request_already_sent">You have already sent a request to this user</string>
+    <string name="already_friends">You and this user are already friends</string>
+    <string name="request_yourself">You cannot send a request to yourself</string>
+    "
 </resources>

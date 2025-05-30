@@ -1,7 +1,7 @@
 package com.jaime.ascend.ui.screens
 
 import com.jaime.ascend.utils.ShopLocalCache
-import com.jaime.ascend.viewmodel.ShopViewModel2
+import com.jaime.ascend.viewmodel.ShopViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,15 +28,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.jaime.ascend.R
-import com.jaime.ascend.data.factory.ShopViewModel2Factory
+import com.jaime.ascend.data.factory.ShopViewModelFactory
 import com.jaime.ascend.data.repository.ShopRepository
 import com.jaime.ascend.ui.components.ActionBarShopScreen
 import com.jaime.ascend.ui.components.MomentCard
 
 @Composable
 fun ShopScreen(navController: NavController) {
-    val viewModel: ShopViewModel2 = viewModel(
-        factory = ShopViewModel2Factory(
+    val viewModel: ShopViewModel = viewModel(
+        factory = ShopViewModelFactory(
             shopRepo = ShopRepository(
                 localCache = ShopLocalCache(
                     context = LocalContext.current,

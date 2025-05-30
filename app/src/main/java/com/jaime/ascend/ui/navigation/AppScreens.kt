@@ -64,6 +64,12 @@ sealed class AppScreens(
         icon = Icons.Filled.DisabledByDefault
     )
 
+    object FriendsRequestScreen : AppScreens(
+        route = "friendsRequestScreen",
+        title = R.string.add_friend,
+        icon = Icons.Filled.DisabledByDefault
+    )
+
     object AddingGoodHabitScreen : AppScreens(
         route = "addingGoodHabit/{categoryId}/{templateId}",
         arguments = listOf(

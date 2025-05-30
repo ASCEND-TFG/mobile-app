@@ -152,6 +152,10 @@ fun MainScreenNavHost() {
                             if (currentUser != null) BadHabitsScreen(navController)
                         }
 
+                        composable(route = AppScreens.FriendsRequestScreen.route) {
+                            if (currentUser != null) FriendsRequestScreen(navController)
+                        }
+
                         composable(route = AppScreens.AddNewGoodHabitScreen.route) {
                             AddNewGoodHabitScreen(
                                 navController = navController,

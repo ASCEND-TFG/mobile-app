@@ -24,6 +24,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -47,6 +49,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -234,6 +237,51 @@ fun ActionBarProfileScreen(
                 modifier = Modifier
                     .size(24.dp)
                     .clickable { navController.navigate(AppScreens.SettingsScreen.route) })
+        }
+        HorizontalDivider(color = MaterialTheme.colorScheme.onBackground, thickness = 1.dp)
+    }
+}
+
+@Composable
+fun ActionBarFriendsScreen(
+    navController: NavController,
+    modifier: Modifier,
+) {
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(85.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ascendlogo_removebg),
+                contentDescription = R.string.app_name.toString(),
+                modifier = Modifier
+                    .size(120.dp)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            BlackButton(
+                onClick = { navController.navigate(AppScreens.FriendsRequestScreen.route) },
+                modifier = Modifier
+                    .height(35.dp)
+                    .width(135.dp),
+                content = {
+                    Text(
+                        text= stringResource(R.string.add_friend),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                }
+            )
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.onBackground, thickness = 1.dp)
     }
@@ -988,7 +1036,9 @@ fun MomentCard(
                 } else {
                     BlackButton(
                         onClick = { showDialog = true },
-                        modifier = Modifier.fillMaxWidth().height(35.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(35.dp),
                         content = {
                             Text(
                                 text = stringResource(R.string.view_more),

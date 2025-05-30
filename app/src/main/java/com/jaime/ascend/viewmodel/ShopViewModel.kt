@@ -1,231 +1,137 @@
+package com.jaime.ascend.viewmodel
+
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.jaime.ascend.data.models.Moment
+import com.jaime.ascend.data.repository.ShopRepository
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import java.util.Calendar
-import kotlin.math.min
-import kotlin.random.Random
-import androidx.compose.runtime.State
-import kotlinx.coroutines.delay
-import java.util.Date
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalAdjusters
 
-class ShopViewModel : ViewModel() {
-    private val db = Firebase.firestore
-    private var appContext: Context? = null
+class ShopViewModel(
+    private val shopRepo: ShopRepository,
+    private val ctx: Context
+) : ViewModel() {
     private val _moments = mutableStateOf<List<Moment>>(emptyList())
-    private val _userCoins = mutableStateOf(0)
-    private val _currentLife = mutableStateOf(0)
-    private val _maxLife = mutableStateOf(0)
-    private val _daysUntilRefresh = mutableStateOf(0)
+    private val _userCoins = mutableIntStateOf(0)
+    private val _currentLife = mutableIntStateOf(0)
+    private val _maxLife = mutableIntStateOf(100)
     private val _ownedMoments = mutableStateOf<Set<String>>(emptySet())
-    private val _lastResetDate = mutableStateOf<Date?>(null)
-    private val _shouldReloadMoments = mutableStateOf(true)
+    private val _isLoading = mutableStateOf(true)
+    private val _daysUntilRefresh = mutableIntStateOf(0)
+    private val _showResetMessage = mutableStateOf(false)
 
+    // Estados públicos
     val moments: State<List<Moment>> = _moments
     val userCoins: State<Int> = _userCoins
     val currentLife: State<Int> = _currentLife
     val maxLife: State<Int> = _maxLife
+    val isLoading: State<Boolean> = _isLoading
     val daysUntilRefresh: State<Int> = _daysUntilRefresh
-
+    val showResetMessage: State<Boolean> = _showResetMessage
 
     init {
         loadInitialData()
-        scheduleWeeklyResetCheck()
     }
 
-    fun setContext(context: Context) {
-        appContext = context.applicationContext
-    }
+    internal fun loadInitialData() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
+                Toast.makeText(ctx, "Usuario no autenticado", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
 
-    private fun loadInitialData() = viewModelScope.launch {
-        loadUserData()
-        checkWeeklyReset()
-        if (_shouldReloadMoments.value) {
-            loadRandomMoments()
-            _shouldReloadMoments.value = false
-        }
-        calculateDaysUntilRefresh()
-    }
+            try {
+                // 1. Cargar datos del usuario
+                loadUserData(userId)
 
-    private suspend fun loadUserData() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        try {
-            val userDoc = db.collection("users").document(userId).get().await()
-            _userCoins.value = userDoc.getLong("coins")?.toInt() ?: 0
-            _currentLife.value = userDoc.getLong("currentLife")?.toInt() ?: 0
-            _maxLife.value = userDoc.getLong("maxLife")?.toInt() ?: 100
-            _ownedMoments.value =
-                (userDoc.get("ownedMoments") as? List<String>)?.toSet() ?: emptySet()
-            _lastResetDate.value = userDoc.getDate("lastResetDate")
-        } catch (e: Exception) {
-            showError("Error loading user data", e)
-        }
-    }
+                // 2. Manejar reset semanal si es necesario
+                val didReset = shopRepo.checkAndHandleWeeklyReset(userId)
+                _showResetMessage.value = didReset
 
-    private fun checkWeeklyReset() {
-        val today = Calendar.getInstance()
-        val lastMonday = getLastMonday()
+                // 3. Generar nuevos momentos is hace falta
+                val b = shopRepo.shouldGenerateNewMoments()
+                println("should generate new moments $b")
+                if (b) {
+                    shopRepo.generateNewMoments()
+                    _ownedMoments.value = emptySet()
+                }
 
-        if (_lastResetDate.value == null ||
-            _lastResetDate.value!!.before(lastMonday.time)
-        ) {
+                // 4. Obtener momentos actuales
+                val currentMoments = shopRepo.getCurrentMoments()
 
-            if (today.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
-                resetWeeklyData()
-                saveResetDate(today.time)
-                _shouldReloadMoments.value = true
+                _moments.value = currentMoments.map { moment ->
+                    moment.copy(isOwned = moment.id in _ownedMoments.value)
+                }
+
+                // 5. Calcular días hasta el próximo lunes
+                _daysUntilRefresh.intValue = calculateDaysUntilNextMonday()
+            } catch (e: Exception) {
+                Log.e("ShopViewModel", "Error loading data", e)
+                Toast.makeText(ctx, "Error cargando datos", Toast.LENGTH_SHORT).show()
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
     /**
-     * Guarda la fecha de reinicio semanal en la base de datos
-     * @param date Fecha de reinicio semanal
+     * Actualiza los datos locales del uusario
+     * @param userId ID del usuario
      */
-    private fun saveResetDate(date: Date) = viewModelScope.launch {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
-        try {
-            db.collection("users").document(userId)
-                .update("lastResetDate", date)
-                .await()
-            _lastResetDate.value = date
-        } catch (e: Exception) {
-            showError("Error saving reset date", e)
-        }
+    private suspend fun loadUserData(userId: String) {
+        val userDoc = FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(userId)
+            .get()
+            .await()
+
+        _userCoins.intValue = userDoc.getLong("coins")?.toInt() ?: 0
+        _currentLife.intValue = userDoc.getLong("currentLife")?.toInt() ?: 0
+        _maxLife.intValue = userDoc.getLong("maxLife")?.toInt() ?: 100
+        _ownedMoments.value = (userDoc.get("ownedMoments") as? List<String>)?.toSet() ?: emptySet()
     }
 
-    private fun resetWeeklyData() {
-        _ownedMoments.value = emptySet()
-        _shouldReloadMoments.value = true
-        showToast("¡Nueva semana! Momentos reseteados")
+    private fun calculateDaysUntilNextMonday(): Int {
+        val today = LocalDate.now()
+        val nextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
+        return ChronoUnit.DAYS.between(today, nextMonday).toInt()
     }
 
-    private fun getLastMonday(): Calendar {
-        val cal = Calendar.getInstance()
-        while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
-            cal.add(Calendar.DAY_OF_YEAR, -1)
-        }
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
-        return cal
-    }
-
-    private fun scheduleWeeklyResetCheck() {
+    fun purchaseMoment(momentId: String) {
         viewModelScope.launch {
-            while (true) {
-                val now = Calendar.getInstance()
-                val nextCheck = Calendar.getInstance().apply {
-                    add(Calendar.DAY_OF_YEAR, 1)
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                }
-                val delay = nextCheck.timeInMillis - now.timeInMillis
-                if (delay > 0) delay(delay)
-
-                checkWeeklyReset()
-                calculateDaysUntilRefresh()
-            }
-        }
-    }
-
-    private fun calculateDaysUntilRefresh() {
-        val calendar = Calendar.getInstance()
-        val currentDay = calendar.get(Calendar.DAY_OF_WEEK)
-        _daysUntilRefresh.value = when {
-            currentDay < Calendar.MONDAY -> Calendar.MONDAY - currentDay
-            currentDay > Calendar.MONDAY -> 7 - (currentDay - Calendar.MONDAY)
-            else -> 7
-        }
-    }
-
-    fun loadRandomMoments(force: Boolean = false) = viewModelScope.launch {
-        if (force || _shouldReloadMoments.value) {
             try {
-                val allMoments = db.collection("moments").get().await()
-                    .toObjects(Moment::class.java)
+                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
+                shopRepo.purchaseMoment(userId, momentId) { newCoins, newLife, ownedMoments ->
+                    _userCoins.intValue = newCoins
+                    _currentLife.intValue = newLife
+                    _ownedMoments.value = ownedMoments.toSet()
 
-                _moments.value = allMoments.shuffled().take(4).map { moment ->
-                    moment.copy(isOwned = moment.id in _ownedMoments.value)
+                    // Guardar habito como owned
+                    _moments.value = _moments.value.map {
+                        if (it.id == momentId) it.copy(isOwned = true) else it
+                    }
                 }
-                _shouldReloadMoments.value = false
             } catch (e: Exception) {
-                showError("Error loading moments", e)
-                _moments.value = emptyList()
+                Log.e("ShopViewModel", "Error purchasing moment", e)
+                Toast.makeText(ctx, "Error al comprar el momento", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    fun purchaseMoment(momentId: String) = viewModelScope.launch {
-        val currentUser = FirebaseAuth.getInstance().currentUser?.uid ?: run {
-            showToast("Usuario no autenticado")
-            return@launch
-        }
-
-        try {
-            val momentDoc = db.collection("moments").document(momentId).get().await()
-            val price = momentDoc.getLong("price")?.toInt() ?: 0
-            val reward = momentDoc.getLong("reward")?.toInt() ?: 0
-
-            val userRef = db.collection("users").document(currentUser)
-
-            db.runTransaction { transaction ->
-                val userSnapshot = transaction.get(userRef)
-                val currentCoins = userSnapshot.getLong("coins")?.toInt() ?: 0
-
-                if (currentCoins < price) throw Exception("Insufficient coins")
-
-                // Actualizar datos
-                val newCoins = currentCoins - price
-                val currentLife = userSnapshot.getLong("currentLife")?.toInt() ?: 0
-                val maxLife = userSnapshot.getLong("maxLife")?.toInt() ?: 100
-                val newLife = min(currentLife + reward, maxLife)
-                val ownedMoments =
-                    (userSnapshot.get("ownedMoments") as? List<String> ?: emptyList()) + momentId
-
-                transaction.update(
-                    userRef, mapOf(
-                        "coins" to newCoins,
-                        "currentLife" to newLife,
-                        "ownedMoments" to ownedMoments.distinct()
-                    )
-                )
-
-                Triple(newCoins, newLife, ownedMoments)
-            }.await()?.let { (newCoins, newLife, ownedMoments) ->
-                // Actualizar estado local
-                _userCoins.value = newCoins
-                _currentLife.value = newLife
-                _ownedMoments.value = ownedMoments.toSet()
-                _moments.value = _moments.value.map {
-                    if (it.id == momentId) it.copy(isOwned = true) else it
-                }
-                showToast("¡Compra exitosa!")
-            }
-        } catch (e: Exception) {
-            showToast(if (e.message == "Insufficient coins") "No tienes suficientes monedas" else "Error al procesar la compra")
-            Log.e("ShopViewModel", "Purchase error", e)
-        }
-    }
-
-    private fun showToast(message: String) {
-        appContext?.let { Toast.makeText(it, message, Toast.LENGTH_SHORT).show() }
-    }
-
-    private fun showError(message: String, e: Exception) {
-        Log.e("ShopViewModel", message, e)
-        showToast("$message. Ver logs para detalles.")
+    fun dismissResetMessage() {
+        _showResetMessage.value = false
     }
 }
