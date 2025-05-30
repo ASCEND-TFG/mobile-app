@@ -7,18 +7,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,14 +29,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.jaime.ascend.R
 import com.jaime.ascend.data.factory.FriendRequestViewModelFactory
 import com.jaime.ascend.data.repository.FriendRequestRepository
+import com.jaime.ascend.data.repository.UserRepository
 import com.jaime.ascend.ui.components.ActionBarWithBackButton
 import com.jaime.ascend.ui.components.BlackButton
+import com.jaime.ascend.ui.components.FriendRequestDialog
+import com.jaime.ascend.ui.components.PendingRequestItem
 import com.jaime.ascend.viewmodel.FriendRequestUiState
 import com.jaime.ascend.viewmodel.FriendRequestViewModel
 import kotlinx.coroutines.launch
@@ -47,19 +50,20 @@ import kotlinx.coroutines.launch
 fun FriendsRequestScreen(navController: NavController) {
     val context = LocalContext.current
     val viewModel: FriendRequestViewModel = viewModel(
-        factory = FriendRequestViewModelFactory(context, FriendRequestRepository())
+        factory = FriendRequestViewModelFactory(context, FriendRequestRepository(), UserRepository())
     )
     val uiState by viewModel.uiState.collectAsState()
     val foundUser by viewModel.foundUser.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var username by remember { mutableStateOf("") }
-
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val pendingRequests by viewModel.pendingRequests.collectAsState()
 
 
     LaunchedEffect(uiState) {
         when (uiState) {
+
             is FriendRequestUiState.UserNotFound -> {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(context.getString(R.string.user_not_found))
@@ -116,14 +120,18 @@ fun FriendsRequestScreen(navController: NavController) {
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.Start
             ) {
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+
                 BlackButton(
                     onClick = { showDialog = true },
                     modifier = Modifier
                         .wrapContentWidth()
-                        .padding(vertical = 16.dp, horizontal = 28.dp),
+                        .padding(vertical = 16.dp, horizontal = 28.dp)
+                        .align(Alignment.CenterHorizontally),
                     content = {
                         Row {
                             Icon(
@@ -144,6 +152,36 @@ fun FriendsRequestScreen(navController: NavController) {
                     }
                 )
 
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+
+                Text(
+                    text = stringResource(R.string.friend_requests),
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline
+                    )
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 12.dp))
+
+                if (pendingRequests.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.no_pending_requests),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                } else {
+
+                    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                        items(pendingRequests) { request ->
+                            PendingRequestItem(
+                                request = request,
+                                onAccept = { viewModel.acceptRequest(request["documentId"].toString()) },
+                                onReject = { viewModel.rejectRequest(request["documentId"].toString()) },
+                            )
+                        }
+                    }
+                }
+
                 if (showDialog) {
                     FriendRequestDialog(
                         username = username,
@@ -157,47 +195,6 @@ fun FriendsRequestScreen(navController: NavController) {
                     )
                 }
             }
-        }
-    )
-}
-
-@Composable
-private fun FriendRequestDialog(
-    username: String,
-    onUsernameChange: (String) -> Unit,
-    isLoading: Boolean,
-    onSendRequest: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.add_friend)) },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = username,
-                    onValueChange = onUsernameChange,
-                    label = { Text(stringResource(R.string.username)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isLoading,
-                    singleLine = true
-                )
-
-                if (isLoading) {
-                    CircularProgressIndicator(Modifier.padding(8.dp))
-                }
-            }
-        },
-        confirmButton = {
-            BlackButton(
-                onClick = onSendRequest,
-                enabled = username.isNotBlank() && !isLoading,
-                content = {
-                    Text(
-                        text = stringResource(R.string.send_request),
-                    )
-                },
-            )
         }
     )
 }

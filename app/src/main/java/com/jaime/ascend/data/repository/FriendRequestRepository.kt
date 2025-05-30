@@ -41,4 +41,35 @@ class FriendRequestRepository(
         return auth.currentUser?.uid
     }
 
+    suspend fun getUserDocument(userId: String) =
+        firestore.collection("users").document(userId).get()
+
+    suspend fun getUserData(userId: String) =
+        firestore.collection("users").document(userId).get()
+
+    suspend fun acceptFriendRequest(currentUserId: String, senderUserId: String) {
+        val batch = firestore.batch()
+
+        // Añade a amigos de ambos usuarios
+        val currentUserRef = firestore.collection("users").document(currentUserId)
+        val senderUserRef = firestore.collection("users").document(senderUserId)
+
+        batch.update(currentUserRef,
+            "friends", FieldValue.arrayUnion(senderUserId),
+            "pendingRequests", FieldValue.arrayRemove(senderUserId)
+        )
+
+        batch.update(senderUserRef,
+            "friends", FieldValue.arrayUnion(currentUserId)
+        )
+
+        batch.commit().await()
+    }
+
+    suspend fun rejectFriendRequest(currentUserId: String, senderUserId: String) {
+        firestore.collection("users").document(currentUserId)
+            .update("pendingRequests", FieldValue.arrayRemove(senderUserId))
+            .await()
+    }
+
 }

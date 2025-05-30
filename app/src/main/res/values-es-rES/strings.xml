@@ -123,4 +123,6 @@
     <string name="user_not_found">Usuario no encontrado</string>
     <string name="request_sended">Solicitud enviada</string>
     <string name="request_yourself">No puedes enviarte solicitud a ti mismo</string>
+    <string name="friend_requests">Solicitudes de Amistad</string>
+    <string name="no_pending_requests">No hay solicitudes pendientes</string>
 </resources>

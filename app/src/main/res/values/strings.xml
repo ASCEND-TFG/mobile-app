@@ -122,5 +122,7 @@
     <string name="request_already_sent">You have already sent a request to this user</string>
     <string name="already_friends">You and this user are already friends</string>
     <string name="request_yourself">You cannot send a request to yourself</string>
-    "
+    <string name="friend_requests">Friend Requests</string>
+    <string name="no_pending_requests">No pending requests</string>
+
 </resources>

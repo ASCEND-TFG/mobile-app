@@ -24,15 +24,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.HeartBroken
 import androidx.compose.material.icons.filled.Paid
+import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -44,12 +45,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -77,6 +79,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.compose.AsyncImage
 import com.github.mikephil.charting.charts.RadarChart
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
@@ -90,6 +93,7 @@ import com.jaime.ascend.data.models.HabitTemplate
 import com.jaime.ascend.data.models.Moment
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.utils.IconMapper
+import com.jaime.ascend.viewmodel.ProfileViewModel
 import com.jaime.ascend.viewmodel.RewardsViewModel
 import com.jaime.ascend.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
@@ -276,7 +280,7 @@ fun ActionBarFriendsScreen(
                     .width(135.dp),
                 content = {
                     Text(
-                        text= stringResource(R.string.add_friend),
+                        text = stringResource(R.string.add_friend),
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleSmall
                     )
@@ -332,6 +336,80 @@ fun ActionBarShopScreen(
             )
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.onBackground, thickness = 1.dp)
+    }
+}
+
+@Composable
+fun FriendItem(
+    friend: Map<String, Any>,
+    modifier: Modifier = Modifier
+) {
+    val username = friend["username"].toString()
+    val avatarUrl = friend["avatarId"].toString()
+    val currentLife = (friend["currentLife"] as? Number)?.toInt() ?: 0
+    val maxLife = (friend["maxLife"] as? Number)?.toInt() ?: 100
+    val coins = (friend["coins"] as? Number)?.toInt() ?: 0
+    val profileViewModel: ProfileViewModel = viewModel()
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AsyncImage(
+                model = if (avatarUrl == "0") {
+                    profileViewModel.getAvatarInitialUrl(username)
+                } else {
+                    profileViewModel.getAvatarUrl(avatarUrl.toInt())
+                },
+                contentDescription = stringResource(R.string.avatar_de, username),
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+            )
+
+            Spacer(Modifier.width(16.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = username,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(Modifier.height(2.dp))
+
+                HealthProgressBar(
+                    currentLife = currentLife,
+                    maxLife = maxLife,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Filled.Paid,
+                        contentDescription = stringResource(R.string.coins),
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = "$coins",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -1046,6 +1124,84 @@ fun MomentCard(
                             )
                         }
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun FriendRequestDialog(
+    username: String,
+    onUsernameChange: (String) -> Unit,
+    isLoading: Boolean,
+    onSendRequest: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.add_friend)) },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = onUsernameChange,
+                    label = { Text(stringResource(R.string.username)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading,
+                    singleLine = true
+                )
+
+                if (isLoading) {
+                    CircularProgressIndicator(Modifier.padding(8.dp))
+                }
+            }
+        },
+        confirmButton = {
+            BlackButton(
+                onClick = onSendRequest,
+                enabled = username.isNotBlank() && !isLoading,
+                content = {
+                    Text(
+                        text = stringResource(R.string.send_request),
+                    )
+                },
+            )
+        }
+    )
+}
+
+@Composable
+fun PendingRequestItem(
+    request: Map<String, Any>,
+    onAccept: () -> Unit,
+    onReject: () -> Unit,
+) {
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = request["username"].toString(),
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Row {
+                IconButton(onClick = onReject) {
+                    Icon(Icons.Filled.Close, "Rechazar", tint = Color.Red)
+                }
+                IconButton(onClick = onAccept) {
+                    Icon(Icons.Filled.Check, "Aceptar", tint = Color.Green)
                 }
             }
         }
