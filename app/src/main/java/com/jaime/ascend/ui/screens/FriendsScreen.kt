@@ -18,6 +18,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.messaging.FirebaseMessaging
 import com.jaime.ascend.data.factory.FriendRequestViewModelFactory
 import com.jaime.ascend.data.repository.FriendRequestRepository
 import com.jaime.ascend.data.repository.UserRepository
@@ -29,7 +33,12 @@ import com.jaime.ascend.viewmodel.FriendRequestViewModel
 fun FriendsScreen(navController: NavController) {
     val context = LocalContext.current
     val viewModel: FriendRequestViewModel = viewModel(
-        factory = FriendRequestViewModelFactory(context, FriendRequestRepository(), UserRepository())
+        factory = FriendRequestViewModelFactory(context, FriendRequestRepository(
+            firestore = FirebaseFirestore.getInstance(),
+            auth = FirebaseAuth.getInstance(),
+            functions = FirebaseFunctions.getInstance(),
+            messaging = FirebaseMessaging.getInstance()
+        ), UserRepository())
     )
     val friendsList by viewModel.friendsList.collectAsState()
     val loading by viewModel.loading.collectAsState()

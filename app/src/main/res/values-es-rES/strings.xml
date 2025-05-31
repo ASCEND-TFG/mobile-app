@@ -119,10 +119,14 @@
     <string name="username">Nombre de usuario</string>
     <string name="send_request">Enviar solicitud</string>
     <string name="request_already_sent">Ya has enviado una solicitud a este usuario</string>
-    <string name="already_friends">Tú y este usuario ya son amiogs</string>
+    <string name="already_friends">Tú y este usuario ya son amigos</string>
     <string name="user_not_found">Usuario no encontrado</string>
     <string name="request_sended">Solicitud enviada</string>
     <string name="request_yourself">No puedes enviarte solicitud a ti mismo</string>
     <string name="friend_requests">Solicitudes de Amistad</string>
     <string name="no_pending_requests">No hay solicitudes pendientes</string>
+    <string name="friends_channel_name">Solicitudes de amistad</string>
+    <string name="friends_channel_description">Notificaciones sobre amigos y solicitudes</string>
+    <string name="habits_channel_description">Notificaciones sobre tus hábitos y progreso</string>
+    <string name="habits_channel_name">Recordatorios de hábitos</string>
 </resources>

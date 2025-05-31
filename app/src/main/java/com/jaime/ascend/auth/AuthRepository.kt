@@ -1,16 +1,14 @@
 package com.jaime.ascend.auth
 
-import android.content.Context
-import android.credentials.GetCredentialRequest
-import android.provider.Settings.Global.getString
 import android.util.Log
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
+import com.jaime.ascend.utils.FirebaseMessages
+import kotlinx.coroutines.tasks.await
 
 class AuthRepository {
     private val firebaseAuth = FirebaseAuth.getInstance()

@@ -3,7 +3,10 @@ package com.jaime.ascend.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jaime.ascend.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.messaging.FirebaseMessaging
 import com.jaime.ascend.data.repository.FriendRequestRepository
 import com.jaime.ascend.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,10 +15,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class FriendRequestViewModel(
-    private val friendRequestRepository: FriendRequestRepository = FriendRequestRepository(),
-    private val userRepository: UserRepository = UserRepository(),
+    private val friendRequestRepository: FriendRequestRepository,
+    private val userRepository: UserRepository,
     private val context: Context
 ) : ViewModel() {
+
+    private val repo = FriendRequestRepository(
+        firestore = FirebaseFirestore.getInstance(),
+        auth = FirebaseAuth.getInstance(),
+        functions = FirebaseFunctions.getInstance(),
+        messaging = FirebaseMessaging.getInstance()
+    )
+
+
     private val _friendsList = MutableStateFlow<List<Map<String, Any>>>(emptyList())
     val friendsList: StateFlow<List<Map<String, Any>>> = _friendsList
 
@@ -71,14 +83,15 @@ class FriendRequestViewModel(
     private fun loadPendingRequests() {
         viewModelScope.launch {
             try {
-                val currentUserId = friendRequestRepository.getCurrentUserId() ?: return@launch
-                val userDoc = friendRequestRepository.getUserDocument(currentUserId).await()
+                val currentUserId = repo.getCurrentUserId() ?: return@launch
+                val userDoc = repo.getUserDocument(currentUserId).await()
                 val pendingIds = userDoc?.get("pendingRequests") as? List<String> ?: emptyList()
 
                 val requests = pendingIds.mapNotNull { userId ->
-                    friendRequestRepository.getUserData(userId).await()?.data?.toMutableMap()?.apply {
-                        put("documentId", userId)
-                    }
+                    repo.getUserData(userId).await()?.data?.toMutableMap()
+                        ?.apply {
+                            put("documentId", userId)
+                        }
                 }
 
                 _pendingRequests.value = requests
@@ -91,8 +104,8 @@ class FriendRequestViewModel(
     fun acceptRequest(userId: String) {
         viewModelScope.launch {
             try {
-                val currentUserId = friendRequestRepository.getCurrentUserId() ?: return@launch
-                friendRequestRepository.acceptFriendRequest(currentUserId, userId)
+                val currentUserId = repo.getCurrentUserId() ?: return@launch
+                repo.acceptFriendRequest(userId, currentUserId)
                 loadPendingRequests() // Recargar la lista
                 _uiState.value = FriendRequestUiState.RequestAccepted
             } catch (e: Exception) {
@@ -104,8 +117,8 @@ class FriendRequestViewModel(
     fun rejectRequest(userId: String) {
         viewModelScope.launch {
             try {
-                val currentUserId = friendRequestRepository.getCurrentUserId() ?: return@launch
-                friendRequestRepository.rejectFriendRequest(currentUserId, userId)
+                val currentUserId = repo.getCurrentUserId() ?: return@launch
+                repo.rejectFriendRequest(currentUserId, userId)
                 loadPendingRequests() // Recargar la lista
                 _uiState.value = FriendRequestUiState.RequestRejected
             } catch (e: Exception) {
@@ -114,47 +127,38 @@ class FriendRequestViewModel(
         }
     }
 
-
-
-fun sendFriendRequest(username: String) {
+    fun sendFriendRequest(username: String) {
         viewModelScope.launch {
             _uiState.value = FriendRequestUiState.Loading
-
             try {
-                val currentUserId = friendRequestRepository.getCurrentUserId()
-                val targetUser = friendRequestRepository.searchUserByUsername(username) ?: throw Exception(context.getString(R.string.user_not_found))
-                val targetUserId = targetUser["documentId"]?.toString() ?: ""
+                val targetUser = repo.searchUserByUsername(username) ?: throw Exception("Usuario no encontrado")
+                val targetUserId = targetUser["documentId"].toString()
+                val currentUserId = repo.getCurrentUserId() ?: throw Exception("No autenticado")
 
-                // Verificar si es el mismo usuario
-                if (targetUserId == currentUserId) {
-                    throw Exception(context.getString(R.string.request_yourself))
-                }
+                if (targetUserId == currentUserId) throw Exception("No puedes enviarte solicitud a ti mismo")
 
-                // Verificar relación existente
                 val friends = targetUser["friends"] as? List<String> ?: emptyList()
-                val pendingRequests = targetUser["pendingRequests"] as? List<String> ?: emptyList()
+                val pending = targetUser["pendingRequests"] as? List<String> ?: emptyList()
 
                 when {
-                    friends.contains(currentUserId) -> {
-                        _uiState.value = FriendRequestUiState.AlreadyFriends
-                    }
-                    pendingRequests.contains(currentUserId) -> {
-                        _uiState.value = FriendRequestUiState.RequestAlreadySent
-                    }
+                    friends.contains(currentUserId) -> _uiState.value = FriendRequestUiState.AlreadyFriends
+                    pending.contains(currentUserId) -> _uiState.value = FriendRequestUiState.RequestAlreadySent
                     else -> {
-                        val success = friendRequestRepository.sendFriendRequest(targetUserId)
+                        val targetUsername = targetUser["username"].toString()
+                        val success = repo.sendFriendRequest(targetUserId, targetUsername)
                         _uiState.value = if (success) {
                             FriendRequestUiState.RequestSent
                         } else {
-                            FriendRequestUiState.Error("Error al enviar solicitud")
+                            FriendRequestUiState.Error("Error al enviar")
                         }
                     }
                 }
             } catch (e: Exception) {
-                _uiState.value = FriendRequestUiState.Error(e.message ?: "Error desconocido")
+                _uiState.value = FriendRequestUiState.Error(e.message ?: "Error")
             }
         }
     }
+
 
     fun clearFoundUser() {
         _foundUser.value = null

@@ -125,4 +125,12 @@
     <string name="friend_requests">Friend Requests</string>
     <string name="no_pending_requests">No pending requests</string>
 
+    <string name="habits_channel_id" translatable="false">habits_channel</string>
+
+    <string name="friends_channel_id" translatable="false">friends_channel</string>
+    <string name="friends_channel_name">Friend requests</string>
+    <string name="friends_channel_description">Notifications about friends and requests</string>
+    <string name="habits_channel_description">Notifications about your habits and progress</string>
+    <string name="habits_channel_name">Habits reminders</string>
+
 </resources>

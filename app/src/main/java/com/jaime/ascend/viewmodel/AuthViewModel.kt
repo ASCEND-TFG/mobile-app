@@ -28,6 +28,14 @@ class AuthViewModel : ViewModel() {
             }
     }
 
+    fun sendEmailVerification()  {
+        Firebase.auth.currentUser?.sendEmailVerification()
+    }
+
+    fun checkEmailVerified(): Boolean {
+        return auth.currentUser?.isEmailVerified ?: false
+    }
+
     fun signIn(email: String, password: String, callback: (Boolean) -> Unit) {
         if (email.isEmpty() || password.isEmpty()) {
             callback(false)

@@ -345,7 +345,7 @@ fun FriendItem(
     modifier: Modifier = Modifier
 ) {
     val username = friend["username"].toString()
-    val avatarUrl = friend["avatarId"].toString()
+    val avatarUrl = friend["avatarId"] as? Number
     val currentLife = (friend["currentLife"] as? Number)?.toInt() ?: 0
     val maxLife = (friend["maxLife"] as? Number)?.toInt() ?: 100
     val coins = (friend["coins"] as? Number)?.toInt() ?: 0
@@ -361,7 +361,7 @@ fun FriendItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = if (avatarUrl == "0") {
+                model = if (avatarUrl == null || avatarUrl == 0) {
                     profileViewModel.getAvatarInitialUrl(username)
                 } else {
                     profileViewModel.getAvatarUrl(avatarUrl.toInt())
@@ -1164,6 +1164,7 @@ internal fun FriendRequestDialog(
                 content = {
                     Text(
                         text = stringResource(R.string.send_request),
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 },
             )

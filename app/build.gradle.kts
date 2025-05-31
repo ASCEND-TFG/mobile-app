@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.androidx.ui.tooling.preview.android)
     implementation(libs.androidx.room.runtime.android)
+    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -94,4 +95,8 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
+    implementation(libs.firebase.inappmessaging.display)
+    implementation(libs.google.firebase.analytics)
+    implementation (libs.firebase.functions.ktx)
+    implementation (libs.google.firebase.messaging.ktx)
 }

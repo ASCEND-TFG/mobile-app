@@ -1,6 +1,7 @@
 package com.jaime.ascend.ui.screens
 
 import AuthViewModel
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -56,6 +58,10 @@ fun SignupScreen(navController: NavController) {
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
     var formError by remember { mutableStateOf<String?>(null) }
 
+    var showVerificationMessage by remember { mutableStateOf(false) }
+
+    val ctx = LocalContext.current
+
     fun validateUsername() {
         usernameError = when {
             username.text.isEmpty() -> null
@@ -99,6 +105,14 @@ fun SignupScreen(navController: NavController) {
                 emailError == null &&
                 passwordError == null &&
                 confirmPasswordError == null
+    }
+
+    LaunchedEffect(Unit) {
+        if (viewModel.checkEmailVerified()) {
+            navController.navigate(AppScreens.HomeScreen.route) {
+                popUpTo(0)
+            }
+        }
     }
 
     AppTheme {
@@ -311,7 +325,11 @@ fun SignupScreen(navController: NavController) {
                                                     username.text
                                                 ) { success ->
                                                     if (success) {
-                                                        navController.navigate(route = AppScreens.HomeScreen.route)
+                                                        if (viewModel.checkEmailVerified()) {
+                                                            navController.navigate(AppScreens.HomeScreen.route)
+                                                        } else {
+                                                            showVerificationMessage = true
+                                                        }
                                                     } else {
                                                         formError = emailCollisionMessage
                                                     }
@@ -359,6 +377,36 @@ fun SignupScreen(navController: NavController) {
                     }
                 }
             }
+        }
+
+        // Dentro de tu Column/Layout principal:
+        if (showVerificationMessage) {
+            AlertDialog(
+                onDismissRequest = { showVerificationMessage = false },
+                title = { Text("Verifica tu email") },
+                text = { Text("Hemos enviado un enlace de verificación a ${email.text}. Por favor revisa tu bandeja de entrada.") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            viewModel.sendEmailVerification()
+                            // Opcional: mostrar toast de confirmación
+                            Toast.makeText(ctx, "Email reenviado", Toast.LENGTH_SHORT).show()
+                        }
+                    ) {
+                        Text("Reenviar verificación")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showVerificationMessage = false
+                            navController.navigate(AppScreens.LoginScreen.route)
+                        }
+                    ) {
+                        Text("Ir a login")
+                    }
+                }
+            )
         }
     }
 }
