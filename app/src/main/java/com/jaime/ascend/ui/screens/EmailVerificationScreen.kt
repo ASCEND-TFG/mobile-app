@@ -20,9 +20,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.jaime.ascend.R
 import com.jaime.ascend.ui.navigation.AppScreens
 import kotlinx.coroutines.delay
 
@@ -53,29 +55,8 @@ fun EmailVerificationScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Por favor verifica tu email", style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(R.string.pls_check_email), style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                isLoading = true
-                viewModel.sendEmailVerification { success ->
-                    isLoading = false
-                    if (success) {
-                        Toast.makeText(ctx, "Email de verificación reenviado", Toast.LENGTH_SHORT).show()
-                    } else {
-                        errorMessage = "Error al reenviar el email"
-                    }
-                }
-            },
-            enabled = !isLoading
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator()
-            } else {
-                Text("Reenviar email de verificación")
-            }
-        }
 
         errorMessage?.let {
             Spacer(modifier = Modifier.height(8.dp))

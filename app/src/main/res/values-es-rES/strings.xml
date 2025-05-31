@@ -129,4 +129,15 @@
     <string name="friends_channel_description">Notificaciones sobre amigos y solicitudes</string>
     <string name="habits_channel_description">Notificaciones sobre tus hábitos y progreso</string>
     <string name="habits_channel_name">Recordatorios de hábitos</string>
+    <string name="pls_check_email">Por favor verifica tu email</string>
+    <string name="reesend_verification">Email de verificación reenviado</string>
+    <string name="error_resending_email">Error al reenviar el email</string>
+    <string name="reesend">Reenviar email de verificación</string>
+    <string name="sort_by">Ordenar por</string>
+    <string name="username_a_z">Nombre de usuario (A-Z)</string>
+    <string name="username_z_a">Nombre de usuario (Z-A)</string>
+    <string name="more_coins">Más monedas</string>
+    <string name="less_coins">Menos monedas</string>
+    <string name="more_life">Más vida</string>
+    <string name="less_life">Menos vida</string>
 </resources>
