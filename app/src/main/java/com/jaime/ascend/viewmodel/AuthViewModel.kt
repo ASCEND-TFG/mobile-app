@@ -28,12 +28,28 @@ class AuthViewModel : ViewModel() {
             }
     }
 
-    fun sendEmailVerification()  {
-        Firebase.auth.currentUser?.sendEmailVerification()
+    fun sendEmailVerification(onComplete: (Boolean) -> Unit) {
+        val user = auth.currentUser
+        user?.reload()?.addOnCompleteListener { reloadTask ->
+            if (reloadTask.isSuccessful) {
+                user.sendEmailVerification()
+                    .addOnCompleteListener { verificationTask ->
+                        onComplete(verificationTask.isSuccessful)
+                    }
+            } else {
+                onComplete(false)
+            }
+        } ?: onComplete(false)
     }
 
     fun checkEmailVerified(): Boolean {
         return auth.currentUser?.isEmailVerified ?: false
+    }
+
+    fun checkEmailVerifiedWithReload(callback: (Boolean) -> Unit) {
+        auth.currentUser?.reload()?.addOnCompleteListener {
+            callback(auth.currentUser?.isEmailVerified ?: false)
+        }
     }
 
     fun signIn(email: String, password: String, callback: (Boolean) -> Unit) {

@@ -70,6 +70,12 @@ sealed class AppScreens(
         icon = Icons.Filled.DisabledByDefault
     )
 
+    object EmailVerificationScreen : AppScreens(
+        route = "emailVerificationScreen",
+        title = R.string.add_friend,
+        icon = Icons.Filled.DisabledByDefault
+    )
+
     object AddingGoodHabitScreen : AppScreens(
         route = "addingGoodHabit/{categoryId}/{templateId}",
         arguments = listOf(

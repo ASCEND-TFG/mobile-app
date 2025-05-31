@@ -107,14 +107,6 @@ fun SignupScreen(navController: NavController) {
                 confirmPasswordError == null
     }
 
-    LaunchedEffect(Unit) {
-        if (viewModel.checkEmailVerified()) {
-            navController.navigate(AppScreens.HomeScreen.route) {
-                popUpTo(0)
-            }
-        }
-    }
-
     AppTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -319,16 +311,18 @@ fun SignupScreen(navController: NavController) {
                                             if (!querySnapshot.isEmpty) {
                                                 formError = userCollisionMessage
                                             } else {
-                                                viewModel.signUp(
-                                                    email.text,
-                                                    password.text,
-                                                    username.text
-                                                ) { success ->
+                                                viewModel.signUp(email.text, password.text, username.text) { success ->
                                                     if (success) {
-                                                        if (viewModel.checkEmailVerified()) {
-                                                            navController.navigate(AppScreens.HomeScreen.route)
-                                                        } else {
-                                                            showVerificationMessage = true
+                                                        viewModel.sendEmailVerification { emailSent ->
+                                                            if (emailSent) {
+                                                                navController.navigate(AppScreens.EmailVerificationScreen.route) {
+                                                                    popUpTo(AppScreens.SignupScreen.route) {
+                                                                        inclusive = true
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                formError = "Error al enviar el email de verificación"
+                                                            }
                                                         }
                                                     } else {
                                                         formError = emailCollisionMessage
@@ -379,8 +373,7 @@ fun SignupScreen(navController: NavController) {
             }
         }
 
-        // Dentro de tu Column/Layout principal:
-        if (showVerificationMessage) {
+        /*if (showVerificationMessage) {
             AlertDialog(
                 onDismissRequest = { showVerificationMessage = false },
                 title = { Text("Verifica tu email") },
@@ -407,6 +400,6 @@ fun SignupScreen(navController: NavController) {
                     }
                 }
             )
-        }
+        }*/
     }
 }

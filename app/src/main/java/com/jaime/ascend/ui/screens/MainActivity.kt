@@ -201,6 +201,10 @@ fun MainScreenNavHost() {
                             if (currentUser != null) FriendsRequestScreen(navController)
                         }
 
+                        composable(route = AppScreens.EmailVerificationScreen.route) {
+                            if (currentUser != null) EmailVerificationScreen(navController)
+                        }
+
                         composable(route = AppScreens.AddNewGoodHabitScreen.route) {
                             AddNewGoodHabitScreen(
                                 navController = navController,
