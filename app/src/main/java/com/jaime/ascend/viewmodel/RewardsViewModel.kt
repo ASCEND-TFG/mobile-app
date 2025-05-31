@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -41,9 +42,7 @@ class RewardsViewModel(
 
     init {
         loadUserData()
-        viewModelScope.launch {
-            checkPendingResets()
-        }
+        checkPendingResets()
         scheduleDailyReset()
     }
 
@@ -331,29 +330,41 @@ class RewardsViewModel(
         }
     }
 
-    private suspend fun checkPendingResets() {
-        val userId = auth.currentUser?.uid ?: return
-        val userRef = firestore.collection("users").document(userId)
+    /**
+     * Checks if there are pending resets and executes them if needed
+     */
+    private fun checkPendingResets() {
+        viewModelScope.launch {
+            println("Checking pending resets")
+            val userId = auth.currentUser?.uid ?: return@launch
+            val userRef = firestore.collection("users").document(userId)
 
-        try {
-            val userDoc = userRef.get().await()
-            lastDailyReset = userDoc.getTimestamp("lastDailyReset")?.toDate()
-            lastWeeklyReset = userDoc.getTimestamp("lastWeeklyReset")?.toDate()
+            try {
+                val userDoc = userRef.get().await()
+                lastDailyReset = userDoc.getTimestamp("lastDailyReset")?.toDate()
+                lastWeeklyReset = userDoc.getTimestamp("lastWeeklyReset")?.toDate()
+                println("Last daily reset: $lastDailyReset")
+                println("Last weekly reset: $lastWeeklyReset")
 
-            val now = Calendar.getInstance()
+                val now = Date()
 
-            if (lastDailyReset == null || !isSameDay(lastDailyReset!!, now.timeInMillis)) {
-                executeDailyReset()
-                userRef.update("lastDailyReset", FieldValue.serverTimestamp()).await()
+                if (lastDailyReset == null || !isSameDay(lastDailyReset!!, now)) {
+                    executeDailyReset()
+                    userRef.update("lastDailyReset", Timestamp.now()).await()
+                }
+
+                val dayOfWeek = Calendar.getInstance().apply { time = now }.get(Calendar.DAY_OF_WEEK)
+
+                if (lastWeeklyReset == null ||
+                    !isSameWeek(lastWeeklyReset!!, now)
+                    && dayOfWeek == Calendar.MONDAY
+                ) {
+                    println("Executing weekly reset")
+                    executeWeeklyReset()
+                }
+            } catch (e: Exception) {
+                Log.e("Reset", "Error checking pending resets", e)
             }
-
-            if (now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY &&
-                (lastWeeklyReset == null || !isSameWeek(lastWeeklyReset!!, now.timeInMillis))
-            ) {
-                executeWeeklyReset()
-            }
-        } catch (e: Exception) {
-            Log.e("Reset", "Error checking pending resets", e)
         }
     }
 
@@ -453,6 +464,9 @@ class RewardsViewModel(
         }
     }
 
+    /**
+     * Executes a daily reset for the user
+     */
     private suspend fun executeDailyReset() {
         val userId = auth.currentUser?.uid ?: return
         try {
@@ -487,6 +501,9 @@ class RewardsViewModel(
         }
     }
 
+    /**
+     * Executes a weekly reset for the user
+     */
     private suspend fun executeWeeklyReset() {
         val userId = auth.currentUser?.uid ?: return
         val userRef = firestore.collection("users").document(userId)
@@ -507,6 +524,9 @@ class RewardsViewModel(
         }
     }
 
+    /**
+     * Creates or resets the default categories
+     */
     private fun createDefaultCategories(): Map<String, Map<String, Any>> {
         return mapOf(
             "career_studies" to createDefaultCategory(),
@@ -520,6 +540,10 @@ class RewardsViewModel(
         )
     }
 
+    /**
+     * Creates a default category for a new user
+     * @return The default data for a category
+     */
     private fun createDefaultCategory(): Map<String, Any> {
         return mapOf(
             "level" to 1,
@@ -528,16 +552,28 @@ class RewardsViewModel(
         )
     }
 
-    private fun isSameDay(date1: Date, timeMillis: Long): Boolean {
+    /**
+     * Checks if two dates are in the same day
+     * @param date1 The first date
+     * @param date2 The second date
+     * @return True if the dates are in the same day, false otherwise
+     */
+    private fun isSameDay(date1: Date, date2: Date): Boolean {
         val cal1 = Calendar.getInstance().apply { time = date1 }
-        val cal2 = Calendar.getInstance().apply { timeInMillis = timeMillis }
+        val cal2 = Calendar.getInstance().apply { time = date2 }
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
     }
 
-    private fun isSameWeek(date1: Date, timeMillis: Long): Boolean {
+    /**
+     * Checks if two dates are in the same week
+     * @param date1 The first date
+     * @param date2 The second date
+     * @return True if the dates are in the same week, false otherwise
+     */
+    private fun isSameWeek(date1: Date, date2: Date): Boolean {
         val cal1 = Calendar.getInstance().apply { time = date1 }
-        val cal2 = Calendar.getInstance().apply { timeInMillis = timeMillis }
+        val cal2 = Calendar.getInstance().apply { time = date2 }
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.WEEK_OF_YEAR) == cal2.get(Calendar.WEEK_OF_YEAR)
     }

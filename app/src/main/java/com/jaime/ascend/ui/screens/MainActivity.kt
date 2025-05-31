@@ -54,14 +54,6 @@ class MainActivity : ComponentActivity() {
                     Log.w("MainActivity", "Fetching FCM registration token failed", task.exception)
                     return@OnCompleteListener
                 }
-
-
-                // Get new FCM registration token
-                val token = task.result
-
-                FirebaseFirestore.getInstance().collection("users").document(auth.currentUser!!.uid)
-                    .update("fcmToken", token)
-
             })
         } else {
             // TODO: Inform user that that your app will not show notifications.

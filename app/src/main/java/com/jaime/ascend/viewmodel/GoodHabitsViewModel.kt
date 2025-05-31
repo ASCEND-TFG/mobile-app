@@ -90,7 +90,6 @@ class GoodHabitsViewModel(
         }
     }
 
-
     fun selectCategory(category: Category?) {
         _selectedCategory.value = category
         _isLoading.value = true
