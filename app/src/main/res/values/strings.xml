@@ -143,5 +143,6 @@
     <string name="more_life">More life</string>
     <string name="less_life">Less life</string>
     <string name="sort_by">Sort by</string>
+    <string name="no_friends">It seems to be a bit empty… try adding a new friend!</string>
 
 </resources>

@@ -8,16 +8,21 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PersonAddAlt1
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -53,16 +58,17 @@ import com.jaime.ascend.viewmodel.FriendRequestViewModel
 fun FriendsScreen(navController: NavController) {
     val context = LocalContext.current
     val viewModel: FriendRequestViewModel = viewModel(
-        factory = FriendRequestViewModelFactory(context, FriendRequestRepository(
-            firestore = FirebaseFirestore.getInstance(),
-            auth = FirebaseAuth.getInstance(),
-            functions = FirebaseFunctions.getInstance(),
-            messaging = FirebaseMessaging.getInstance()
-        ), UserRepository())
+        factory = FriendRequestViewModelFactory(
+            context, FriendRequestRepository(
+                firestore = FirebaseFirestore.getInstance(),
+                auth = FirebaseAuth.getInstance(),
+                functions = FirebaseFunctions.getInstance(),
+                messaging = FirebaseMessaging.getInstance()
+            ), UserRepository()
+        )
     )
     val friendsList by viewModel.friendsList.collectAsState()
     val loading by viewModel.loading.collectAsState()
-
 
     // Estado para el menú desplegable
     var expanded by remember { mutableStateOf(false) }
@@ -94,97 +100,94 @@ fun FriendsScreen(navController: NavController) {
     Scaffold(
         topBar = { ActionBarFriendsScreen(navController = navController, modifier = Modifier) },
         content = { innerPadding ->
-
-            Column(modifier = Modifier.padding(innerPadding).padding(top = 16.dp)) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    ExposedDropdownMenuBox(
-                        expanded = expanded,
-                        onExpandedChange = { expanded = !expanded },
-                        modifier = Modifier.background(
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(12.dp)
-                        )
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(top = 16.dp)
+                    .fillMaxSize()
+            ) {
+                if (friendsList.isEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        TextField(
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth(),
-                            readOnly = true,
-                            value = options[selectedOption],
-                            onValueChange = {},
-                            label = { Text(stringResource(R.string.sort_by)) },
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                            },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors()
+                        Icon(
+                            modifier = Modifier.size(64.dp),
+                            imageVector = Icons.Filled.PersonAddAlt1,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
                         )
-
-                        ExposedDropdownMenu(
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = stringResource(R.string.no_friends),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        ExposedDropdownMenuBox(
                             expanded = expanded,
-                            onDismissRequest = { expanded = false }
+                            onExpandedChange = { expanded = !expanded },
+                            modifier = Modifier.background(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(12.dp)
+                            )
                         ) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.username_a_z)) },
-                                onClick = {
-                                    selectedOption =0
-                                    expanded = false
-                                }
+                            TextField(
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .fillMaxWidth(),
+                                readOnly = true,
+                                value = options[selectedOption],
+                                onValueChange = {},
+                                label = { Text(stringResource(R.string.sort_by)) },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                                },
+                                colors = ExposedDropdownMenuDefaults.textFieldColors()
                             )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.username_z_a)) },
-                                onClick = {
-                                    selectedOption = 1
-                                    expanded = false
+
+                            ExposedDropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                            ) {
+                                options.forEachIndexed { index, option ->
+                                    DropdownMenuItem(
+                                        text = { Text(option) },
+                                        onClick = {
+                                            selectedOption = index
+                                            expanded = false
+                                        }
+                                    )
                                 }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.more_coins)) },
-                                onClick = {
-                                    selectedOption =2
-                                    expanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.less_coins)) },
-                                onClick = {
-                                    selectedOption = 3
-                                    expanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.more_life)) },
-                                onClick = {
-                                    selectedOption = 4
-                                    expanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.less_life)) },
-                                onClick = {
-                                    selectedOption =5
-                                    expanded = false
-                                }
-                            )
+                            }
                         }
                     }
-                }
 
-                if (loading) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(16.dp)
-                    ) {
-                        items(sortedFriendsList) { friend ->
-                            FriendItem(
-                                friend = friend
-                            )
+                    if (loading) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            contentPadding = PaddingValues(16.dp)
+                        ) {
+                            items(sortedFriendsList) { friend ->
+                                FriendItem(friend = friend)
+                            }
                         }
                     }
                 }

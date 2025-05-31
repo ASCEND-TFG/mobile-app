@@ -140,4 +140,5 @@
     <string name="less_coins">Menos monedas</string>
     <string name="more_life">Más vida</string>
     <string name="less_life">Menos vida</string>
+    <string name="no_friends">Parece que esto está un poco vacío… ¡prueba a añadir un nuevo amigo!</string>
 </resources>
