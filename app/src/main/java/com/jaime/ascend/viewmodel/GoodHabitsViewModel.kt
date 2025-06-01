@@ -35,6 +35,19 @@ class GoodHabitsViewModel(
     val selectedCategory: State<Category?> = _selectedCategory
     val templateToAdd: State<HabitTemplate?> = _templateToAdd
 
+    fun loadGoodHabitTemplates() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                _templates.value = templateRepository.getAllGoodHabitTemplates()
+            } catch (e: Exception) {
+                _error.value = e.message
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
     fun createGoodHabit(
         templateId: String,
         days: List<Int>,

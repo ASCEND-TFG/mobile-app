@@ -7,6 +7,40 @@ import kotlinx.coroutines.tasks.await
 
 class TemplateRepository(private val firestore: FirebaseFirestore) {
 
+    suspend fun getAllBadHabitTemplates(): List<HabitTemplate> {
+        return try {
+            firestore.collection("bhabit_templates")
+                .get()
+                .await()
+                .documents
+                .mapNotNull { doc ->
+                    doc.toObject(HabitTemplate::class.java)?.copy(id = doc.id)
+                }
+        } catch (
+            e: Exception
+        ) {
+            Log.e("TemplateRepository", "getAllTemplates: Error getting templates", e)
+            emptyList()
+        }
+    }
+
+    suspend fun getAllGoodHabitTemplates(): List<HabitTemplate> {
+        return try {
+            firestore.collection("ghabit_templates")
+                .get()
+                .await()
+                .documents
+                .mapNotNull { doc ->
+                    doc.toObject(HabitTemplate::class.java)?.copy(id = doc.id)
+                }
+        } catch (
+            e: Exception
+        ) {
+            Log.e("TemplateRepository", "getAllTemplates: Error getting templates", e)
+            emptyList()
+        }
+       }
+
     suspend fun getBadHabitTemplatesByCategory(categoryId: String): List<HabitTemplate> {
         return try {
             // Get the category reference first

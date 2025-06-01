@@ -141,4 +141,6 @@
     <string name="more_life">Más vida</string>
     <string name="less_life">Menos vida</string>
     <string name="no_friends">Parece que esto está un poco vacío… ¡prueba a añadir un nuevo amigo!</string>
+    <string name="search_habits_hint">Busca hábitos…</string>
+    <string name="didnt_find_habtis">No se encontraron hábitos</string>"
 </resources>

@@ -1,6 +1,5 @@
 package com.jaime.ascend.viewmodel
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -14,9 +13,6 @@ import com.jaime.ascend.data.repository.BadHabitRepository
 import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.utils.Difficulty
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class BadHabitsViewModel(
@@ -40,6 +36,19 @@ class BadHabitsViewModel(
     val categories: State<List<Category>> = _categories
     val selectedCategory: State<Category?> = _selectedCategory
     val templateToAdd: State<HabitTemplate?> = _templateToAdd
+
+    fun loadBadHabitTemplates() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                _templates.value = templateRepository.getAllBadHabitTemplates()
+            } catch (e: Exception) {
+                _error.value = e.message
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 
     fun createBadHabit(
         templateId: String,

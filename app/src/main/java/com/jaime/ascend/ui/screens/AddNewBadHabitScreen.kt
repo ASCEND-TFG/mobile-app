@@ -1,5 +1,6 @@
 package com.jaime.ascend.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,18 +15,29 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -45,6 +57,7 @@ import com.jaime.ascend.utils.IconMapper.getHabitIcon
 import com.jaime.ascend.viewmodel.BadHabitsViewModel
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddNewBadHabitScreen(
     navController: NavController,
@@ -65,6 +78,23 @@ fun AddNewBadHabitScreen(
     val isLoading by viewModel.isLoading
     val selectedCategory by viewModel.selectedCategory
     val templates by viewModel.templates
+    var searchQuery by remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(Unit) {
+        viewModel.loadCategories()
+        viewModel.loadBadHabitTemplates()
+    }
+
+    val filteredTemplates = remember(templates, searchQuery) {
+        if (searchQuery.isEmpty()) emptyList() else templates.filter { template ->
+            template.getName(Locale.getDefault()).contains(searchQuery, ignoreCase = true) ||
+                    template.getDescription(Locale.getDefault())
+                        .contains(searchQuery, ignoreCase = true) ||
+                    categories.find { it.id == template.category?.id }?.getName(Locale.getDefault())
+                        ?.contains(searchQuery, ignoreCase = true) == true
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadCategories()
@@ -89,34 +119,103 @@ fun AddNewBadHabitScreen(
         },
         contentWindowInsets = WindowInsets(0.dp)
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (categories.isEmpty()) {
-                Text(text = "No categories found")
-            } else if (selectedCategory == null) {
-                CategoriesList(
-                    categories = categories,
-                    onCategorySelected = { viewModel.selectCategory(it) }
-                )
-            } else {
-                TemplatesList(
-                    templates = templates,
-                    onTemplateSelected = {
-                        val r = AppScreens.AddingBadHabitScreen.route
-                            .replace("{templateId}", it.id)
-                        navController.navigate(r)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            ) {
+                SearchBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 0.dp)
+                        .padding(horizontal = 16.dp),
+                    windowInsets = WindowInsets(top = 12.dp),
+                    query = searchQuery,
+                    onQueryChange = { query ->
+                        searchQuery = query
+                    },
+                    active = searchQuery.isNotEmpty(),
+                    onActiveChange = {},
+                    colors = SearchBarDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
+                    tonalElevation = 0.2.dp,
+                    placeholder = { Text(text = stringResource(R.string.search_habits_hint)) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = null
+                        )
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(
+                                onClick = {
+                                    searchQuery = ""
+                                    focusManager.clearFocus()
+                                }
+                            ) {
+                                Icon(Icons.Filled.Close, "Clear")
+                            }
+                        }
+                    },
+                    onSearch = { focusManager.clearFocus() }
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background)
+                            .fillMaxSize()
+                            .nestedScroll(rememberNestedScrollInteropConnection()),
+                        contentPadding = PaddingValues(vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        items(filteredTemplates) { template ->
+                            ItemDisplayCard(
+                                item = DisplayItem.TemplateItem(template),
+                                onClick = {
+                                    val route = AppScreens.AddingGoodHabitScreen.route
+                                        .replace("{templateId}", template.id)
+                                    navController.navigate(route)
+                                },
+                            )
+                        }
                     }
-                )
+                }
+            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    isLoading -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                    selectedCategory != null -> {
+                        TemplatesList(
+                            templates = templates.filter { it.category?.id == selectedCategory?.id },
+                            onTemplateSelected = {
+                                val route = AppScreens.AddingGoodHabitScreen.route
+                                    .replace("{templateId}", it.id)
+                                navController.navigate(route)
+                            }
+                        )
+                    }
+
+                    else -> {
+                        CategoriesList(
+                            categories = categories,
+                            onCategorySelected = { viewModel.selectCategory(it) }
+                        )
+                    }
+                }
             }
         }
     }
 }
-
 
 @Composable
 private fun CategoriesList(
