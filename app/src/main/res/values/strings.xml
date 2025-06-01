@@ -146,5 +146,12 @@
     <string name="no_friends">It seems to be a bit empty… try adding a new friend!</string>
     <string name="search_habits_hint">Search habits…</string>
     <string name="didnt_find_habtis">No habits found</string>
+    <string name="new_week">New week!</string>
+    <string name="reset_moments_message">Moments have been reset and new ones are available.</string>
+    <string name="you_re_dead">YOU\'RE DEAD!</string>
+    <string name="to_revive_complete_the_following_challenge">To revive, complete the following challenge:</string>
+    <string name="complete_challenge">Complete challenge</string>
+    <string name="you_will_receive_50_life_points">You will receive 50 life points!</string>
+    <string name="your_challenge">YOUR CHALLENGE</string>
 
 </resources>

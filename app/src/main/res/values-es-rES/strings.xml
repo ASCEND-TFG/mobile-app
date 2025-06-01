@@ -142,5 +142,13 @@
     <string name="less_life">Menos vida</string>
     <string name="no_friends">Parece que esto está un poco vacío… ¡prueba a añadir un nuevo amigo!</string>
     <string name="search_habits_hint">Busca hábitos…</string>
-    <string name="didnt_find_habtis">No se encontraron hábitos</string>"
+    <string name="didnt_find_habtis">No se encontraron hábitos</string>
+    <string name="new_week">¡Nueva semana!</string>
+    <string name="reset_moments_message">Los momentos se han resetado y hay nuevos disponibles</string>
+    <string name="you_re_dead">¡HAS MUERTO!</string>
+    <string name="to_revive_complete_the_following_challenge">Para revivir, completa el siguiente reto:</string>
+    <string name="complete_challenge">Completar reto</string>
+    <string name="you_will_receive_50_life_points">¡Recibirás 50 puntos de vida!</string>
+    <string name="your_challenge">TU RETO</string>
+    "
 </resources>

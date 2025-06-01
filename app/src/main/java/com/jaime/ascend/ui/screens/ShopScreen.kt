@@ -1,9 +1,8 @@
 package com.jaime.ascend.ui.screens
 
-import com.jaime.ascend.utils.ShopLocalCache
-import com.jaime.ascend.viewmodel.ShopViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -29,9 +28,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.jaime.ascend.R
 import com.jaime.ascend.data.factory.ShopViewModelFactory
+import com.jaime.ascend.data.models.Moment
 import com.jaime.ascend.data.repository.ShopRepository
 import com.jaime.ascend.ui.components.ActionBarShopScreen
 import com.jaime.ascend.ui.components.MomentCard
+import com.jaime.ascend.ui.navigation.AppScreens
+import com.jaime.ascend.utils.ShopLocalCache
+import com.jaime.ascend.viewmodel.ShopViewModel
 
 @Composable
 fun ShopScreen(navController: NavController) {
@@ -52,72 +55,100 @@ fun ShopScreen(navController: NavController) {
     val daysUntilRefresh by viewModel.daysUntilRefresh
     val isLoading by viewModel.isLoading
     val showResetMessage by viewModel.showResetMessage
+    val isUserDead by viewModel.isUserDead
+    val revivalChallenge by viewModel.revivalChallenge
+    val isShopLocked by viewModel.isShopLocked
+    val showRevivalDialog by viewModel.showRevivalDialog
 
     LaunchedEffect(Unit) {
         viewModel.loadInitialData()
     }
 
-    if (showResetMessage) {
+    Scaffold(
+        topBar = { ActionBarShopScreen(modifier = Modifier, coins = userCoins) },
+        content = { padding ->
+            if (isUserDead) {
+                DeathScreen(padding, navController)
+            } else {
+                ShopScreen(padding, moments, userCoins, isShopLocked, viewModel, daysUntilRefresh)
+            }
+        }
+    )
+
+    // Weekly reset dialog
+    if (!isUserDead && showResetMessage) {
         AlertDialog(
             onDismissRequest = { viewModel.dismissResetMessage() },
-            title = { Text("¡Nueva semana!") },
-            text = { Text("Los momentos se han resetado y hay nuevos disponibles") },
+            title = { Text(stringResource(R.string.new_week)) },
+            text = { Text(stringResource(R.string.reset_moments_message)) },
             confirmButton = {
                 Button(onClick = { viewModel.dismissResetMessage() }) {
-                    Text("Entendido")
+                    Text(stringResource(R.string.confirm))
                 }
             }
         )
     }
+}
 
-    Scaffold(
-        topBar = { ActionBarShopScreen(modifier = Modifier, coins = userCoins) },
-        content = { padding ->
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize()
-                    .padding(16.dp)
+@Composable
+private fun ShopScreen(
+    padding: PaddingValues,
+    moments: List<Moment>,
+    userCoins: Int,
+    isShopLocked: Boolean,
+    viewModel: ShopViewModel,
+    daysUntilRefresh: Int
+) {
+    Column(
+        modifier = Modifier
+            .padding(padding)
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // Weekly moments title
+        Text(
+            text = stringResource(R.string.this_week_s_moments),
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 16.dp),
+            textDecoration = TextDecoration.Underline,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.padding(20.dp))
+
+        // Moments grid
+        if (moments.isNotEmpty()) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.this_week_s_moments),
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    textDecoration = TextDecoration.Underline,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.padding(20.dp))
-
-                if (moments.isNotEmpty()) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(moments) { moment ->
-                            MomentCard(
-                                moment = moment,
-                                coins = userCoins,
-                                onClick = { viewModel.purchaseMoment(moment.id) }
-                            )
+                items(moments) { moment ->
+                    MomentCard(
+                        moment = moment,
+                        coins = userCoins,
+                        onClick = {
+                            if (!isShopLocked) {
+                                viewModel.purchaseMoment(moment.id)
+                            }
                         }
-                    }
-                } else {
-                    Text(
-                        stringResource(R.string.loading_moments),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                 }
-
-                Text(
-                    text = stringResource(R.string.new_moments_in_days, daysUntilRefresh),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
             }
+        } else {
+            Text(
+                stringResource(R.string.loading_moments),
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
         }
-    )
+
+        // Refresh countdown
+        Text(
+            text = stringResource(R.string.new_moments_in_days, daysUntilRefresh),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+    }
 }

@@ -132,6 +132,12 @@ sealed class AppScreens(
         icon = Icons.Filled.DisabledByDefault
     )
 
+    object DeathScreen : AppScreens(
+        route = "deathScreen",
+        title = R.string.add_friend,
+        icon = Icons.Filled.DisabledByDefault
+    )
+
     // Pantallas con BottomNavigation
     object HomeScreen : AppScreens(
         route = "home",

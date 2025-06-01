@@ -197,6 +197,10 @@ fun MainScreenNavHost() {
                             if (currentUser != null) EmailVerificationScreen(navController)
                         }
 
+                        /*composable(route = AppScreens.DeathScreen.route) {
+                            if (currentUser != null) DeathScreen(navController)
+                        }*/
+
                         composable(route = AppScreens.AddNewGoodHabitScreen.route) {
                             AddNewGoodHabitScreen(
                                 navController = navController,

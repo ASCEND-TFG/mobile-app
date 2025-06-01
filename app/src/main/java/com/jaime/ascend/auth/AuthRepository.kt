@@ -63,9 +63,11 @@ class AuthRepository {
 
                 val userData = mapOf(
                     "username" to username,
+                    "isShopLocked" to false,
                     "coins" to 0,
                     "currentLife" to 100,
                     "maxLife" to 100,
+                    "avatarId" to 0,
                     "lastDailyReset" to null,
                     "lastWeeklyReset" to null,
                     "friends" to emptyList<String>(),

@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jaime.ascend.data.models.Moment
 import com.jaime.ascend.data.repository.ShopRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.time.DayOfWeek
@@ -31,6 +32,10 @@ class ShopViewModel(
     private val _isLoading = mutableStateOf(true)
     private val _daysUntilRefresh = mutableIntStateOf(0)
     private val _showResetMessage = mutableStateOf(false)
+    private val _isUserDead = mutableStateOf(false)
+    private val _revivalChallenge = mutableStateOf("")
+    private val _isShopLocked = mutableStateOf(false)
+    private val _showRevivalDialog = mutableStateOf(false)
 
     // Estados públicos
     val moments: State<List<Moment>> = _moments
@@ -40,10 +45,10 @@ class ShopViewModel(
     val isLoading: State<Boolean> = _isLoading
     val daysUntilRefresh: State<Int> = _daysUntilRefresh
     val showResetMessage: State<Boolean> = _showResetMessage
-
-    init {
-        loadInitialData()
-    }
+    val isUserDead: State<Boolean> = _isUserDead
+    val revivalChallenge: State<String> = _revivalChallenge
+    val isShopLocked: State<Boolean> = _isShopLocked
+    val showRevivalDialog: State<Boolean> = _showRevivalDialog
 
     internal fun loadInitialData() {
         viewModelScope.launch {
@@ -102,6 +107,8 @@ class ShopViewModel(
         _currentLife.intValue = userDoc.getLong("currentLife")?.toInt() ?: 0
         _maxLife.intValue = userDoc.getLong("maxLife")?.toInt() ?: 100
         _ownedMoments.value = (userDoc.get("ownedMoments") as? List<String>)?.toSet() ?: emptySet()
+        _isShopLocked.value = userDoc.getBoolean("isShopLocked") ?: false
+        _isUserDead.value = _currentLife.intValue <= 0
     }
 
     private fun calculateDaysUntilNextMonday(): Int {

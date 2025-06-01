@@ -198,7 +198,7 @@ fun AddNewBadHabitScreen(
                         TemplatesList(
                             templates = templates.filter { it.category?.id == selectedCategory?.id },
                             onTemplateSelected = {
-                                val route = AppScreens.AddingGoodHabitScreen.route
+                                val route = AppScreens.AddingBadHabitScreen.route
                                     .replace("{templateId}", it.id)
                                 navController.navigate(route)
                             }
