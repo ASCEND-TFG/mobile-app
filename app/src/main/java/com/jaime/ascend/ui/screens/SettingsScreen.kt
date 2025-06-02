@@ -2,8 +2,11 @@ package com.jaime.ascend.ui.screens
 
 import AuthViewModel
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +18,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -34,7 +40,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -57,6 +65,7 @@ fun SettingsScreen(navController: NavController) {
     var darkModeEnabled by remember { mutableStateOf(false) }
     var notificationsEnabled by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     if (showLogoutDialog) {
         AlertDialog(
@@ -188,10 +197,22 @@ fun SettingsScreen(navController: NavController) {
                             .fillMaxWidth()
                             .height(48.dp),
                         content = {
-                            Text(
-                                text = stringResource(id = R.string.sign_out_button),
-                                fontSize = 16.sp
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Logout,
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(end = 8.dp)
+                                )
+                                Text(
+                                    text = stringResource(id = R.string.sign_out_button),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     )
 
@@ -207,16 +228,57 @@ fun SettingsScreen(navController: NavController) {
                             contentColor = MaterialTheme.colorScheme.onError
                         )
                     ) {
-                        Text(
-                            text = stringResource(id = R.string.delete_account_button),
-                            style = MaterialTheme.typography.labelLarge
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Delete,
+                                contentDescription = null,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Text(
+                                text = stringResource(id = R.string.delete_account_button),
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    Divider(modifier = Modifier.padding(vertical = 28.dp))
+
+                    OutlinedButton(
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/imJaimeDev"))
+                            context.startActivity(intent)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Code,
+                                contentDescription = null,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.developers_info),
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(32.dp))
 
                     Text(
-                        text = "Ascend ver. 0",
+                        text = "ASCEND ver. 1.0 - imJaimeDev ;)",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         modifier = Modifier.align(Alignment.CenterHorizontally)

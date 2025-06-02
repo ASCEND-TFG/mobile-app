@@ -153,5 +153,6 @@
     <string name="complete_challenge">Complete challenge</string>
     <string name="you_will_receive_50_life_points">You will receive 50 life points!</string>
     <string name="your_challenge">YOUR CHALLENGE</string>
+    <string name="developers_info">Developer\'s info</string>
 
 </resources>
