@@ -36,6 +36,12 @@ import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.utils.ShopLocalCache
 import com.jaime.ascend.viewmodel.ShopViewModel
 
+/**
+ * Screen that displays the shop.
+ * It shows a list of moments and allows the user to purchase them.
+ * @author Jaime Martínez Fernández
+ * @param navController NavController
+ */
 @Composable
 fun ShopScreen(navController: NavController) {
     val viewModel: ShopViewModel = viewModel(
@@ -90,6 +96,15 @@ fun ShopScreen(navController: NavController) {
     }
 }
 
+/**
+ * Shop screen content.
+ * @param padding PaddingValues
+ * @param moments List<Moment>
+ * @param userCoins Int
+ * @param isShopLocked Boolean
+ * @param viewModel ShopViewModel
+ * @param daysUntilRefresh Int
+ */
 @Composable
 private fun ShopScreen(
     padding: PaddingValues,

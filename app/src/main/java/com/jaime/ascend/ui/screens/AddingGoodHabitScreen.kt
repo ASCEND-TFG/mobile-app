@@ -43,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -73,8 +74,13 @@ fun AddingGoodHabitScreen(
     viewModel: GoodHabitsViewModel = viewModel(
         factory = GoodHabitsViewModelFactory(
             categoryRepository = CategoryRepository(FirebaseFirestore.getInstance()),
-            habitRepository = GoodHabitRepository(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance()),
-            templateRepository = TemplateRepository(FirebaseFirestore.getInstance())
+            habitRepository = GoodHabitRepository(
+                FirebaseFirestore.getInstance(),
+                FirebaseAuth.getInstance(),
+                LocalContext.current
+            ),
+            templateRepository = TemplateRepository(FirebaseFirestore.getInstance()),
+            context = LocalContext.current
         )
     ),
 ) {
@@ -258,7 +264,7 @@ fun AddingGoodHabitScreen(
                         BlackButton(
                             onClick = {
                                 if (selectedDays.isNotEmpty()) {
-                                    viewModel.createGoodHabit (
+                                    viewModel.createGoodHabit(
                                         templateId = templateId,
                                         days = selectedDays,
                                         difficulty = selectedDifficulty,

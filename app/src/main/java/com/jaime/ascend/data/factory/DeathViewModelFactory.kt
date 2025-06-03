@@ -5,6 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.jaime.ascend.viewmodel.DeathViewModel
 
+/**
+ * Factory class for creating instances of [DeathViewModel].
+ * @author Jaime Martínez Fernández
+ */
 class DeathViewModelFactory(
     private val context: Context
 ) : ViewModelProvider.Factory {

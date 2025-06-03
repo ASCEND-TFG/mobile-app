@@ -6,6 +6,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.jaime.ascend.data.repository.ShopRepository
 import com.jaime.ascend.viewmodel.ShopViewModel
 
+/**
+ * Factory class for creating instances of [ShopViewModel].
+ * @author Jaime Martínez Fernández
+ */
 class ShopViewModelFactory(
     private val ctx: Context,
     private val shopRepo: ShopRepository

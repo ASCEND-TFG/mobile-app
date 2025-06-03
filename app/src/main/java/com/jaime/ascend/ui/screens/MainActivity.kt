@@ -20,6 +20,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavType
@@ -42,6 +44,11 @@ import com.jaime.ascend.ui.components.BottomNavigation
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.ui.theme.AppTheme
 
+/**
+ * Main activity.
+ * It contains the navigation graph.
+ * @author Jaime Martínez Fernández
+ */
 class MainActivity : ComponentActivity() {
     private val auth = Firebase.auth
 
@@ -55,11 +62,13 @@ class MainActivity : ComponentActivity() {
                     return@OnCompleteListener
                 }
             })
-        } else {
-            // TODO: Inform user that that your app will not show notifications.
         }
     }
 
+    /**
+     * Ask for notification permission.
+     * If the permission is not granted, it will be requested.
+     */
     private fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
@@ -71,7 +80,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,6 +98,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Main screen navigation graph.
+ * It contains all the screens of the app.
+ */
 @Composable
 fun MainScreenNavHost() {
     val navController = rememberNavController()
@@ -99,7 +111,7 @@ fun MainScreenNavHost() {
     val startDestination = AppScreens.SplashScreen.route
     val firestore = FirebaseFirestore.getInstance()
     val categoryRepository = CategoryRepository(firestore)
-    val goodHabitRepository = GoodHabitRepository(firestore, auth)
+    val goodHabitRepository = GoodHabitRepository(firestore, auth, LocalContext.current)
     val badHabitRepository = BadHabitRepository(firestore, auth)
     val templateRepository = TemplateRepository(firestore)
 

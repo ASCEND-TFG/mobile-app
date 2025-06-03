@@ -13,6 +13,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
+/**
+ * Repository for bad habits.
+ * @param firestore The Firebase Firestore instance.
+ * @param auth The Firebase Authentication instance.
+ * @author Jaime Martínez Fernández
+ */
 class BadHabitRepository(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
@@ -23,11 +29,15 @@ class BadHabitRepository(
     // Current active listeners to avoid duplicates
     private val activeListeners = mutableMapOf<String, ListenerRegistration>()
 
+    /**
+     * Retrieves a flow of bad habits for a given user.
+     * @param userId The ID of the user.
+     * @return A flow of bad habits.
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getUserBadHabitsRealTime(userId: String): Flow<List<BadHabit>> = callbackFlow {
         val listenerKey = "badhabits_$userId"
 
-        // Cancel any existing listener for this user
         activeListeners[listenerKey]?.remove()
 
         val listener = habitsCollection
@@ -55,6 +65,12 @@ class BadHabitRepository(
         awaitClose { activeListeners.remove(listenerKey)?.remove() }
     }
 
+    /**
+     * Creates a new bad habit.
+     * @param templateId The ID of the bad habit template.
+     * @param difficulty The difficulty of the bad habit.
+     * @return A boolean indicating if the creation was successful.
+     */
     suspend fun createBadHabit(
         templateId: String,
         difficulty: Difficulty,
@@ -86,6 +102,11 @@ class BadHabitRepository(
         return success
     }
 
+    /**
+     * Updates a bad habit.
+     * @param habit The bad habit to update.
+     * @throws Exception if the update fails.
+     */
     suspend fun updateBadHabit(habit: BadHabit) {
         try {
             habitsCollection.document(habit.id).set(habit.toMap()).await()
@@ -95,16 +116,6 @@ class BadHabitRepository(
         }
     }
 
-    suspend fun deleteBadHabit(habitId: String) {
-        try {
-            habitsCollection.document(habitId).delete().await()
-        } catch (e: Exception) {
-            logError("BADHABIT_DELETE", "Error deleting bad habit $habitId", e)
-            throw e
-        }
-    }
-
-    /* ------------------------- Helper Functions ------------------------- */
     private fun logError(tag: String, message: String, e: Exception) {
         Log.e(tag, "$message: ${e.message}")
     }

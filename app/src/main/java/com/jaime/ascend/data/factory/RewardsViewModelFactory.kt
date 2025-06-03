@@ -6,6 +6,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jaime.ascend.viewmodel.RewardsViewModel
 
+/**
+ * Factory class for creating instances of [RewardsViewModel].
+ * @author Jaime Martínez Fernández
+ */
 class RewardsViewModelFactory(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),

@@ -1,6 +1,5 @@
 package com.jaime.ascend.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,7 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +55,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+/**
+ * Profile screen.
+ * It displays the user's profile information.
+ * It also allows the user to change the avatar and analysis of their categories progress.
+ * @author Jaime Martínez Fernández
+ * @param navController NavController
+ * @param viewModel ProfileViewModel
+ */
 @Composable
 fun ProfileScreen(
     navController: NavController,
@@ -87,7 +93,7 @@ fun ProfileScreen(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Sección de perfil
+                // Profile section
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -190,6 +196,12 @@ fun ProfileScreen(
     }
 }
 
+/**
+ * Avatar selection dialog.
+ * It allows the user to select a new avatar.
+ * @param viewModel ProfileViewModel
+ * @param onDismiss () -> Unit
+ */
 @Composable
 fun AvatarSelectionDialog(
     viewModel: ProfileViewModel,

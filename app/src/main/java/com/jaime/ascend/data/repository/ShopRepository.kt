@@ -13,17 +13,35 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.min
 
+/**
+ * Repository for the shop.
+ * @param firestore The Firebase Firestore instance.
+ * @param localCache The local cache for moments.
+ * @param currentContext The current context.
+ * @author Jaime Martínez Fernández
+ */
 class ShopRepository(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
     private val localCache: ShopLocalCache,
     private val currentContext: Context
 ) {
 
+    /**
+     * Constants for Firestore collections.
+     * @property MOMENTS_COLLECTION The name of the moments collection.
+     * @property USERS_COLLECTION The name of the users collection.
+     */
     private companion object {
         const val MOMENTS_COLLECTION = "moments"
         const val USERS_COLLECTION = "users"
     }
 
+    /**
+     * Checks if it's time to reset the weekly moments.
+     * @param userId The ID of the user.
+     * @return True if it's time to reset, false otherwise.
+     * @throws Exception if the reset fails.
+     */
     suspend fun checkAndHandleWeeklyReset(userId: String): Boolean {
         val today = LocalDate.now()
         val lastResetDate = localCache.getLastReRollDate()?.let {
@@ -61,15 +79,16 @@ class ShopRepository(
     }
 
     /**
-     * Obtiene los momentos actuales de la caché local
-     * @return Lista de momentos, si no hay, devuelve una lista vacia
+     * Gets the current list of moments.
+     * @return The current list of moments.
      */
     suspend fun getCurrentMoments(): List<Moment> {
         return localCache.getCachedMoments()
     }
 
     /**
-     * Genera nuevos momentos aleatorios y los almacena en la caché local
+     * Generates new random moments.
+     * @throws Exception if the moments could not be generated.
      */
     suspend fun generateNewMoments() {
         val allMoments = firestore.collection(MOMENTS_COLLECTION)
@@ -84,8 +103,8 @@ class ShopRepository(
     }
 
     /**
-     * Obtiene la fecha del último reroll de la caché local
-     * @return Fecha del último reroll, si se conoce, devuelve null
+     * Gets the last re-roll date.
+     * @return The last re-roll date, or null if not found.
      */
     suspend fun getLastReRollDate(): LocalDate? {
         val dateString = localCache.getLastReRollDate()
@@ -96,8 +115,8 @@ class ShopRepository(
     }
 
     /**
-     * Verifica si es necesario generar nuevos momentos
-     * @return True si es necesario, false en caso contrario
+     * Checks if it's time to generate new moments.
+     * @return True if it's time to generate new moments, false otherwise.
      */
     suspend fun shouldGenerateNewMoments(): Boolean {
         val lastReRoll = getLastReRollDate()
@@ -113,10 +132,11 @@ class ShopRepository(
     }
 
     /**
-     * Realiza la compra de un momento
-     * @param currentUser ID del usuario actual
-     * @param momentId ID del momento a comprar
-     * @param onSuccess Callback que se ejecuta en caso de éxito
+     * Purchases a moment.
+     * @param currentUser The ID of the current user.
+     * @param momentId The ID of the moment to purchase.
+     * @param onSuccess The callback to execute on success.
+     * @throws Exception if the purchase fails.
      */
     suspend fun purchaseMoment(
         currentUser: String,

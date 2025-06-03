@@ -6,24 +6,21 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.messaging.FirebaseMessaging
-import com.jaime.ascend.utils.FirebaseMessages
-import kotlinx.coroutines.tasks.await
 
+/**
+ * Repository for handling authentication operations with Firebase
+ * @author Jaime Martínez Fernández
+ */
 class AuthRepository {
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
 
-    /*fun getGoogleSignInClient(context: Context): GoogleSignInClient {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(context.getString(R.string.default_web_client_id)) // Reemplaza con tu client ID
-            .requestEmail()
-            .build()
-
-        return GoogleSignIn.getClient(context, gso)
-    }*/
-
-
+    /**
+     * Signs in a user with the provided email and password.
+     * @param email The user's email.
+     * @param password The user's password.
+     * @param callback A function to be called with the result of the sign-in operation.
+     */
     fun signIn(email: String, password: String, callback: (Boolean) -> Unit) {
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -45,6 +42,13 @@ class AuthRepository {
         }
     }
 
+    /**
+     * Registers a new user with email/pasword and creates their initial data in Firestore
+     * @param email The user's email.
+     * @param password The user's password.
+     * @param username The user's username.
+     * @param callback A function to be called with the result of the sign-up operation.
+     */
     fun signUp(email: String, password: String, username: String, callback: (Boolean) -> Unit) {
         firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -52,7 +56,6 @@ class AuthRepository {
                 val uid = user?.uid ?: ""
                 val userDocRef = firestore.collection("users").document(uid)
 
-                // Función auxiliar para crear categorías con la estructura correcta
                 fun createCategory(initialExp: Int = 0): Map<String, Any> {
                     return mapOf(
                         "currentExp" to initialExp,

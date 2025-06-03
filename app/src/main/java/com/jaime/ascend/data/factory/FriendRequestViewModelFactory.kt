@@ -7,6 +7,10 @@ import com.jaime.ascend.data.repository.FriendRequestRepository
 import com.jaime.ascend.data.repository.UserRepository
 import com.jaime.ascend.viewmodel.FriendRequestViewModel
 
+/**
+ * Factory class for creating instances of [FriendRequestViewModel].
+ * @author Jaime Martínez Fernández
+ */
 class FriendRequestViewModelFactory(
     private val ctx: Context,
     private val friendRepo: FriendRequestRepository,

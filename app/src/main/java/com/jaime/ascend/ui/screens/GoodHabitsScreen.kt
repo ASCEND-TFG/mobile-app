@@ -70,8 +70,9 @@ fun GoodHabitsScreen(
     val viewModel: GoodHabitsViewModel = viewModel(
         factory = GoodHabitsViewModelFactory(
             categoryRepository = CategoryRepository(firestore),
-            habitRepository = GoodHabitRepository(firestore, auth),
-            templateRepository = TemplateRepository(firestore)
+            habitRepository = GoodHabitRepository(firestore, auth, LocalContext.current),
+            templateRepository = TemplateRepository(firestore),
+            context = LocalContext.current
         )
     )
     val rewardsViewModel: RewardsViewModel = viewModel(

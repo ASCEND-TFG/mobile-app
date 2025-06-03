@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.viewmodel.CategoriesViewModel
 
+/**
+ * Factory class for creating instances of [CategoriesViewModel].
+ */
 class CategoriesViewModelFactory(
     private val repository: CategoryRepository
 ) : ViewModelProvider.Factory {

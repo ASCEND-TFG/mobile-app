@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.jaime.ascend.viewmodel.UserViewModel
 
+/**
+ * Factory class for creating instances of [UserViewModel].
+ * @author Jaime Martínez Fernández
+ */
 class UserViewModelFactory(
 ) : ViewModelProvider.Factory {
 

@@ -1,14 +1,32 @@
 package com.jaime.ascend.ui.screens
 
 import AuthViewModel
-import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +50,12 @@ import com.jaime.ascend.ui.theme.AppTheme
 import com.jaime.ascend.ui.theme.AppTypography
 import com.jaime.ascend.ui.theme.displayFontFamily
 
+/**
+ * Screen that handles the signup process.
+ * It displays a form with email, username, password and confirm password fields.
+ * It also has a button to navigate to the login screen.
+ * @author Jaime Martínez Fernández
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(navController: NavController) {
@@ -40,7 +64,8 @@ fun SignupScreen(navController: NavController) {
     val emailPattern = Regex("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]{2,}")
 
     val emailErrorMessage = stringResource(id = R.string.signup_error_message_email_format)
-    val passwordMismatchMessage = stringResource(id = R.string.signup_error_message_password_mismatch)
+    val passwordMismatchMessage =
+        stringResource(id = R.string.signup_error_message_password_mismatch)
     val weakPasswordMessage = stringResource(id = R.string.signup_error_message_weak_password)
     val longUsernameMessage = stringResource(id = R.string.signup_error_message_long_username)
     val shortUsernameMessage = stringResource(id = R.string.signup_error_message_short_username)
@@ -58,10 +83,11 @@ fun SignupScreen(navController: NavController) {
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
     var formError by remember { mutableStateOf<String?>(null) }
 
-    var showVerificationMessage by remember { mutableStateOf(false) }
-
     val ctx = LocalContext.current
 
+    /**
+     * Validates the username field.
+     */
     fun validateUsername() {
         usernameError = when {
             username.text.isEmpty() -> null
@@ -71,6 +97,9 @@ fun SignupScreen(navController: NavController) {
         }
     }
 
+    /**
+     * Validates the email field.
+     */
     fun validateEmail() {
         emailError = when {
             email.text.isEmpty() -> null
@@ -79,6 +108,9 @@ fun SignupScreen(navController: NavController) {
         }
     }
 
+    /**
+     * Validates the confirm password field.
+     */
     fun validateConfirmPassword() {
         confirmPasswordError = when {
             confirmPassword.text.isEmpty() -> null
@@ -87,6 +119,9 @@ fun SignupScreen(navController: NavController) {
         }
     }
 
+    /**
+     * Validates the password field.
+     */
     fun validatePassword() {
         passwordError = when {
             password.text.isEmpty() -> null
@@ -96,6 +131,9 @@ fun SignupScreen(navController: NavController) {
         validateConfirmPassword()
     }
 
+    /**
+     * Checks if the form is valid.
+     */
     fun isFormValid(): Boolean {
         return username.text.isNotEmpty() &&
                 email.text.isNotEmpty() &&
@@ -311,7 +349,11 @@ fun SignupScreen(navController: NavController) {
                                             if (!querySnapshot.isEmpty) {
                                                 formError = userCollisionMessage
                                             } else {
-                                                viewModel.signUp(email.text, password.text, username.text) { success ->
+                                                viewModel.signUp(
+                                                    email.text,
+                                                    password.text,
+                                                    username.text
+                                                ) { success ->
                                                     if (success) {
                                                         viewModel.sendEmailVerification { emailSent ->
                                                             if (emailSent) {
@@ -321,7 +363,8 @@ fun SignupScreen(navController: NavController) {
                                                                     }
                                                                 }
                                                             } else {
-                                                                formError = "Error al enviar el email de verificación"
+                                                                formError =
+                                                                    "Error al enviar el email de verificación"
                                                             }
                                                         }
                                                     } else {
@@ -372,34 +415,5 @@ fun SignupScreen(navController: NavController) {
                 }
             }
         }
-
-        /*if (showVerificationMessage) {
-            AlertDialog(
-                onDismissRequest = { showVerificationMessage = false },
-                title = { Text("Verifica tu email") },
-                text = { Text("Hemos enviado un enlace de verificación a ${email.text}. Por favor revisa tu bandeja de entrada.") },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            viewModel.sendEmailVerification()
-                            // Opcional: mostrar toast de confirmación
-                            Toast.makeText(ctx, "Email reenviado", Toast.LENGTH_SHORT).show()
-                        }
-                    ) {
-                        Text("Reenviar verificación")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            showVerificationMessage = false
-                            navController.navigate(AppScreens.LoginScreen.route)
-                        }
-                    ) {
-                        Text("Ir a login")
-                    }
-                }
-            )
-        }*/
     }
 }

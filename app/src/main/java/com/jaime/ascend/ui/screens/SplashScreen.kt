@@ -30,7 +30,11 @@ import com.jaime.ascend.ui.theme.AppTheme
 import kotlinx.coroutines.delay
 import java.util.Locale
 
-
+/**
+ * Screen that presents a splash screen during the app's startup process.
+ * It displays a loading indicator and a random quote from Firestore.
+ * @author Jaime Martínez Fernández
+ */
 class SplashScreen : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +47,10 @@ class SplashScreen : ComponentActivity() {
     }
 }
 
+/**
+ * Composable function that displays the splash screen content.
+ * @param onTimeout Callback function to be executed when the splash screen timeout is reached.
+ */
 @Composable
 fun SplashScreenContent(onTimeout: () -> Unit = {}) {
     val defaultText = stringResource(id = R.string.loading)

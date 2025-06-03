@@ -56,7 +56,7 @@ class FriendRequestViewModel(
             _loading.value = true
             try {
                 val currentUserId = userRepository.getCurrentUserId() ?: return@launch
-                val userDoc = userRepository.getUserDocument(currentUserId).await()
+                val userDoc = userRepository.getUserData(currentUserId).await()
                 val friendsIds = userDoc?.get("friends") as? List<String> ?: emptyList()
 
                 val friends = friendsIds.mapNotNull { friendId ->
@@ -84,7 +84,7 @@ class FriendRequestViewModel(
         viewModelScope.launch {
             try {
                 val currentUserId = repo.getCurrentUserId() ?: return@launch
-                val userDoc = repo.getUserDocument(currentUserId).await()
+                val userDoc = repo.getUserData(currentUserId).await()
                 val pendingIds = userDoc?.get("pendingRequests") as? List<String> ?: emptyList()
 
                 val requests = pendingIds.mapNotNull { userId ->

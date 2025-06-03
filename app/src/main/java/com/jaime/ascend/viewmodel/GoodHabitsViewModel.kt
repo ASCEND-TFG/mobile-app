@@ -1,5 +1,6 @@
 package com.jaime.ascend.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +19,7 @@ class GoodHabitsViewModel(
     private val categoryRepository: CategoryRepository,
     private val habitRepository: GoodHabitRepository,
     private val templateRepository: TemplateRepository,
+    context: Context,
 ) : ViewModel() {
     private val _habits = mutableStateOf<List<GoodHabit>>(emptyList())
     private val _templates = mutableStateOf<List<HabitTemplate>>(emptyList())

@@ -100,6 +100,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
+/**
+ * Custom button component.
+ * @param modifier The modifier to be applied to the button.
+ * @param onClick The action to be performed when the button is clicked.
+ * @param content The content of the button.
+ * @param enabled Whether the button is enabled or not.
+ */
 @Composable
 fun BlackButton(
     modifier: Modifier = Modifier,
@@ -140,7 +147,10 @@ fun BlackButton(
     }
 }
 
-
+/**
+ * Bottom navigation bar.
+ * @param navController The navigation controller.
+ */
 @Composable
 fun BottomNavigation(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -187,6 +197,10 @@ fun BottomNavigation(navController: NavController) {
     }
 }
 
+/**
+ * Action bar component.
+ * @param modifier The modifier to be applied to the action bar.
+ */
 @Composable
 @Preview(showBackground = true)
 fun ActionBar(modifier: Modifier = Modifier) {
@@ -208,6 +222,12 @@ fun ActionBar(modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * Action bar for profile screen.
+ * @param viewModel The user view model.
+ * @param modifier The modifier to be applied to the action bar.
+ * @param navController The navigation controller.
+ */
 @Composable
 fun ActionBarProfileScreen(
     viewModel: UserViewModel = viewModel(), modifier: Modifier, navController: NavController,
@@ -246,6 +266,11 @@ fun ActionBarProfileScreen(
     }
 }
 
+/**
+ * Action bar for friends screen.
+ * @param modifier The modifier to be applied to the action bar.
+ * @param navController The navigation controller.
+ */
 @Composable
 fun ActionBarFriendsScreen(
     navController: NavController,
@@ -291,6 +316,12 @@ fun ActionBarFriendsScreen(
     }
 }
 
+/**
+ * Action bar for shop screen.
+ * @param viewModel The user view model.
+ * @param modifier The modifier to be applied to the action bar.
+ * @param coins The number of coins.
+ */
 @Composable
 fun ActionBarShopScreen(
     viewModel: UserViewModel = viewModel(),
@@ -339,6 +370,11 @@ fun ActionBarShopScreen(
     }
 }
 
+/**
+ * Friend item component.
+ * @param friend The friend to be displayed.
+ * @param modifier The modifier to be applied to the friend item.
+ */
 @Composable
 fun FriendItem(
     friend: Map<String, Any>,
@@ -413,6 +449,13 @@ fun FriendItem(
     }
 }
 
+/**
+ * Action bar with back button.
+ * @param modifier The modifier to be applied to the action bar.
+ * @param screenName The name of the screen.
+ * @param navController The navigation controller.
+ * @param onBack The action to be performed when the back button is clicked.
+ */
 @Composable
 fun ActionBarWithBackButton(
     modifier: Modifier = Modifier,
@@ -461,6 +504,12 @@ fun ActionBarWithBackButton(
     }
 }
 
+/**
+ * Day of the week selector.
+ * @param modifier The modifier to be applied to the day of the week selector.
+ * @param selectedDays The list of selected days.
+ * @param onDaySelected The action to be performed when a day is selected.
+ */
 @Composable
 fun DayOfWeekSelector(
     modifier: Modifier = Modifier,
@@ -515,6 +564,12 @@ fun DayOfWeekSelector(
     }
 }
 
+/**
+ * Health progress bar.
+ * @param currentLife The current life.
+ * @param maxLife The maximum life.
+ * @param modifier The modifier to be applied to the health progress bar.
+ */
 @Composable
 fun HealthProgressBar(
     currentLife: Int,
@@ -569,6 +624,12 @@ fun HealthProgressBar(
     }
 }
 
+/**
+ * Reward section.
+ * @param coinReward The number of coins to be rewarded.
+ * @param xpReward The number of XP to be rewarded.
+ * @param modifier The modifier to be applied to the reward section.
+ */
 @Composable
 fun RewardSection(
     coinReward: Int,
@@ -621,6 +682,12 @@ fun RewardSection(
     }
 }
 
+/**
+ * Bad habit card.
+ * @param habit The bad habit to be displayed.
+ * @param onHabitClick The action to be performed when the habit is clicked.
+ * @param viewModel The rewards view model.
+ */
 @Composable
 fun BadHabitCard(
     habit: BadHabit,
@@ -744,6 +811,12 @@ fun BadHabitCard(
     }
 }
 
+/**
+ * Good habit card.
+ * @param habit The good habit to be displayed.
+ * @param onHabitClick The action to be performed when the habit is clicked.
+ * @param viewModel The rewards view model.
+ */
 @Composable
 fun GoodHabitCard(
     habit: GoodHabit,
@@ -868,6 +941,11 @@ fun GoodHabitCard(
     }
 }
 
+/**
+ * Category card.
+ * @param category The category to be displayed.
+ * @param language The language to be used.
+ */
 @Composable
 fun CategoryCard(category: Category, language: String) {
     Card(
@@ -929,6 +1007,11 @@ fun CategoryCard(category: Category, language: String) {
     }
 }
 
+/**
+ * Radar chart.
+ * @param categories The categories to be displayed.
+ * @param modifier The modifier to be applied to the radar chart.
+ */
 @Composable
 fun RadarChartView(
     categories: Map<String, Category>,
@@ -998,6 +1081,12 @@ fun RadarChartView(
     )
 }
 
+/**
+ * Moment card.
+ * @param moment The moment to be displayed.
+ * @param coins The number of coins to be displayed.
+ * @param onClick The action to be performed when the card is clicked.
+ */
 @Composable
 fun MomentCard(
     moment: Moment,
@@ -1008,7 +1097,6 @@ fun MomentCard(
 
     var showDialog by remember { mutableStateOf(false) }
 
-    // Diálogo de confirmación
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -1130,6 +1218,14 @@ fun MomentCard(
     }
 }
 
+/**
+ * Friend request dialog.
+ * @param username The username to be displayed.
+ * @param onUsernameChange The action to be performed when the username changes.
+ * @param isLoading The loading state.
+ * @param onSendRequest The action to be performed when the request is sent.
+ * @param onDismiss The action to be performed when the dialog is dismissed.
+ */
 @Composable
 internal fun FriendRequestDialog(
     username: String,
@@ -1172,6 +1268,12 @@ internal fun FriendRequestDialog(
     )
 }
 
+/**
+ * Pending request item.
+ * @param request The pending request to be displayed.
+ * @param onAccept The action to be performed when the request is accepted.
+ * @param onReject The action to be performed when the request is rejected.
+ */
 @Composable
 fun PendingRequestItem(
     request: Map<String, Any>,

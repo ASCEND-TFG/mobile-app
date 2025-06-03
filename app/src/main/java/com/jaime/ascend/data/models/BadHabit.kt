@@ -1,13 +1,26 @@
 package com.jaime.ascend.data.models
 
-import android.util.Log
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ServerTimestamp
 import com.jaime.ascend.utils.Difficulty
-import kotlinx.coroutines.tasks.await
-import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
+/**
+ * BadHabit data class.
+ * @author Jaime Martínez Fernández
+ * @param id The unique identifier of the bad habit.
+ * @param category The category of the bad habit.
+ * @param template The template of the bad habit.
+ * @param completed Whether the bad habit is completed or not.
+ * @param coinReward The coin reward of the bad habit.
+ * @param createdAt The date when the bad habit was created.
+ * @param difficulty The difficulty of the bad habit.
+ * @param lifeLoss The life loss of the bad habit.
+ * @param lastRelapse The last time when the bad habit was completed.
+ * @param xpReward The XP reward of the bad habit.
+ * @param userId The ID of the user who owns the bad habit.
+ * @param currentStreak The current streak of the bad habit.
+ */
 data class BadHabit(
     val id: String = "",
     val category: DocumentReference? = null,
@@ -23,9 +36,10 @@ data class BadHabit(
     val userId: String = "",
     @Transient var currentStreak: String = "0 min"
 ) {
-    @Transient var resolvedTemplate: HabitTemplate? = null
-    @Transient var resolvedCategory: Category? = null
-
+    /**
+     * Calculates and formats the current streak of the bad habit.
+     * @return The formatted current streak.
+     */
     fun calculateAndFormatCurrentStreak(): String {
         val referenceDate = lastRelapse ?: createdAt
         val diff = System.currentTimeMillis() - referenceDate.time
@@ -38,21 +52,10 @@ data class BadHabit(
         }
     }
 
-    suspend fun resolverCategory(): Category? {
-        return if (resolvedCategory != null) {
-            resolvedCategory
-        } else {
-            try {
-                val category = category?.get()?.await()?.toObject(Category::class.java)
-                resolvedCategory = category
-                category
-            } catch (e: Exception) {
-                Log.e("HABIT", "Error resolving category", e)
-                null
-            }
-        }
-    }
-
+    /**
+     * Converts the bad habit to a map.
+     * @return The map representation of the bad habit.
+     */
     fun toMap(): Map<String, Any> {
         return mapOf(
             "category" to category!!,

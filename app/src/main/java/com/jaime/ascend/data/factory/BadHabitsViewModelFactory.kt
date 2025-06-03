@@ -9,6 +9,10 @@ import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.viewmodel.BadHabitsViewModel
 
+/**
+ * Factory class for creating instances of [BadHabitsViewModel].
+ * @author Jaime Martínez Fernández
+ */
 class BadHabitsViewModelFactory(
     private val categoryRepository: CategoryRepository,
     private val habitRepository: BadHabitRepository,

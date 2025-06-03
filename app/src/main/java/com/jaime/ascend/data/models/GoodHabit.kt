@@ -1,13 +1,24 @@
 package com.jaime.ascend.data.models
 
-import android.util.Log
-import androidx.annotation.StringRes
 import com.google.firebase.firestore.DocumentReference
-import com.jaime.ascend.R
 import com.jaime.ascend.utils.Difficulty
-import kotlinx.coroutines.tasks.await
-import java.util.*
+import java.util.Date
 
+/**
+ * GoodHabit data class.
+ * @author Jaime Martínez Fernández
+ * @param id The unique identifier of the good habit.
+ * @param category The category of the good habit.
+ * @param template The template of the good habit.
+ * @param completed Whether the good habit is completed or not.
+ * @param coinReward The coin reward of the good habit.
+ * @param createdAt The date when the good habit was created.
+ * @param days The days of the week when the good habit need to be completed.
+ * @param difficulty The difficulty of the good habit.
+ * @param xpReward The XP reward of the good habit.
+ * @param userId The ID of the user who owns the good habit.
+ * @param reminderTime The time when the good habit reminder should be triggered.
+ */
 data class GoodHabit(
     val id: String = "",
     val category: DocumentReference? = null,
@@ -20,52 +31,4 @@ data class GoodHabit(
     val xpReward: Int = 0,
     val userId: String = "",
     val reminderTime: String? = null,
-) {
-    @Transient var resolvedTemplate: HabitTemplate? = null
-    @Transient var resolvedCategory: Category? = null
-
-    suspend fun resolveTemplate(): HabitTemplate? {
-        return if (resolvedTemplate != null) {
-            resolvedTemplate  // Return cached version
-        } else {
-            try {
-                val template = template?.get()?.await()?.toObject(HabitTemplate::class.java)
-                resolvedTemplate = template
-                template
-            } catch (e: Exception) {
-                Log.e("HABIT", "Error resolving template", e)
-                null
-            }
-        }
-    }
-
-    suspend fun resolverCategory(): Category? {
-        return if (resolvedCategory != null) {
-            resolvedCategory  // Return cached version
-        } else {
-            try {
-                val category = category?.get()?.await()?.toObject(Category::class.java)
-                resolvedCategory = category
-                category
-            } catch (e: Exception) {
-                Log.e("HABIT", "Error resolving category", e)
-                null
-            }
-        }
-    }
-
-    fun toMap(): Map<String, Any> {
-        return mapOf(
-            "category" to category!!,
-            "template" to template!!,
-            "checked" to completed,
-            "coinReward" to coinReward,
-            "createdAt" to createdAt,
-            "days" to days,
-            "difficulty" to difficulty,
-            "xpReward" to xpReward,
-            "userId" to userId,
-            "reminderTime" to reminderTime!!,
-        )
-    }
-}
+)

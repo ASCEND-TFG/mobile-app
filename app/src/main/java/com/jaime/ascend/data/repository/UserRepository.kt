@@ -5,18 +5,28 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Repository for the user.
+ * @param firestore The Firebase Firestore instance.
+ * @param auth The Firebase Authentication instance.
+ */
 class UserRepository(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 ) {
-    suspend fun getUserDocument(userId: String): Task<DocumentSnapshot> {
+    /**
+     * Gets the user document.
+     * @param userId The ID of the user.
+     * @return The user document.
+     */
+     fun getUserData(userId: String): Task<DocumentSnapshot> {
         return firestore.collection("users").document(userId).get()
     }
 
-    suspend fun getUserData(userId: String): Task<DocumentSnapshot> {
-        return firestore.collection("users").document(userId).get()
-    }
-
+    /**
+     * Gets the current user ID.
+     * @return The current user ID.
+     */
     fun getCurrentUserId(): String? {
         return auth.currentUser?.uid
     }
