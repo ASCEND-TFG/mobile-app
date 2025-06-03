@@ -29,23 +29,17 @@ In a market flooded with generic task apps, ASCEND stands out by:
 - `Jetpack Compose`
 - `Firebase (Auth, Firestore, Storage, Cloud Messaging)`
 - `Figma` for UI/UX
-- `React` (for the public web and admin panel) 
+- `Angular` (for the public webpage) 
 - `GitHub` + `Notion` (version control and agile management)
-
-## 📦 Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/ASCEND-TFG/mobile-app.git
-```
-⚠️ Make sure your google-services.json file is set up to connect to Firebase.
 
 ## 📈 Project Status
 - ✅ Signup and login
 - ✅ Habit creation and tracking
-- 👨‍💻 Relapse control
-- 👨‍💻 Statistics and gamification
-- ⬜ Public web + admin panel
+- ✅ Relapse control
+- ✅ Statistics and gamification
+- ✅ Moments shop
+- ✅ Friends 
+- ✅ Public web 
 
 ## 📬 Contact
 If you'd like to collaborate, report a bug, or simply provide feedback, feel free to contact me at:
