@@ -155,5 +155,7 @@
     <string name="your_challenge">YOUR CHALLENGE</string>
     <string name="developers_info">Developer\'s info</string>
     <string name="it_is_time_to_complete_this_habit">It is time to complete this habit</string>
+    <string name="streak">Streak</string>
+    <string name="last_relapse">Last Relapse</string>
 
 </resources>

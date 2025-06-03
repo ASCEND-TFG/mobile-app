@@ -225,14 +225,14 @@ private fun BadHabitDetailContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         DetailSection(
-            title = "Streak",
+            title = stringResource(R.string.streak),
             content = streakTime
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         DetailSection(
-            title = "Last Relapse",
+            title = stringResource(R.string.last_relapse),
             content = habit.lastRelapse.formatToDayMonthYear()
         )
 
