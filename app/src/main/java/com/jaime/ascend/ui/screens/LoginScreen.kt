@@ -55,6 +55,13 @@ import com.jaime.ascend.ui.theme.AppTheme
 import com.jaime.ascend.ui.theme.AppTypography
 import com.jaime.ascend.ui.theme.displayFontFamily
 
+/**
+ * Login screen.
+ * It contains the login form.
+ * @author Jaime Martínez Fernández
+ * @param onLoginSuccess Callback to navigate to the home screen.
+ * @param navController Navigation controller.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
@@ -70,6 +77,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
     var formError by remember { mutableStateOf<String?>(null) }
     val ctx: Context = LocalContext.current
 
+    /**
+     * Validate email.
+     */
     fun validateEmail() {
         emailError = when {
             email.text.isEmpty() -> null
@@ -78,6 +88,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
         }
     }
 
+    /**
+     * Check if the form is valid.
+     */
     fun isFormValid(): Boolean {
         return email.text.isNotEmpty() &&
                 password.text.isNotEmpty() &&

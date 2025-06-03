@@ -56,6 +56,14 @@ import com.jaime.ascend.viewmodel.HabitDetailViewModel
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
+/**
+ * Habit detail screen.
+ * It contains the details of a habit.
+ * @author Jaime Martínez Fernández
+ * @param navController Navigation controller.
+ * @param habitId Id of the habit.
+ * @param viewModel Habit detail view model.
+ */
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -154,6 +162,14 @@ fun GoodHabitDetailScreen(
     }
 }
 
+/**
+ * Habit detail content.
+ * @param habit Habit.
+ * @param template Habit template.
+ * @param onDeleteClick On delete click.
+ * @param modifier Modifier.
+ * @param navController Navigation controller.
+ */
 @Composable
 private fun HabitDetailContent(
     habit: GoodHabit,
@@ -254,6 +270,12 @@ private fun HabitDetailContent(
     }
 }
 
+/**
+ * Detail section.
+ * @param title Title.
+ * @param content Content.
+ * @param modifier Modifier.
+ */
 @Composable
 private fun DetailSection(
     title: String,
@@ -280,9 +302,11 @@ private fun DetailSection(
     }
 }
 
-
-
-
+/**
+ * Day of week display.
+ * @param selectedDays Selected days.
+ * @param modifier Modifier.
+ */
 @Composable
 private fun DayOfWeekDisplay(
     selectedDays: List<Int>,
@@ -336,7 +360,13 @@ private fun DayOfWeekDisplay(
     }
 }
 
-
+/**
+ * Action buttons.
+ * @param onDeleteClick On delete click.
+ * @param modifier Modifier.
+ * @param habitId Habit id.
+ * @param navController Navigation controller.
+ */
 @Composable
 private fun ActionButtons(
     onDeleteClick: () -> Unit,
@@ -383,6 +413,11 @@ private fun ActionButtons(
     }
 }
 
+/**
+ * Delete confirmation dialog.
+ * @param onConfirm On confirm.
+ * @param onDismiss On dismiss.
+ */
 @Composable
 private fun DeleteConfirmationDialog(
     onConfirm: () -> Unit,

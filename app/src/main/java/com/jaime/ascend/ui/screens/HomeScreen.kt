@@ -41,6 +41,12 @@ import com.jaime.ascend.ui.theme.backgroundDark
 import com.jaime.ascend.ui.theme.backgroundLight
 import kotlinx.coroutines.launch
 
+/**
+ * Home screen.
+ * It contains the tabs with the habits.
+ * @author Jaime Martínez Fernández
+ * @param navController Navigation controller.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -112,12 +118,4 @@ fun HomeScreen(navController: NavController) {
             }
         }
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewHomeScreen() {
-    AppTheme {
-        HomeScreen(navController = rememberNavController())
-    }
 }

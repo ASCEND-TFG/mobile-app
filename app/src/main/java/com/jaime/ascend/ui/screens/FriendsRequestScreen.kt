@@ -50,16 +50,24 @@ import com.jaime.ascend.viewmodel.FriendRequestUiState
 import com.jaime.ascend.viewmodel.FriendRequestViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * Friends request screen.
+ * It contains the list of friend requests where you can accept or reject them. And you can add a new friend via username.
+ * @param navController Navigation controller.
+ * @author Jaime Martínez Fernández
+ */
 @Composable
 fun FriendsRequestScreen(navController: NavController) {
     val context = LocalContext.current
     val viewModel: FriendRequestViewModel = viewModel(
-        factory = FriendRequestViewModelFactory(context, FriendRequestRepository(
-            firestore = FirebaseFirestore.getInstance(),
-            auth = FirebaseAuth.getInstance(),
-            functions = FirebaseFunctions.getInstance(),
-            messaging = FirebaseMessaging.getInstance()
-        ), UserRepository())
+        factory = FriendRequestViewModelFactory(
+            context, FriendRequestRepository(
+                firestore = FirebaseFirestore.getInstance(),
+                auth = FirebaseAuth.getInstance(),
+                functions = FirebaseFunctions.getInstance(),
+                messaging = FirebaseMessaging.getInstance()
+            ), UserRepository()
+        )
     )
     val uiState by viewModel.uiState.collectAsState()
     val foundUser by viewModel.foundUser.collectAsState()

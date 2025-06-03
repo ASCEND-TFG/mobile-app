@@ -49,6 +49,14 @@ import com.jaime.ascend.viewmodel.HabitDetailViewModel
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
+/**
+ * Edit bad habit screen.
+ * It is used to edit a bad habit.
+ * @param navController Navigation controller.
+ * @param habitId Id of the habit to edit.
+ * @param viewModel Habit detail view model.
+ * @author Jaime Martínez Fernández
+ */
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,29 +73,24 @@ fun EditBadHabitScreen(
 
     var template by remember { mutableStateOf<HabitTemplate?>(null) }
     var category by remember { mutableStateOf<Category?>(null) }
-
-    // Estados para la edición
     var expanded by remember { mutableStateOf(false) }
     var selectedDifficulty by remember { mutableStateOf<Difficulty>(Difficulty.EASY) }
 
     LaunchedEffect(habit) {
         habit?.let { currentHabit ->
             try {
-                // Carga el template solo si la referencia existe
                 currentHabit.template?.let { templateRef ->
                     templateRef.get().await().toObject(HabitTemplate::class.java)?.let {
                         template = it
                     }
                 }
 
-                // Carga la categoría si existe
                 currentHabit.category?.let { categoryRef ->
                     categoryRef.get().await().toObject(Category::class.java)?.let {
                         category = it
                     }
                 }
 
-                // Inicializa los estados editables
                 selectedDifficulty = currentHabit.difficulty
 
             } catch (e: Exception) {
@@ -154,6 +157,18 @@ fun EditBadHabitScreen(
     )
 }
 
+/**
+ * Edit bad habit content.
+ * It is used to edit a bad habit.
+ * @param habit Habit to edit.
+ * @param template Habit template.
+ * @param selectedDifficulty Selected difficulty.
+ * @param onDifficultyChange Callback when difficulty is changed.
+ * @param expanded Dropdown expanded state.
+ * @param onExpandedChange Callback when dropdown is expanded/collapsed.
+ * @param onSaveClick Callback when save button is clicked.
+ * @param modifier Modifier.
+ */
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -175,7 +190,6 @@ private fun EditBadHabitContent(
         horizontalAlignment = Alignment.Start
     )
     {
-        // Nombre del hábito (no editable)
         Text(
             text = template.getName(Locale.getDefault()),
             style = MaterialTheme.typography.titleLarge.copy(
@@ -183,7 +197,6 @@ private fun EditBadHabitContent(
             )
         )
 
-        // Descripción (no editable)
         Text(
             text = template.getDescription(Locale.getDefault()),
             style = MaterialTheme.typography.bodyLarge
@@ -191,7 +204,6 @@ private fun EditBadHabitContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Dificultad (editable con Dropdown)
         Text(
             text = stringResource(R.string.select_difficulty),
             style = MaterialTheme.typography.titleMedium,
@@ -238,7 +250,6 @@ private fun EditBadHabitContent(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Botón de guardar
         BlackButton(
             onClick = onSaveClick,
             modifier = Modifier.fillMaxWidth(),

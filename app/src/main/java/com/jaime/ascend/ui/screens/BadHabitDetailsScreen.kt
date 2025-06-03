@@ -58,6 +58,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ *  Bad habit details screen.
+ * It is used to show the details of a bad habit.
+ * @param navController Navigation controller.
+ */
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,16 +76,13 @@ fun BadHabitDetailsScreen(
     val habit by viewModel.bhabit.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
-
     var showDeleteDialog by remember { mutableStateOf(false) }
     var template by remember { mutableStateOf<HabitTemplate?>(null) }
     var category by remember { mutableStateOf<Category?>(null) }
-
     val changesSaved by navController.currentBackStackEntry
         ?.savedStateHandle
         ?.getStateFlow<Boolean>("changesSaved", false)
         ?.collectAsState() ?: remember { mutableStateOf(false) }
-
     val context = LocalContext.current
     var currentStreak by remember { mutableStateOf("0 min") }
 
@@ -169,6 +171,16 @@ fun BadHabitDetailsScreen(
     }
 }
 
+/**
+ * Bad habit detail content.
+ * It is used to show the details of a bad habit.
+ * @param habit Habit.
+ * @param template Habit template.
+ * @param streakTime Streak time.
+ * @param onDeleteClick On delete click.
+ * @param modifier Modifier.
+ * @param navController Navigation controller.
+ */
 @Composable
 private fun BadHabitDetailContent(
     habit: BadHabit,
@@ -184,7 +196,6 @@ private fun BadHabitDetailContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Nombre del hábito
         Text(
             text = template?.getName(Locale.getDefault()) ?: habit.id,
             style = MaterialTheme.typography.titleLarge.copy(
@@ -192,7 +203,6 @@ private fun BadHabitDetailContent(
             )
         )
 
-        // Descripción
         Text(
             text = template?.getDescription(Locale.getDefault()) ?: "",
             style = MaterialTheme.typography.bodyLarge
@@ -207,7 +217,6 @@ private fun BadHabitDetailContent(
             else -> habit.difficulty.toString().lowercase().capitalize(Locale.getDefault())
         }
 
-        // Dificultad
         DetailSection(
             title = stringResource(R.string.difficulty),
             content = difficultyText
@@ -215,7 +224,6 @@ private fun BadHabitDetailContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Streak
         DetailSection(
             title = "Streak",
             content = streakTime
@@ -223,7 +231,6 @@ private fun BadHabitDetailContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Last Relapse
         DetailSection(
             title = "Last Relapse",
             content = habit.lastRelapse.formatToDayMonthYear()
@@ -231,7 +238,6 @@ private fun BadHabitDetailContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Recompensas
         Text(
             text = stringResource(R.string.passive_rewards),
             style = MaterialTheme.typography.titleMedium
@@ -266,6 +272,12 @@ private fun BadHabitDetailContent(
 
 }
 
+/**
+ * Life loss section.
+ * It is used to show the life loss of a bad habit.
+ * @param lifeloss Life loss.
+ * @param modifier Modifier.
+ */
 @Composable
 fun LifeLossSection(
     lifeloss: Int,
@@ -303,6 +315,13 @@ fun LifeLossSection(
     }
 }
 
+/**
+ * Detail section.
+ * It is used to show the details of a bad habit.
+ * @param title Title.
+ * @param content Content.
+ * @param modifier Modifier.
+ */
 @Composable
 private fun DetailSection(
     title: String,
@@ -329,6 +348,14 @@ private fun DetailSection(
     }
 }
 
+/**
+ * Action buttons.
+ * It is used to show the action buttons of a bad habit.
+ * @param onDeleteClick On delete click.
+ * @param modifier Modifier.
+ * @param habitId Habit id.
+ * @param navController Navigation controller.
+ */
 @Composable
 private fun ActionButtons(
     onDeleteClick: () -> Unit,
@@ -376,6 +403,12 @@ private fun ActionButtons(
     }
 }
 
+/**
+ * Delete confirmation dialog.
+ * It is used to show the delete confirmation dialog.
+ * @param onConfirm On confirm.
+ * @param onDismiss On dismiss.
+ */
 @Composable
 private fun DeleteConfirmationDialog(
     onConfirm: () -> Unit,
@@ -414,6 +447,11 @@ private fun DeleteConfirmationDialog(
     )
 }
 
+/**
+ * Format to day month year.
+ * It is used to format a date to day month year.
+ * @return Formatted date.
+ */
 fun Date?.formatToDayMonthYear(): String {
     val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return formatter.format(this)

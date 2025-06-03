@@ -38,7 +38,6 @@ import com.jaime.ascend.data.repository.CategoryRepository
 import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.ui.components.BadHabitCard
 import com.jaime.ascend.ui.components.BlackButton
-import com.jaime.ascend.ui.components.GoodHabitCard
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.viewmodel.BadHabitsViewModel
 import com.jaime.ascend.viewmodel.RewardsViewModel
@@ -46,6 +45,12 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Bad habits screen.
+ * It is used to show the bad habits of the user.
+ * @param navController Navigation controller.
+ * @author Jaime Martínez Fernández
+ */
 @Composable
 fun BadHabitsScreen(
     navController: NavController,
@@ -70,13 +75,11 @@ fun BadHabitsScreen(
     val configuration = LocalConfiguration.current
     val currentLocale by rememberUpdatedState(configuration.locales[0])
     val context = LocalContext.current
-
     val habits by viewModel.habits
     val templates by viewModel.templates
     val isLoading by viewModel.isLoading
     val error by viewModel.error
 
-    // Load data on launch
     LaunchedEffect(auth.currentUser) {
         auth.currentUser?.uid?.let { uid ->
             viewModel.loadHabits(uid)
@@ -171,6 +174,12 @@ fun BadHabitsScreen(
     }
 }
 
+/**
+ * Get formatted date.
+ * It is used to get the formatted date.
+ * @param context Context.
+ * @param locale Locale.
+ */
 private fun getFormattedDate(context: android.content.Context, locale: Locale): String {
     val pattern = if (locale.language == "es") "dd MMMM, yyyy" else "dd MMMM, yyyy"
     return SimpleDateFormat(pattern, locale).format(Date())

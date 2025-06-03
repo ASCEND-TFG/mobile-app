@@ -58,6 +58,14 @@ import com.jaime.ascend.utils.IconMapper.getHabitIcon
 import com.jaime.ascend.viewmodel.GoodHabitsViewModel
 import java.util.Locale
 
+/**
+ * Add new good habit screen.
+ * @param navController The navigation controller.
+ * @param categoryRepository The category repository.
+ * @param habitRepository The good habit repository.
+ * @param templateRepository The template repository.
+ * @author Jaime Martínez Fernández
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddNewGoodHabitScreen(
@@ -213,6 +221,11 @@ fun AddNewGoodHabitScreen(
     }
 }
 
+/**
+ * Categories list.
+ * @param categories The list of categories.
+ * @param onCategorySelected The callback when a category is selected.
+ */
 @Composable
 private fun CategoriesList(
     categories: List<Category>,
@@ -234,6 +247,12 @@ private fun CategoriesList(
     }
 }
 
+/**
+ * Templates list.
+ * @param templates The list of templates.
+ * @param onTemplateSelected The callback when a template is selected.
+ * @author Jaime Martínez Fernández
+ */
 @Composable
 fun TemplatesList(
     templates: List<HabitTemplate>,
@@ -255,7 +274,11 @@ fun TemplatesList(
     }
 }
 
-
+/**
+ * Item display card.
+ * @param item The item to display.
+ * @param onClick The callback when the item is clicked.
+ */
 @Composable
 private fun ItemDisplayCard(
     item: DisplayItem,
@@ -312,6 +335,9 @@ private fun ItemDisplayCard(
     }
 }
 
+/**
+ * Display item.
+ */
 sealed class DisplayItem {
     data class CategoryItem(val category: Category) : DisplayItem()
     data class TemplateItem(val template: HabitTemplate) : DisplayItem()

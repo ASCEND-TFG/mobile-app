@@ -3,6 +3,15 @@ package com.jaime.ascend.utils
 import androidx.annotation.StringRes
 import com.jaime.ascend.R
 
+/**
+ * Represents a difficulty level.
+ * @param xpValue The experience points value.
+ * @param coinValue The coin value.
+ * @param difficultyName The name of the difficulty.
+ * @param lifeLoss The life loss value.
+ * @param labelRes The resource ID of the difficulty label.
+ * @author Jaime Martínez Fernández
+ */
 enum class Difficulty(
     val xpValue: Int,
     val coinValue: Int,

@@ -1,14 +1,11 @@
 package com.jaime.ascend.ui.screens
 
 import AuthViewModel
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +25,12 @@ import com.jaime.ascend.R
 import com.jaime.ascend.ui.navigation.AppScreens
 import kotlinx.coroutines.delay
 
+/**
+ * Email verification screen.
+ * It is shown when the user has not verified their email.
+ * @param navController Navigation controller.
+ * @author Jaime Martínez Fernández
+ */
 @Composable
 fun EmailVerificationScreen(navController: NavController) {
     val viewModel = viewModel<AuthViewModel>()
@@ -37,7 +40,7 @@ fun EmailVerificationScreen(navController: NavController) {
 
     LaunchedEffect(Unit) {
         while (true) {
-            delay(5000) // Verificar cada 5 segundos
+            delay(5000)
             viewModel.checkEmailVerifiedWithReload { isVerified ->
                 if (isVerified) {
                     navController.navigate(AppScreens.HomeScreen.route) {
@@ -55,7 +58,10 @@ fun EmailVerificationScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(stringResource(R.string.pls_check_email), style = MaterialTheme.typography.headlineMedium)
+        Text(
+            stringResource(R.string.pls_check_email),
+            style = MaterialTheme.typography.headlineMedium
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         errorMessage?.let {

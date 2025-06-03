@@ -32,6 +32,12 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.ui.graphics.vector.ImageVector
 
+/**
+ * Maps a string to an icon.
+ * @param iconName The name of the icon.
+ * @return The corresponding icon.
+ * @author Jaime Martínez Fernández
+ */
 object IconMapper {
     fun getCategoryIcon(iconName: String?): ImageVector {
         if (iconName == null)

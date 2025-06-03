@@ -73,7 +73,6 @@ class GoodHabitsViewModel(
         }
     }
 
-    // Load habits WITHOUT resolving templates upfront
     fun loadHabits(userId: String) {
         viewModelScope.launch {
             _isLoading.value = true

@@ -17,21 +17,27 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.jaime.ascend.R
 import com.jaime.ascend.data.factory.DeathViewModelFactory
 import com.jaime.ascend.ui.navigation.AppScreens
 import com.jaime.ascend.viewmodel.DeathViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.res.stringResource
-import com.jaime.ascend.R
 
+/**
+ * Death screen.
+ * It is shown when the user is out of life points. It used to block the user from shopping.
+ * @param padding Padding values.
+ * @param navController Navigation controller.
+ */
 @Composable
 fun DeathScreen(
     padding: PaddingValues,

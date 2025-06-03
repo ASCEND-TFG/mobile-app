@@ -57,6 +57,15 @@ import com.jaime.ascend.utils.IconMapper.getHabitIcon
 import com.jaime.ascend.viewmodel.BadHabitsViewModel
 import java.util.Locale
 
+/**
+ * Add new bad habit screen.
+ * @param navController The navigation controller.
+ * @param categoryRepository The category repository.
+ * @param habitRepository The bad habit repository.
+ * @param templateRepository The template repository.
+ * @param auth The authentication.
+ * @author Jaime Martínez Fernández
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddNewBadHabitScreen(
@@ -194,6 +203,7 @@ fun AddNewBadHabitScreen(
                     isLoading -> {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                     }
+
                     selectedCategory != null -> {
                         TemplatesList(
                             templates = templates.filter { it.category?.id == selectedCategory?.id },
@@ -217,6 +227,11 @@ fun AddNewBadHabitScreen(
     }
 }
 
+/**
+ * Categories list.
+ * @param categories The list of categories.
+ * @param onCategorySelected The callback when a category is selected.
+ */
 @Composable
 private fun CategoriesList(
     categories: List<Category>,
@@ -238,7 +253,11 @@ private fun CategoriesList(
     }
 }
 
-
+/**
+ * Templates list.
+ * @param templates The list of templates.
+ * @param onTemplateSelected The callback when a template is selected.
+ */
 @Composable
 private fun ItemDisplayCard(
     item: DisplayItem,

@@ -80,7 +80,6 @@ class NotificationReceiver : BroadcastReceiver() {
 
     /**
      * Sends a notification.
-     *
      * @param context The context.
      * @param habitId The ID of the habit.
      * @param habitName The name of the habit.

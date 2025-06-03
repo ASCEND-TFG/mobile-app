@@ -50,7 +50,12 @@ import com.jaime.ascend.utils.Difficulty
 import com.jaime.ascend.viewmodel.BadHabitsViewModel
 import java.util.Locale
 
-
+/**
+ * Adding bad habit screen.
+ * @param navController The navigation controller.
+ * @param templateId The ID of the template.
+ * @param viewModel The view model.
+ */
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -109,7 +114,6 @@ fun AddingBadHabitScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     template?.let { template ->
-                        // Sección de información del hábito
                         Text(
                             text = template.getName(Locale.getDefault()),
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
