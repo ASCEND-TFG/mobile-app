@@ -15,6 +15,15 @@ import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.utils.Difficulty
 import kotlinx.coroutines.launch
 
+/**
+ * View model for bad habits.
+ * @author Jaime Martínez Fernández
+ * @param categoryRepository The category repository.
+ * @param habitRepository The habit repository.
+ * @param templateRepository The template repository.
+ * @param auth The authentication.
+ * @author Jaime Martínez Fernández
+ */
 class BadHabitsViewModel(
     private val categoryRepository: CategoryRepository,
     private val habitRepository: BadHabitRepository,
@@ -37,6 +46,9 @@ class BadHabitsViewModel(
     val selectedCategory: State<Category?> = _selectedCategory
     val templateToAdd: State<HabitTemplate?> = _templateToAdd
 
+    /**
+     * Load bad habit templates.
+     */
     fun loadBadHabitTemplates() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -50,6 +62,13 @@ class BadHabitsViewModel(
         }
     }
 
+    /**
+     * Create a bad habit.
+     * @param templateId The id of the template.
+     * @param difficulty The difficulty.
+     * @param onComplete The callback.
+     * @throws Exception If an error occurs.
+     */
     fun createBadHabit(
         templateId: String,
         difficulty: Difficulty,
@@ -70,6 +89,10 @@ class BadHabitsViewModel(
         }
     }
 
+    /**
+     * Load bad habits.
+     * @param userId The id of the user.
+     */
     fun loadHabits(userId: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -82,6 +105,10 @@ class BadHabitsViewModel(
         }
     }
 
+    /**
+     * Load template.
+     * @param templateId The id of the template.
+     */
     fun loadTemplate(templateId: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -91,6 +118,9 @@ class BadHabitsViewModel(
         }
     }
 
+    /**
+     * Load categories.
+     */
     suspend fun loadCategories() {
         _isLoading.value = true
         try {
@@ -102,6 +132,10 @@ class BadHabitsViewModel(
         }
     }
 
+    /**
+     * Select category.
+     * @param category The category.
+     */
     fun selectCategory(category: Category?) {
         _selectedCategory.value = category
         _isLoading.value = true
@@ -111,21 +145,6 @@ class BadHabitsViewModel(
                 _templates.value = templateRepository.getBadHabitTemplatesByCategory(category?.id!!)
             } catch (e: Exception) {
                 Log.e("BadHabitsVM", "Error loading templates", e)
-                _error.value = e.localizedMessage
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
-    fun toggleHabitCompleted(habit: BadHabit, isCompleted: Boolean) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                val updatedHabit = habit.copy(completed = isCompleted)
-                habitRepository.updateBadHabit(updatedHabit)
-            } catch (e: Exception) {
-                Log.e("BadHabitsVM", "Error updating habit", e)
                 _error.value = e.localizedMessage
             } finally {
                 _isLoading.value = false

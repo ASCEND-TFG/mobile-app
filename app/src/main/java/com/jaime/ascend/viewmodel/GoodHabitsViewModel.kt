@@ -15,6 +15,15 @@ import com.jaime.ascend.data.repository.TemplateRepository
 import com.jaime.ascend.utils.Difficulty
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the good habits screen.
+ * It allows the user to create new good habits.
+ * @author Jaime Martínez Fernández
+ * @param categoryRepository The repository for categories
+ * @param habitRepository The repository for good habits
+ * @param templateRepository The repository for habit templates
+ * @param context The application context
+ */
 class GoodHabitsViewModel(
     private val categoryRepository: CategoryRepository,
     private val habitRepository: GoodHabitRepository,
@@ -37,6 +46,10 @@ class GoodHabitsViewModel(
     val selectedCategory: State<Category?> = _selectedCategory
     val templateToAdd: State<HabitTemplate?> = _templateToAdd
 
+    /**
+     * Loads the good habit templates.
+     * @throws Exception if there is an error loading the templates
+     */
     fun loadGoodHabitTemplates() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -50,6 +63,15 @@ class GoodHabitsViewModel(
         }
     }
 
+    /**
+     * Creates a new good habit.
+     * @param templateId The ID of the habit template to use
+     * @param days The days of the week to complete the habit
+     * @param difficulty The difficulty of the habit
+     * @param reminderTime The time to remind the user to complete the habit
+     * @param onComplete The callback to invoke when the habit is created
+     * @throws Exception if there is an error creating the habit
+     */
     fun createGoodHabit(
         templateId: String,
         days: List<Int>,
@@ -73,6 +95,10 @@ class GoodHabitsViewModel(
         }
     }
 
+    /**
+     * Loads the user's good habits.
+     * @param userId The ID of the user to load the habits for
+     */
     fun loadHabits(userId: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -84,6 +110,10 @@ class GoodHabitsViewModel(
         }
     }
 
+    /**
+     * Loads a habit template by its ID.
+     * @param templateId The ID of the habit template to load
+     */
     fun loadTemplate(templateId: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -93,6 +123,10 @@ class GoodHabitsViewModel(
         }
     }
 
+    /**
+     * Loads the categories.
+     * @throws Exception if there is an error loading the categories
+     */
     suspend fun loadCategories() {
         _isLoading.value = true
         try {
@@ -104,11 +138,14 @@ class GoodHabitsViewModel(
         }
     }
 
+    /**
+     * Selects a category.
+     * @param category The category to select
+     */
     fun selectCategory(category: Category?) {
         _selectedCategory.value = category
         _isLoading.value = true
 
-        // Load templates for the selected category
         viewModelScope.launch {
             try {
                 _templates.value = templateRepository.getGoodHabitTemplatesByCategory(category?.id!!)

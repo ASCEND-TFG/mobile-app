@@ -25,6 +25,11 @@ class DeathViewModel(
         loadUserChallenge()
     }
 
+    /**
+     * Loads the user's challenge.
+     * @throws Exception if there is an error loading the challenge
+     * @return The challenge
+     */
     private fun loadUserChallenge() {
         viewModelScope.launch {
             try {
@@ -50,6 +55,12 @@ class DeathViewModel(
         }
     }
 
+    /**
+     * Loads a specific challenge.
+     * @param challengeId The ID of the challenge to load
+     * @throws Exception if there is an error loading the challenge
+     * @return The challenge
+     */
     private suspend fun loadSpecificChallenge(challengeId: String) {
         try {
             val challengeDoc = FirebaseFirestore.getInstance()
@@ -65,25 +76,27 @@ class DeathViewModel(
         }
     }
 
+    /**
+     * Assigns a new challenge to the user.
+     * @param userId The ID of the user to assign the challenge to
+     * @throws Exception if there is an error assigning the challenge
+     * @return The challenge
+     */
     private suspend fun assignNewChallenge(userId: String) {
         try {
-            // 1. Obtener todos los challenges disponibles
             val challenges = FirebaseFirestore.getInstance()
                 .collection("challenges")
                 .get()
                 .await()
 
-            // 2. Seleccionar uno aleatorio
             val randomChallenge = challenges.documents.random()
 
-            // 3. Guardar referencia en el usuario
             FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(userId)
                 .update("pendingChallenge", randomChallenge.id)
                 .await()
 
-            // 4. Cargar el challenge seleccionado
             val descriptionMap = randomChallenge.get("description") as? Map<String, String>
             _revivalChallenge.value = getLocalizedChallenge(descriptionMap)
         } catch (e: Exception) {
@@ -91,6 +104,13 @@ class DeathViewModel(
         }
     }
 
+    /**
+     * Gets the localized challenge.
+     * @param descriptionMap The map of descriptions
+     * @return The localized challenge
+     * @throws Exception if there is an error getting the localized challenge
+     * @return The localized challenge
+     */
     private fun getLocalizedChallenge(descriptionMap: Map<String, String>?): String {
         val lang = when (Locale.getDefault().language) {
             "es" -> "es"
@@ -99,6 +119,11 @@ class DeathViewModel(
         return descriptionMap?.get(lang) ?: descriptionMap?.get("en") ?: ""
     }
 
+    /**
+     * Completes the challenge.
+     * @throws Exception if there is an error completing the challenge
+     * @return The result of the operation
+     */
     fun completeChallenge() {
         viewModelScope.launch {
             val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch

@@ -1,9 +1,17 @@
+import org.jetbrains.dokka.gradle.DokkaTask
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     //id("com.android.application")
     id("com.google.gms.google-services")
+    id("org.jetbrains.dokka") version "1.9.10"
+}
+
+tasks.named<DokkaTask>("dokkaHtml").configure {
+    outputDirectory.set(file("../../doc"))
+    moduleName.set("Ascend")
 }
 
 android {
@@ -81,6 +89,10 @@ dependencies {
     implementation (libs.androidx.datastore.preferences)
     implementation (libs.kotlinx.serialization.json)
     implementation (libs.gson)
+    testImplementation (libs.mockk.mockk)
+    testImplementation (libs.kotlinx.coroutines.test)
+    testImplementation (libs.junit)
+    testImplementation (libs.robolectric)
 
     //Firebase
     implementation(platform(libs.firebase.bom))
@@ -99,4 +111,7 @@ dependencies {
     implementation(libs.google.firebase.analytics)
     implementation (libs.firebase.functions.ktx)
     implementation (libs.google.firebase.messaging.ktx)
+    testImplementation(kotlin("test"))
+
+
 }

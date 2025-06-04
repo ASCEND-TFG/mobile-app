@@ -20,6 +20,12 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
 
+/**
+ * ViewModel for the Shop screen
+ * @param shopRepo Repository for the shop
+ * @param ctx Context of the application
+ * @author Jaime Martínez Fernández
+ */
 class ShopViewModel(
     private val shopRepo: ShopRepository,
     private val ctx: Context
@@ -37,7 +43,6 @@ class ShopViewModel(
     private val _isShopLocked = mutableStateOf(false)
     private val _showRevivalDialog = mutableStateOf(false)
 
-    // Estados públicos
     val moments: State<List<Moment>> = _moments
     val userCoins: State<Int> = _userCoins
     val currentLife: State<Int> = _currentLife
@@ -50,6 +55,9 @@ class ShopViewModel(
     val isShopLocked: State<Boolean> = _isShopLocked
     val showRevivalDialog: State<Boolean> = _showRevivalDialog
 
+    /**
+     * Load initial data from Firestore
+     */
     internal fun loadInitialData() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -59,14 +67,11 @@ class ShopViewModel(
             }
 
             try {
-                // 1. Cargar datos del usuario
                 loadUserData(userId)
 
-                // 2. Manejar reset semanal si es necesario
                 val didReset = shopRepo.checkAndHandleWeeklyReset(userId)
                 _showResetMessage.value = didReset
 
-                // 3. Generar nuevos momentos is hace falta
                 val b = shopRepo.shouldGenerateNewMoments()
                 println("should generate new moments $b")
                 if (b) {
@@ -74,14 +79,12 @@ class ShopViewModel(
                     _ownedMoments.value = emptySet()
                 }
 
-                // 4. Obtener momentos actuales
                 val currentMoments = shopRepo.getCurrentMoments()
 
                 _moments.value = currentMoments.map { moment ->
                     moment.copy(isOwned = moment.id in _ownedMoments.value)
                 }
 
-                // 5. Calcular días hasta el próximo lunes
                 _daysUntilRefresh.intValue = calculateDaysUntilNextMonday()
             } catch (e: Exception) {
                 Log.e("ShopViewModel", "Error loading data", e)
@@ -93,8 +96,8 @@ class ShopViewModel(
     }
 
     /**
-     * Actualiza los datos locales del uusario
-     * @param userId ID del usuario
+     * Load user data from Firestore
+     * @param userId ID of the user
      */
     private suspend fun loadUserData(userId: String) {
         val userDoc = FirebaseFirestore.getInstance()
@@ -111,12 +114,21 @@ class ShopViewModel(
         _isUserDead.value = _currentLife.intValue <= 0
     }
 
+    /**
+     * Calculate the number of days until the next Monday
+     * @return Number of days until the next Monday
+     */
     private fun calculateDaysUntilNextMonday(): Int {
         val today = LocalDate.now()
         val nextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
         return ChronoUnit.DAYS.between(today, nextMonday).toInt()
     }
 
+    /**
+     * Purcharse a moment
+     * @param momentId ID of the moment to purchase
+     * @throws Exception if there is an error purchasing the moment
+     */
     fun purchaseMoment(momentId: String) {
         viewModelScope.launch {
             try {
@@ -138,6 +150,9 @@ class ShopViewModel(
         }
     }
 
+    /**
+     * Dismiss the reset message
+     */
     fun dismissResetMessage() {
         _showResetMessage.value = false
     }

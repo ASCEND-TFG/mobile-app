@@ -24,6 +24,13 @@ import java.util.Date
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * ViewModel for the rewards screen.
+ * It allows the user to check their rewards.
+ * @author Jaime Martínez Fernández
+ * @param auth Firebase authentication instance
+ * @param firestore Firebase Firestore instance
+ */
 class RewardsViewModel(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
@@ -46,11 +53,18 @@ class RewardsViewModel(
         scheduleDailyReset()
     }
 
+    /**
+     * Cleans up the listener when the ViewModel is destroyed
+     */
     override fun onCleared() {
         userListener?.remove()
         super.onCleared()
     }
 
+    /**
+     * Loads the user's data from Firestore
+     * @throws Exception if there is an error loading
+     */
     private fun loadUserData() {
         val userId = auth.currentUser?.uid ?: return
 
@@ -80,6 +94,12 @@ class RewardsViewModel(
             }
     }
 
+    /**
+     * Toggles the completion status of a habit
+     * @param habit The habit to toggle
+     * @param isCompleted The new completion status
+     * @throws Exception if there is an error updating the habit
+     */
     fun toggleBadHabitCompleted(habit: BadHabit, isCompleted: Boolean) {
         val currentDate = Calendar.getInstance().time
 
@@ -100,6 +120,12 @@ class RewardsViewModel(
         }
     }
 
+    /**
+     * Toggles the completion status of a habit
+     * @param habit The habit to toggle
+     * @param isCompleted The new completion status
+     * @throws Exception if there is an error updating the habit
+     */
     fun toggleGoodHabitCompleted(habit: GoodHabit, isCompleted: Boolean) {
         viewModelScope.launch {
             try {
@@ -118,6 +144,10 @@ class RewardsViewModel(
         }
     }
 
+    /**
+     * Processes the completion of a good habit
+     * @param habit The habit to process
+     */
     private suspend fun processGoodHabitCompletion(habit: GoodHabit) {
         val userId = auth.currentUser?.uid ?: return
         val userRef = firestore.collection("users").document(userId)
@@ -177,6 +207,10 @@ class RewardsViewModel(
         }.await()
     }
 
+    /**
+     * Processes the uncompletion of a good habit
+     * @param habit The habit to process
+     */
     private suspend fun processGoodHabitUncompletion(habit: GoodHabit) {
         val userId = auth.currentUser?.uid ?: return
         val userRef = firestore.collection("users").document(userId)
@@ -236,6 +270,11 @@ class RewardsViewModel(
         }.await()
     }
 
+    /**
+     * Processes the completion of a bad habit
+     * @param habit The habit to process
+     * @throws Exception if there is an error processing the habit
+     */
     private suspend fun processBadHabitCompletion(habit: BadHabit) {
         val userId = auth.currentUser?.uid ?: return
         val userRef = firestore.collection("users").document(userId)
@@ -266,6 +305,10 @@ class RewardsViewModel(
         }.await()
     }
 
+    /**
+     * Processes the uncompletion of a bad habit
+     * @param habit The habit to process
+     */
     private suspend fun processBadHabitUncompletion(habit: BadHabit) {
         val userId = auth.currentUser?.uid ?: return
         val userRef = firestore.collection("users").document(userId)
@@ -291,6 +334,11 @@ class RewardsViewModel(
         }.await()
     }
 
+    /**
+     * Calculates the next level experience for a given level
+     * @param currentLevel The current level
+     * @return The experience needed to reach the next level
+     */
     fun calculateNextLevelExp(currentLevel: Int): Int {
         return when (currentLevel) {
             1 -> 150
@@ -306,6 +354,9 @@ class RewardsViewModel(
         }
     }
 
+    /**
+     * Schedules a daily reset for the user
+     */
     private fun scheduleDailyReset() {
         viewModelScope.launch {
             while (true) {
@@ -368,6 +419,10 @@ class RewardsViewModel(
         }
     }
 
+    /**
+     * Executes a daily passive rewards for the user
+     * @throws Exception if there is an error processing the rewards
+     */
     private suspend fun executeDailyPassiveRewards() {
         val userId = auth.currentUser?.uid ?: return
         val userRef = firestore.collection("users").document(userId)
@@ -411,12 +466,10 @@ class RewardsViewModel(
                         (updatedUserDoc["categories"] as? Map<String, Map<String, Any>>)?.toMutableMap()
                             ?: mutableMapOf()
 
-                    // Aplicar recompensas a cada categoría
                     categoryRewards.forEach { (categoryId, rewards) ->
                         val categoryData = categories[categoryId]?.toMutableMap()
                             ?: createDefaultCategory().toMutableMap()
 
-                        // Actualizar XP y nivel
                         var currentExp = (categoryData["currentExp"] as? Number)?.toInt() ?: 0
                         var currentLevel = (categoryData["level"] as? Number)?.toInt() ?: 1
 
@@ -439,7 +492,6 @@ class RewardsViewModel(
                         categories[categoryId] = categoryData
                     }
 
-                    // Actualizar monedas del usuario
                     val totalCoins = categoryRewards.values.sumOf { it.first }
                     val currentUserCoins = (updatedUserDoc["coins"] as? Number)?.toInt() ?: 0
                     val newCoins = currentUserCoins + totalCoins
@@ -466,6 +518,7 @@ class RewardsViewModel(
 
     /**
      * Executes a daily reset for the user
+     * @throws Exception if there is an error executing the reset
      */
     private suspend fun executeDailyReset() {
         val userId = auth.currentUser?.uid ?: return
@@ -503,6 +556,7 @@ class RewardsViewModel(
 
     /**
      * Executes a weekly reset for the user
+     * @throws Exception if there is an error executing the reset
      */
     private suspend fun executeWeeklyReset() {
         val userId = auth.currentUser?.uid ?: return

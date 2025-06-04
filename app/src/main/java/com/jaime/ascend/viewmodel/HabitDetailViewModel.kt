@@ -14,6 +14,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
+/**
+ * ViewModel for the habit detail screen.
+ * It allows the user to edit the habit.
+ * @author Jaime Martínez Fernández
+ * @param habitId The ID of the habit to load
+ * @param isGoodHabit Whether the habit is a good habit or not
+ */
 class HabitDetailViewModel(habitId: String, isGoodHabit: Boolean) : ViewModel() {
 
     private val firestore = FirebaseFirestore.getInstance()
@@ -40,6 +47,11 @@ class HabitDetailViewModel(habitId: String, isGoodHabit: Boolean) : ViewModel() 
         }
     }
 
+    /**
+     * Updates the habit with the given ID.
+     * @param habitId The ID of the habit to update
+     * @param difficulty The new difficulty of the habit
+     */
     fun updateBadHabit(
         habitId: String,
         difficulty: Difficulty,
@@ -58,7 +70,6 @@ class HabitDetailViewModel(habitId: String, isGoodHabit: Boolean) : ViewModel() 
                     .update(updates)
                     .await()
 
-                // Actualizar el estado local
                 _bhabit.value = _bhabit.value?.copy(
                     difficulty = difficulty,
                     coinReward = difficulty.coinValue,
@@ -74,6 +85,13 @@ class HabitDetailViewModel(habitId: String, isGoodHabit: Boolean) : ViewModel() 
         }
     }
 
+    /**
+     * Updates the habit with the given ID.
+     * @param habitId The ID of the habit to update
+     * @param days The new days of the habit
+     * @param difficulty The new difficulty of the habit
+     * @param reminderTime The new reminder time of the habit
+     */
     fun updateGoodHabit(
         habitId: String,
         days: List<Int>,
@@ -118,6 +136,11 @@ class HabitDetailViewModel(habitId: String, isGoodHabit: Boolean) : ViewModel() 
         }
     }
 
+    /**
+     * Loads the habit with the given ID.
+     * @param habitId The ID of the habit to load
+     * @throws Exception if there is an error loading the habit
+     */
     internal fun loadBadHabit(habitId: String) {
         Log.d("HabitDetail", "Loading habit with ID: $habitId")
         viewModelScope.launch {
@@ -143,6 +166,10 @@ class HabitDetailViewModel(habitId: String, isGoodHabit: Boolean) : ViewModel() 
         }
     }
 
+    /**
+     * Loads the habit with the given ID.
+     * @param habitId The ID of the habit to load
+     */
     internal fun loadGoodHabit(habitId: String) {
         viewModelScope.launch {
             try {
@@ -167,6 +194,11 @@ class HabitDetailViewModel(habitId: String, isGoodHabit: Boolean) : ViewModel() 
         }
     }
 
+    /**
+     * Deletes the habit with the given ID.
+     * @param habitId The ID of the habit to delete
+     * @throws Exception if there is an error deleting the habit
+     */
     fun deleteBadHabit(habitId: String) {
         viewModelScope.launch {
             try {
@@ -179,6 +211,11 @@ class HabitDetailViewModel(habitId: String, isGoodHabit: Boolean) : ViewModel() 
         }
     }
 
+    /**
+     * Deletes the habit with the given ID.
+     * @param habitId The ID of the habit to delete
+     * @throws Exception if there is an error deleting the habit
+     */
     fun deleteGoodHabit(habitId: String) {
         viewModelScope.launch {
             try {

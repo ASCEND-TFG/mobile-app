@@ -14,6 +14,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlin.random.Random
 
+/**
+ * ViewModel for the profile screen.
+ * It allows the user to edit the profile.
+ * @author Jaime Martínez Fernández
+ * @param application The application context
+ */
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
     private val firestore = FirebaseFirestore.getInstance()
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
@@ -51,14 +57,26 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         generateRandomAvatars()
     }
 
+    /**
+     * Gets the URL of the avatar with the given ID.
+     * @param avatarId The ID of the avatar
+     */
     fun getAvatarUrl(avatarId: Int): String {
         return "https://avatar.iran.liara.run/public/$avatarId"
     }
 
+    /**
+     * Gets the initial URL of the avatar with the given username.
+     * @param username The username of the avatar
+     */
     fun getAvatarInitialUrl(username: String): String {
         return "https://avatar.iran.liara.run/username?username=$username"
     }
 
+    /**
+     * Sets up the firestore listener.
+     * @throws Exception if there is an error setting up the listener
+     */
     private fun setupFirestoreListener() {
         if (userId.isEmpty()) {
             Log.e("ProfileViewModel", "User ID is empty")
@@ -113,6 +131,9 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    /**
+     * Generates a list of random avatars.
+     */
     fun generateRandomAvatars() {
         val randomAvatars = mutableListOf<Int>()
         while (randomAvatars.size < 6) {
@@ -124,6 +145,10 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         _randomAvatars.value = randomAvatars
     }
 
+    /**
+     * Updates the avatar of the user.
+     * @param newAvatarId The new avatar ID
+     */
     suspend fun updateAvatar(newAvatarId: Int) {
         try {
             firestore.collection("users").document(userId)
@@ -135,6 +160,9 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    /**
+     * Cleans up the listener when the ViewModel is destroyed
+     */
     override fun onCleared() {
         super.onCleared()
         userListener?.remove()

@@ -8,6 +8,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * View model for authentication.
+ * @author Jaime Martínez Fernández
+ */
 class AuthViewModel : ViewModel() {
     private val authRepository = AuthRepository()
     private val auth = Firebase.auth
@@ -21,6 +25,11 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Send password reset email.
+     * @param email The email.
+     * @param onComplete The callback.
+     */
     fun sendPasswordResetEmail(email: String, onComplete: (Boolean) -> Unit) {
         Firebase.auth.sendPasswordResetEmail(email)
             .addOnCompleteListener { task ->
@@ -28,6 +37,10 @@ class AuthViewModel : ViewModel() {
             }
     }
 
+    /**
+     * Send email verification.
+     * @param onComplete The callback.
+     */
     fun sendEmailVerification(onComplete: (Boolean) -> Unit) {
         val user = auth.currentUser
         user?.reload()?.addOnCompleteListener { reloadTask ->
@@ -42,16 +55,22 @@ class AuthViewModel : ViewModel() {
         } ?: onComplete(false)
     }
 
-    fun checkEmailVerified(): Boolean {
-        return auth.currentUser?.isEmailVerified ?: false
-    }
-
+    /**
+     * Check if the email is verified.
+     * @param callback The callback.
+     */
     fun checkEmailVerifiedWithReload(callback: (Boolean) -> Unit) {
         auth.currentUser?.reload()?.addOnCompleteListener {
             callback(auth.currentUser?.isEmailVerified ?: false)
         }
     }
 
+    /**
+     * Sign in with email and password.
+     * @param email The email.
+     * @param password The password.
+     * @param callback The callback.
+     */
     fun signIn(email: String, password: String, callback: (Boolean) -> Unit) {
         if (email.isEmpty() || password.isEmpty()) {
             callback(false)
@@ -62,6 +81,13 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Sign up with email and password.
+     * @param email The email.
+     * @param password The password.
+     * @param username The username.
+     * @param onComplete The callback.
+     */
     fun signUp(email: String, password: String, username: String, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             authRepository.signUp(email, password, username) { success ->
@@ -70,6 +96,9 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Sign out.
+     */
     fun signOut() {
         auth.signOut()
     }

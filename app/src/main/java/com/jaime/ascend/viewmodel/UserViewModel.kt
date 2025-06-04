@@ -7,6 +7,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+/**
+ *  ViewModel for the user.
+ *  It fetches the user's username and coins from Firestore.
+ *  @author Jaime Martínez Fernández
+ */
 class UserViewModel : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
@@ -22,6 +27,9 @@ class UserViewModel : ViewModel() {
         fetchCoins()
     }
 
+    /**
+     * Fetches the user's username from Firestore.
+     */
     private fun fetchUserName() {
         if (userId.isNotEmpty()) {
             val userDocRef = firestore.collection("users").document(userId)
@@ -40,6 +48,9 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Fetches the user's coins from Firestore.
+     */
     private fun fetchCoins() {
         if (userId.isNotEmpty()) {
             val userDocRef = firestore.collection("users").document(userId)

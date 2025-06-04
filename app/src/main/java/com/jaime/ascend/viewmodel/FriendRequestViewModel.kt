@@ -1,6 +1,7 @@
 package com.jaime.ascend.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -14,6 +15,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
+/**
+ * ViewModel for the friend request screen.
+ * It allows the user to send friend requests.
+ * @author Jaime Martínez Fernández
+ * @param friendRequestRepository The repository for friend requests
+ * @param userRepository The repository for users
+ * @param context The application context
+ */
 class FriendRequestViewModel(
     private val friendRequestRepository: FriendRequestRepository,
     private val userRepository: UserRepository,
@@ -26,7 +35,6 @@ class FriendRequestViewModel(
         functions = FirebaseFunctions.getInstance(),
         messaging = FirebaseMessaging.getInstance()
     )
-
 
     private val _friendsList = MutableStateFlow<List<Map<String, Any>>>(emptyList())
     val friendsList: StateFlow<List<Map<String, Any>>> = _friendsList
@@ -51,6 +59,11 @@ class FriendRequestViewModel(
         loadFriends()
     }
 
+    /**
+     * Loads the user's friends.
+     * @throws Exception if there is an error loading the friends
+     * @return The list of friends
+     */
     fun loadFriends() {
         viewModelScope.launch {
             _loading.value = true
@@ -73,13 +86,18 @@ class FriendRequestViewModel(
 
                 _friendsList.value = friends
             } catch (e: Exception) {
-                // Manejar error
+                Log.e("TAG", "loadFriends: $e")
             } finally {
                 _loading.value = false
             }
         }
     }
 
+    /**
+     * Loads the pending friend requests.
+     * @throws Exception if there is an error loading the requests
+     * @return The list of pending requests
+     */
     private fun loadPendingRequests() {
         viewModelScope.launch {
             try {
@@ -101,6 +119,12 @@ class FriendRequestViewModel(
         }
     }
 
+    /**
+     * Accepts a friend request.
+     * @param userId The ID of the user to accept the request from
+     * @throws Exception if there is an error accepting the request
+     * @return The result of the operation
+     */
     fun acceptRequest(userId: String) {
         viewModelScope.launch {
             try {
@@ -114,6 +138,12 @@ class FriendRequestViewModel(
         }
     }
 
+    /**
+     * Rejects a friend request.
+     * @param userId The ID of the user to reject the request from
+     * @throws Exception if there is an error rejecting the request
+     * @return The result of the operation
+     */
     fun rejectRequest(userId: String) {
         viewModelScope.launch {
             try {
@@ -127,6 +157,12 @@ class FriendRequestViewModel(
         }
     }
 
+    /**
+     * Sends a friend request to a user.
+     * @param username The username of the user to send the request to
+     * @throws Exception if there is an error sending the request
+     * @return The result of the operation
+     */
     fun sendFriendRequest(username: String) {
         viewModelScope.launch {
             _uiState.value = FriendRequestUiState.Loading
@@ -159,12 +195,30 @@ class FriendRequestViewModel(
         }
     }
 
-
+    /**
+     * Clears the found user.
+     * @return The result of the operation
+     */
     fun clearFoundUser() {
         _foundUser.value = null
     }
 }
 
+/**
+ * Represents the state of the friend request screen.
+ * @author Jaime Martínez Fernández
+ * @param Idle The initial state
+ * @param Loading The state while loading
+ * @param UserFound The state when a user is found
+ * @param UserNotFound The state when a user is not found
+ * @param RequestSent The state when a request is sent
+ * @param AlreadyFriends The state when a user is already a friend
+ * @param RequestAlreadySent The state when a request is already sent
+ * @param RequestAccepted The state when a request is accepted
+ * @param RequestRejected The state when a request is rejected
+ * @param Error The state when an error occurs
+ * @return The state of the friend request screen
+ */
 sealed class FriendRequestUiState {
     object Idle : FriendRequestUiState()
     object Loading : FriendRequestUiState()

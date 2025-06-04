@@ -11,11 +11,23 @@ import com.jaime.ascend.ui.navigation.AppScreens
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
+/**
+ * ViewModel for the settings screen.
+ * It allows the user to delete their account.
+ * @author Jaime Martínez Fernández
+ * @param auth Firebase authentication instance
+ * @param firestore Firebase Firestore instance
+ */
 class SettingsViewModel(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
 ) : ViewModel() {
 
+    /**
+     * Deletes the user's account.
+     * @param onSuccess Callback to be executed on successful deletion
+     * @param onFailure Callback to be executed on failure
+     */
     fun deleteUserAccount(
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
@@ -25,9 +37,7 @@ class SettingsViewModel(
                 val currentUser = auth.currentUser
 
                 if (currentUser != null) {
-                    // 1. Eliminar de Firestore
                     deleteUserFromFirestore(currentUser.uid)
-                    // 2. Eliminar de Authentication
                     deleteUserFromAuth(currentUser)
 
                     onSuccess()
@@ -41,9 +51,13 @@ class SettingsViewModel(
         }
     }
 
+    /**
+     * Deletes the user's account from Firestore.
+     * @param userId ID of the user
+     * @throws Exception if there is an error deleting from Firestore
+     */
     private suspend fun deleteUserFromFirestore(userId: String) {
         try {
-            // Eliminar documento del usuario
             firestore.collection("users").document(userId)
                 .delete()
                 .await()
@@ -51,17 +65,22 @@ class SettingsViewModel(
             Log.d("SettingsViewModel", "Usuario eliminado de Firestore")
         } catch (e: Exception) {
             Log.e("SettingsViewModel", "Error eliminando de Firestore", e)
-            throw e // Relanzamos para manejarlo en deleteUserAccount
+            throw e
         }
     }
 
+    /**
+     * Deletes the user's account from Firebase Authentication.
+     * @param user User to be deleted
+     * @throws Exception if there is an error deleting from Auth
+     */
     private suspend fun deleteUserFromAuth(user: FirebaseUser) {
         try {
             user.delete().await()
             Log.d("SettingsViewModel", "Usuario eliminado de Auth")
         } catch (e: Exception) {
             Log.e("SettingsViewModel", "Error eliminando de Auth", e)
-            throw e // Relanzamos para manejarlo en deleteUserAccount
+            throw e
         }
     }
 }
